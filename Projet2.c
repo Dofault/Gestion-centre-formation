@@ -1,0 +1,5 @@
+main() {
+
+
+    print("test2");
+}
