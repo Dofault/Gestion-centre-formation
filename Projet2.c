@@ -1,5 +1,0 @@
-main() {
-
-
-    print("test2");
-}
