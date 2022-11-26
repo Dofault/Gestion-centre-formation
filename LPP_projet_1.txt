@@ -1,0 +1,94 @@
+Sujet n°5
+------------------------------------------ Enonce ------------------------------------------ 
+Le centre de formations propose différentes formations. Chaque formation concerne un certain nombre d'étudiants, et un ou plusieurs formateurs. Ceux-ci
+doivent avoir les titres requis, ont des indisponibilités à certains moments de la semaine. L'horaire doit leur convenir. Les formations ont un coût
+par étudiant. Certaines réductions peuvent être accordées. Certaines formations nécessitent des prérequis.
+
+
+------------------------------------------ Liste 'obligatoire' ------------------------------------------ 
+- Gérer les formation
+	+ Ajouter, supprimer et modifier les formation
+	+ Pouvoir les encoder et les garder en mémoire
+	+ Gérer les formateurs : un ou plusieurs/formations.
+	+ Pouvoir ajouter un prérequis (Toutes les formations n'ont pas besoin d'un prérequis)
+	
+	- Aspect budgétaire
+		> Cout par étudiant (Chaque étudiant paie le même prix)
+		> Possibilité d'accorder une réduction
+
+- Aspect budgétaire
+        > Cout par étudiant 
+            1. Chaque étudiant paie le même prix, si ya des étudiants qui sont boursiers on pourra leurs accoder une reduction par la suite
+            2. Le prix de la formation est fixe.
+
+	
+- Gérer les formateurs
+	+ Indiquer les titres des formateurs
+	+ Indiquer les possibles indisponibilités dans la semaine
+	+ Fournir un horaire qui convient (pas de validation si l'horaire n'est pas cohérent avec les indisponibilités du formateur OU avec les horaires du centre)
+	
+
+- Gestion des etudiants 
+	+ Nombre limite maximum
+	+ Pouvoir les encoder et les garder en mémoire
+	
+	
+------------------------------------------ Liste 'optionnelle' ------------------------------------------ 
+
+	+ Etablir des paliers selon la rareté du titre requis pour le formateur 
+		-> Si le formateur doit avoir une doctorat, le prix augmente bcp.
+	+ Selon l'année d'expérience d'un employé son salaire augmente
+	+ Sur base des recettes (prix formations * etudiant) et des dépenses (salaire + autre), definir si l'entreprise est en benefice ou perte
+	+ Afficher quel formation est en perte et si c'est le cas proposer d'augmenter le prix de la formation
+
+>> Chercher des vrais prix pour se faire une idée. 
+
+
+------------------------------------------ Nom des variables ------------------------------------------ 
+!! Ecrire chaque mot en entier (Exemple repris de ton schéma : nomFormateur, disponibiliteFormateur et PAS nomForma, dispoForma)
+camelCase
+
+
+Structure Etudiant
+	etudiant.Nom
+	etudiant.Prenom
+	etudiant.NaissanceJour
+	etudiant.NaissanceMois
+	etudiant.NaissanceAnnee
+	etudiant.Formation
+	etudiant.Bloc
+	etudiant.MontantAPayer		// On appliquera la reduction direct sur ce montant
+	etudiant.MontantPaye
+	etudiant.Reduction		// si ce montant est != 0 on applique reduc
+
+Structure Formateur
+	formateur.Nom
+	formateur.Prenom
+	formateur.NaissanceJour
+	formateur.NaissanceMois
+	formateur.NaissanceAnnee
+	formateur.Titre[]			// un titre = nom d'une formation ?
+	formateur.NbTitre
+	formateur.NiveauDiplome
+	
+
+
+Structure Formation
+	formation.Nom
+	formation.Prix
+	formation.MaxEtudiant
+	formation.NbBloc
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
