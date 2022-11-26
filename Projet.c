@@ -2,6 +2,32 @@
 #include<string.h>
 #include<stdlib.h>      //Gestion de la mémoire avec malloc, free, ...
 
+typedef struct etudiant {
+    char nom[30];
+    char prenom[30];
+    char nomDeFormation[100];
+    int naissanceJour, naissanceMois, naissanceAnnee, annee;
+    float montantAPayer, montantPaye, reduction;
+    struct etudiant *suivant;
+}etudiant;
+
+typedef struct formateur {
+    char nom[30];
+    char prenom[30];
+    char titre[10][100];
+    int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome;
+    struct formateur *suivant;
+}formateur;
+
+typedef struct formation {
+    char nom[100];
+    char cours[50];
+    char anneeCours[5][50];
+    int maxEtudiant;
+    float prix;
+    struct formation *suivant;
+}formation;
+
 int main() {
 //Ouverture des fichiers *dat et *res
 
@@ -12,8 +38,30 @@ int valeurMenu = 0;
 /*------------------------------------------------------Fin declaration des variables----------------------------------------------------------------*/
 void changerMenu(int *);
 
-
-changerMenu(&valeurMenu);
+while(valeurMenu != 0) {
+		
+		if(valeurMenu == 1) {
+	        // fonction consulter horaire
+	        printf("Chargement du menu ""consulter un horaire"" ...");
+	        menuConsulterHoraire();
+	        printf("\nJe quitte la fonction horaire\n");
+	    }
+	
+	    if(valeurMenu == 2) {
+	        // fonction ajouter élève
+	    }
+	
+	    if(valeurMenu == 3) {
+	        // fonction gestion formation
+	    }
+	
+	    if(valeurMenu == 4) {
+	        // fonction consulter etudiant
+	    }
+	    
+	    
+    	menuPrincipal(&valeurMenu);
+	}
     
 }   //Fin du programme principal.
 
@@ -49,5 +97,35 @@ void changerMenu( int *valeurMenu) {
 
     //Appel des fonctions d'affichage correspondant
     /*Pas encore mise en place pour le moment*/
+}
+
+
+
+void menuConsulterHoraire() {
+    /*La valeur du menu principal est 0. Donc, si *valeurMenu est déjà à 0, on propose un affichage pour 0 qui s'appelle 'Retour'.*/
+
+    int valeurMenuHoraire=-1;
+
+    while(valeurMenuHoraire != 0) {
+        
+        printf("Choix de la formation\n");
+        printf("0 : Quitter\n");
+        printf("1 : Formation x\n");
+        printf("2 : Formation y\n");
+
+        scanf("%d", &valeurMenuHoraire);
+
+        //Gestion d'erreur
+        while(valeurMenuHoraire < 0 || valeurMenuHoraire > 2) {
+            printf("Valeur incorrecte.\n");
+            scanf("%d", valeurMenuHoraire);
+        }
+
+        if(valeurMenuHoraire == 1) {
+            //Bloc d'instruction pour la formation
+        }
+
+        //Et ainsi de suite
+    }
 }
 

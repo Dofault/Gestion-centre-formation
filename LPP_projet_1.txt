@@ -59,14 +59,12 @@ Structure Etudiant
 	etudiant.naissanceJour
 	etudiant.naissanceMois
 	etudiant.naissanceAnnee
-	etudiant.formation
 	etudiant.annee
 	etudiant.montantAPayer			// On appliquera la reduction direct sur ce montant
 	etudiant.montantPaye
 	etudiant.reduction			// si ce montant est != 0 on applique reduc
 	etudiant.nomDeFormation			//Permet de lier un étudiant à une formation -> cette valeur DOIT être égale (strcmp) à la valeur d'une des formation.nom  
-	etudiant.anneeDeFormation		//Permet de lier un étdudiant à une année de formation.
-
+	
 Structure Formateur
 	formateur.nom
 	formateur.prenom

@@ -78,12 +78,12 @@ void menuConsulterHoraire() {
 	        scanf("%d", &valeurMenuHoraire);
 	
 	        //Gestion d'erreur
-	        while(valeurMenuHoraire < 0 || valeurMenuHoraire > 4) {
+	        while(valeurMenuHoraire < 0 || valeurMenuHoraire > 2) {
 	            printf("Valeur incorrecte.\n");
 	            scanf("%d", valeurMenuHoraire);
 	        }
 		}
-
+		//sortie
 }
 
 
