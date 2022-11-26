@@ -50,34 +50,34 @@ camelCase
 
 
 Structure Etudiant
-	etudiant.Nom
-	etudiant.Prenom
-	etudiant.NaissanceJour
-	etudiant.NaissanceMois
-	etudiant.NaissanceAnnee
-	etudiant.Formation
-	etudiant.Bloc
-	etudiant.MontantAPayer		// On appliquera la reduction direct sur ce montant
-	etudiant.MontantPaye
-	etudiant.Reduction		// si ce montant est != 0 on applique reduc
+	etudiant.nom
+	etudiant.prenom
+	etudiant.naissanceJour
+	etudiant.naissanceMois
+	etudiant.naissanceAnnee
+	etudiant.formation
+	etudiant.bloc
+	etudiant.montantAPayer		// On appliquera la reduction direct sur ce montant
+	etudiant.montantPaye
+	etudiant.reduction		// si ce montant est != 0 on applique reduc
 
 Structure Formateur
-	formateur.Nom
-	formateur.Prenom
-	formateur.NaissanceJour
-	formateur.NaissanceMois
-	formateur.NaissanceAnnee
-	formateur.Titre[]			// un titre = nom d'une formation ?
-	formateur.NbTitre
-	formateur.NiveauDiplome
+	formateur.nom
+	formateur.prenom
+	formateur.naissanceJour
+	formateur.naissanceMois
+	formateur.naissanceAnnee
+	formateur.titre[]			// un titre = nom d'une formation ?
+	formateur.nbTitre
+	formateur.niveauDiplome
 	
 
 
 Structure Formation
-	formation.Nom
-	formation.Prix
-	formation.MaxEtudiant
-	formation.NbBloc
+	formation.nom
+	formation.prix
+	formation.maxEtudiant
+	formation.nbBloc
 	
 
 
