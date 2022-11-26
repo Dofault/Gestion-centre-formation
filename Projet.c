@@ -60,7 +60,7 @@ int main() {
     
     // Declaration des fonctions
     void changerMenu(int *);
-    menuConsulterHoraire();
+    void menuConsulterHoraire();
     int menuGererFormation();
     int gestionFormation();
 
@@ -94,20 +94,20 @@ int main() {
                     //Création d'un espace mémoire pour la nouvelleFormation
                     nouvelleFormation = malloc(sizeof(formation));
                     nouvelleFormation->suivant = formationDebut->suivant;
-                    formationDebut->suivant = nouvelleFormation;
+                    formationDebut->suivant = nouvelleFormation; 
 
                     //Compléter les caractéristiques de la formation
-                    prinft("Quel est le nom de la nouvelle formation ?");
+                    printf("Quel est le nom de la nouvelle formation ?");
                     scanf("%s",&nouvelleFormation->nom);
-                    prinft("Quels cours sont donnés dans la nouvelle formation ?"); //pour le moment on ne met que le premier cours, pour test
+                    printf("Quels cours sont donnés dans la nouvelle formation ?"); //pour le moment on ne met que le premier cours, pour test
                     scanf("%s",&nouvelleFormation->cours[1]);
-                    printf("En combien d'année se réalise la formation ?\n")
+                    printf("En combien d'année se réalise la formation ?\n");
                     scanf("%d", &nouvelleFormation->nombreAnneeFormation);
-                    prinft("Quels cours sont donnés à chaque année ?"); //Complètement skip ca pour le moment, pas le temps de faire les boucles,
+                    printf("Quels cours sont donnés à chaque année ?"); //Complètement skip ca pour le moment, pas le temps de faire les boucles,
                     //scanf("%s",&nouvelleFormation->);
-                    prinft("Combien d'étudiants peut acceuillir la nouvelle formation ?");
+                    printf("Combien d'étudiants peut acceuillir la nouvelle formation ?");
                     scanf("%d",&nouvelleFormation->maxEtudiant);
-                    prinft("Quel est le prix pour chaque étudiant pour cette formation ?");
+                    printf("Quel est le prix pour chaque étudiant pour cette formation ?");
                     scanf("%f",&nouvelleFormation->prix);
                 }
            }
@@ -204,7 +204,8 @@ int menuGererFormation() {
     if(valeurMenuFormation == 1) {
         queFaire = gestionFormation(); 
         return queFaire;
-        /*Regarde avec gestionFormation() : 
+        /*
+		 Regarde avec gestionFormation() : 
           Si l'utilisateur a choisi l'option 1, on sait qu'il veut ajouter une formation. Ca implique qu'il doive écrire dans un fichier.
           On return ici 1 et dans le main on fait écrire toutes les parties d'une structure Formation.
         */
