@@ -43,12 +43,16 @@ par étudiant. Certaines réductions peuvent être accordées. Certaines formati
 
 >> Chercher des vrais prix pour se faire une idée. 
 
+	+ Afficher la liste des étudiants
+		> Tous les étudiants d'une formation
+		> Tous les étudiants d'une année d'une formation
+
 
 ------------------------------------------ Nom des variables ------------------------------------------ 
 !! Ecrire chaque mot en entier (Exemple repris de ton schéma : nomFormateur, disponibiliteFormateur et PAS nomForma, dispoForma)
 camelCase
 
-
+						//INSCRIRE ALIGNE A CE COMMENTAIRE L'UTILITE DE LA VAR SI ELLE EST AMBIGUE
 Structure Etudiant
 	etudiant.nom
 	etudiant.prenom
@@ -56,10 +60,12 @@ Structure Etudiant
 	etudiant.naissanceMois
 	etudiant.naissanceAnnee
 	etudiant.formation
-	etudiant.bloc
-	etudiant.montantAPayer		// On appliquera la reduction direct sur ce montant
+	etudiant.annee
+	etudiant.montantAPayer			// On appliquera la reduction direct sur ce montant
 	etudiant.montantPaye
-	etudiant.reduction		// si ce montant est != 0 on applique reduc
+	etudiant.reduction			// si ce montant est != 0 on applique reduc
+	etudiant.nomDeFormation			//Permet de lier un étudiant à une formation -> cette valeur DOIT être égale (strcmp) à la valeur d'une des formation.nom  
+	etudiant.anneeDeFormation		//Permet de lier un étdudiant à une année de formation.
 
 Structure Formateur
 	formateur.nom
@@ -67,8 +73,8 @@ Structure Formateur
 	formateur.naissanceJour
 	formateur.naissanceMois
 	formateur.naissanceAnnee
-	formateur.titre[]			// un titre = nom d'une formation ?
-	formateur.nbTitre
+	formateur.titre[]			// un titre = nom d'une qualification/prérequis
+	formateur.nbTitre			//nbTitre vraiment indispensable ?
 	formateur.niveauDiplome
 	
 
@@ -77,7 +83,9 @@ Structure Formation
 	formation.nom
 	formation.prix
 	formation.maxEtudiant
-	formation.nbBloc
+	formation.nbAnnee
+	formation.anneeCours[i][25]		//les intitulés des cours pour l'année i de la formation
+	formation.cours[50]			//les cours de l'ensemble de la formation
 	
 
 

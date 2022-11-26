@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<string.h>
+#include<stdlib.h>      //Gestion de la mémoire avec malloc, free, ...
 
 int main() {
 //Ouverture des fichiers *dat et *res
