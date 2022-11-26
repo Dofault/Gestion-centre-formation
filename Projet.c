@@ -2,7 +2,7 @@
 main() {
 
     // Bonjourrezarez
-    fprintf("teterezas");
+    printf("teterezas");
 
 
 
