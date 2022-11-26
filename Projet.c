@@ -2,6 +2,7 @@
 main() {
 
     // Bonjourrezarez
+<<<<<<< Updated upstream
     printf("teterezas");
 
 
@@ -10,5 +11,8 @@ main() {
 
 
 
+=======
+    fprintf("Salut Aurelien !");
+>>>>>>> Stashed changes
     
 }
