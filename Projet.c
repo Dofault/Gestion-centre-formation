@@ -15,7 +15,7 @@ typedef struct formateur {
     char nom[30];
     char prenom[30];
     char titre[10][100];
-    int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome;
+    int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre;
     struct formateur *suivant;
 }formateur;
 
@@ -23,7 +23,7 @@ typedef struct formation {
     char nom[100];
     char cours[20][50];
     char anneeCours[5][50];
-    int maxEtudiant, nombreAnneeFormation;
+    int maxEtudiant, nombreAnneeFormation, nbCours, nbAnnee;
     float prix;
     struct formation *suivant;
 }formation;
@@ -31,30 +31,36 @@ typedef struct formation {
 
 
 int main() {
+	
     //Ouverture des fichiers *dat et *res
     FILE *fdat, *fdat1, *fdat2, *fres, *fres1, *fres2;
-    fres = fopen("listeEtdudiant.dat","w");
-    fres1 = fopen("listeFormateur.dat","w");
-    fres2 = fopen("listeFormation.dat","w");
-
-    fdat = fopen("listeEtdudiant.dat","r");
+    fdat = fopen("listeEtudiant.dat","r");
     fdat1 = fopen("listeFormateur.dat","r");
     fdat2 = fopen("listeFormation.dat","r");
 
     //Declaration des variables
-    int valeurMenu, queFaire;
+    int valeurMenu, queFaire, i, x;
     //queFaire est une variable qui est modifiée par les fonctions : en effet, on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le
     //main. (Préférence de M. Carpentier) Donc, si un menu nécessite une lecture/écriture, il faut lui faire varier la valeur de queFaire. Voir valeurMenu == 3 pour exemple
 
-    //variables formation
+    // Var formation
     formation *formationDebut, *formationCourant, *formationSuivant, *nouvelleFormation;
     formationCourant = malloc(sizeof(formation));
     formationDebut = formationCourant;
 
+    // Var etudiant
+    etudiant *etudiantDebut,*etudiantCourant,*etudiantSuivant,*etudiantIntercale;
+    int nbEtudiant = 0;
+    
+    // Var formateur
+    formateur *formateurDebut,*formateurCourant,*formateurSuivant,*formateurIntercale;
+    int nbFormateur=0;
+    
     //!!!! A SUPPRIMER QUAND ON AURA PLUSIEURS FORMATIONS. JUSTE POUR TESTER LA FEATURE
+    /* Aurelien: ces deux lignes emp�che ton programme de fonctionner mdr
     formationDebut = NULL;
     formationDebut->suivant = NULL;
-
+	*/
     /*------------------------------------------------------Fin declaration des variables----------------------------------------------------------------*/
     /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
     
@@ -64,23 +70,85 @@ int main() {
     int menuGererFormation();
     int gestionFormation();
 
-
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+   
+	// LECTURE DES ETUDIANTS, VARIABLE PERTINENTE : nbEtudiant ET etudiantDebut pour les chaines
+	// -----------------------------------------------------------------------------------------
+	etudiantCourant=malloc(sizeof(etudiant));
+	etudiantDebut=etudiantCourant;
+	fscanf(fdat,"%30s", &etudiantCourant->nom);
+	while(!feof(fdat)) {
+		fscanf(fdat," %30s %100s %2d %2d %4d %2d %8f %8f %8f", &etudiantCourant->prenom, &etudiantCourant->nomDeFormation, 
+		&etudiantCourant->naissanceJour, &etudiantCourant->naissanceMois, &etudiantCourant->naissanceAnnee, &etudiantCourant->annee, &etudiantCourant->montantAPayer, 
+		&etudiantCourant->montantPaye, &etudiantCourant->reduction);
+	  	etudiantSuivant=malloc(sizeof(etudiant));
+	  	etudiantCourant->suivant=etudiantSuivant;
+	  	nbEtudiant++;
+   	  	etudiantCourant=etudiantSuivant;
+		fscanf(fdat,"%30s", &etudiantCourant->nom);
+	}      
+	etudiantCourant=etudiantDebut;
+	for(i=0;i<nbEtudiant;i++) {
+		etudiantCourant=etudiantCourant->suivant;
+	}   
+	etudiantCourant->suivant=NULL;  // free(etudiantSuivant);
+	
+	
+	
+
+
+	// LECTURE DES FORMATEUR DANS LA VARIABLE nbFormateur ET formateurDebut
+	// -------------------------------------------------------------------
+	formateurCourant=malloc(sizeof(formateur));
+	formateurDebut=formateurCourant;
+	fscanf(fdat1,"%30s", &formateurCourant->nom);
+	while(!feof(fdat1))
+	{
+		fscanf(fdat1," %30s %2d %2d %4d %2d %2d", &formateurCourant->prenom, 
+		&formateurCourant->naissanceJour, &formateurCourant->naissanceMois, &formateurCourant->naissanceAnnee, &formateurCourant->niveauDiplome, 
+		&formateurCourant->nbTitre);
+		// Passage en revu de tout les titres du formateur
+		for(i=1;i<= formateurCourant->nbTitre; i++) {
+			// scan 100 caract�re par nombre de titre
+			fscanf(fdat1," %100s", formateurCourant->titre[i]);
+		}
+	  	formateurSuivant=malloc(sizeof(formateur));
+	  	formateurCourant->suivant=formateurSuivant;
+	  	nbFormateur++;
+   	  	formateurCourant=formateurSuivant;
+		fscanf(fdat1,"%30s", &formateurCourant->nom);
+	}
+	formateurCourant=formateurDebut;
+	for(i=0;i<nbFormateur;i++){
+		formateurCourant=formateurCourant->suivant;
+	}
+	formateurCourant->suivant=NULL;
+   
+
+   
+   
+   
+   
+   	// Fin de la lecture ouverture des RES
+	fclose(fdat); 
+	fclose(fdat1); 
+	fclose(fdat2); /*
+    fres = fopen("listeEtudiant.dat","w");
+    fres1 = fopen("listeFormateur.dat","w");
+    fres2 = fopen("listeFormation.dat","w");*/
+   
    
     //Initialisation de la valeur de valeurMenu
     changerMenu(&valeurMenu);
     while(valeurMenu != 0) {
-
-       
-
         if(valeurMenu == 1) {
-            // fonction consulter horaire
+            // consulter horaire
             menuConsulterHoraire();
         }
     
         if(valeurMenu == 2) {
-            // fonction ajouter élève
+            // ajouter élève
         }
     
         if(valeurMenu == 3) {
@@ -122,14 +190,7 @@ int main() {
     }
         
     //Fermeture des flux de lecture et d'écriture
-    printf("Fermeture des fichiers.\n");
-    fclose(fdat);
-    fclose(fdat1);
-    fclose(fdat2);
-    fclose(fres);
-    fclose(fres1);
-    fclose(fres2);
-    printf("Au revoir et a bientot.\n");
+    fclose(fres); fclose(fres1); fclose(fres2); printf("Au revoir et a bientot.\n");
 
 }   //Fin du programme principal.
 
