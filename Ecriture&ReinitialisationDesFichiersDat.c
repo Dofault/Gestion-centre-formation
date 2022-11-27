@@ -2,12 +2,12 @@
 #include<string.h>
 #include<stdlib.h>
 
-// Ce fichier sert à ecrire dans les fichiers dat et à tester la mise en forme
-// il y a aussi les ordres d'écriture à copier coller
+// Ce fichier sert a ecrire dans les fichiers dat et a tester la mise en forme
+// il y a aussi les ordres d'ecriture a copier coller
 main()
 {
 	FILE *fres, *fres1, *fres2; 
-    fres = fopen("listeEtudiant.dat","w");
+    //fres = fopen("listeEtudiant.dat","w");
     fres1 = fopen("listeFormateur.dat","w");
     fres2 = fopen("listeFormation.dat","w");
     
@@ -38,10 +38,20 @@ main()
 	int naissanceJour, naissanceMois, naissanceAnnee, annee, 
 	float montantAPayer, montantPaye, reduction;
 	-------------------------------------------------------- */
-	fprintf(fres,"%-30s %-30s %-100s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", "Aure", "Desp", "Info", 2, 5, 2000, 1, 4000.30, 2000.30, 500);
+	/*fprintf(fres,"%-30s %-30s %-100s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", "Aure", "Desp", "Info", 2, 5, 2000, 1, 4000.30, 2000.30, 500);
 	fprintf(fres,"%-30s %-30s %-100s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", "Geof", "Dela", "Info", 1, 6, 1993, 1, 4100.30, 2100.30, 300);
 	fprintf(fres,"%-30s %-30s %-100s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", "Nico", "Bal", "Info", 1, 6, 1991, 1, 4110.30, 2200.30, 400);
-	fprintf(fres,"%-30s %-30s %-100s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", "Jean", "Carp", "Compta", 2, 6, 1921, 1, 3333.30, 2220.30, 420);
+	fprintf(fres,"%-30s %-30s %-100s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", "Jean", "Carp", "Compta", 2, 6, 1921, 1, 3333.30, 2220.30, 420);*/
+
+
+	//TEST POUR AJOUTER UNE ENTREE SANS SUPPRIMER TOUT LE FICHIER
+	//fermeture du flux d'Ã©criture "w" et ouverture d'un flux d'Ã©criture "a"
+	//fclose(fres);
+	fres = fopen("listeEtudiant.dat","a");
+	fprintf(fres,"%-30s %-30s %-100s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", "Test2", "Ajout2", "Kine", 1, 2, 3000, 1, 4000.30, 2000.30, 500);
+
+	//Ca fonctionne. En ouvrant un fichier en "a" au lieu de "w", on ne supprime pas tout le contenu. Attention que le simple fait d'ouvrir un fichier en "w", mÃªme si
+	//on n'Ã©crit rien dedans, va tout supprimer... (c'est pour ca que j'ai mis en commentaire ton fres)
 	
 /*	--------------------------------------------------------
     ECRITURE DES VARIABLES DE FORMATION PAS FINIS :
@@ -55,12 +65,12 @@ main()
 	fprintf(fres2,"%-100s %2d %2d", "gNomFormation1", nbCours, nbAnnee);
 	int i;
 	for(i=1;i<= nbCours; i++) {
-		// print 20 caractère pour chaque cours
+		// print 20 caractï¿½re pour chaque cours
 		fprintf(fres2,"%7s%02d%11s ", "UnCours", i, "          ");
 	}
 	
 	for(i=1;i<= nbAnnee; i++) {
-		// print 20 caractère pour chaque cours
+		// print 20 caractï¿½re pour chaque cours
 		fprintf(fres2,"%7s%02d%11s ", "UnCours", i, "          ");
 	}
 */
@@ -94,7 +104,7 @@ main()
 		}
 		
 		for(i=1;i<= nbTitre; i++) {
-			// print 100 caractère pour chaque formation
+			// print 100 caractï¿½re pour chaque formation
 			fprintf(fres1," %7s%02d%91s", "FormationNumero", i, "");
 		}
 		fprintf(fres1,"\n");
