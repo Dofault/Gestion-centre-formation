@@ -22,8 +22,7 @@ typedef struct formateur {
 typedef struct formation {
     char nom[100];
     char cours[20][50];
-    char anneeCours[5][50];
-    int maxEtudiant, nombreAnneeFormation, nbCours, nbAnnee, nbEtudiant;
+    int maxEtudiant, nbCours, nbEtudiant;
     float prix;
     struct formation *suivant;
     
@@ -41,35 +40,30 @@ int main() {
     fdat1 = fopen("listeFormateur.dat","r");
     fdat2 = fopen("listeFormation.dat","r");
 
-    //Declaration des variables
+    //Decl variables
     int valeurMenu, queFaire, i, x, y, z;
-    //queFaire est une variable qui est modifiée par les fonctions : en effet, on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le
-    //main. (Préférence de M. Carpentier) Donc, si un menu nécessite une lecture/écriture, il faut lui faire varier la valeur de queFaire. Voir valeurMenu == 3 pour exemple
+    //queFaire est une variable qui est modifiée par les fonctions : on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le main
 
     // Var formation
     int nbFormation=0;
     formation *formationDebut, *formationCourant, *formationSuivant, *nouvelleFormation, *formationIntercale;
-
     // Var etudiant
     int nbEtudiant = 0;
     etudiant *etudiantDebut,*etudiantCourant,*etudiantSuivant,*etudiantIntercale;
-    
     // Var formateur
     int nbFormateur=0;
     formateur *formateurDebut,*formateurCourant,*formateurSuivant,*formateurIntercale;
     
-    
     /*------------------------------------------------------Fin declaration des variables----------------------------------------------------------------*/
-    /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------Debut declaration fonction ------------------------------------------------------------------*/
     
-    // Declaration des fonctions
     void changerMenu(int *);
     void menuConsulterHoraire();
     int menuGererFormation();
     int gestionFormation();
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
-    /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------------------------------Debut de la lecture -----------------------------------------------------------------------*/
    
 	// LECTURE DES ETUDIANTS, VARIABLE PERTINENTE : nbEtudiant ET etudiantDebut pour les chaines
 	// -----------------------------------------------------------------------------------------
@@ -96,7 +90,7 @@ int main() {
 	
 
 
-	// LECTURE DES FORMATEUR DANS LA VARIABLE nbFormateur ET formateurDebut
+	// LECTURE DES FORMATEUR VARIABLE PERTINENTE : nbFormateur ET formateurDebut
 	// -------------------------------------------------------------------
 	formateurCourant=malloc(sizeof(formateur));
 	formateurDebut=formateurCourant;
@@ -114,7 +108,7 @@ int main() {
 		}
 		// Passage en revu de tout les titres du formateur
 		for(i=1;i<= formateurCourant->nbTitre; i++) {
-			// scan 100 caract�re par nombre de titre
+			// scan 100 caract�re par nombre de titre
 			fscanf(fdat1," %100s", formateurCourant->titre[i]);
 		}
 	  	formateurSuivant=malloc(sizeof(formateur));
@@ -169,7 +163,6 @@ int main() {
 	
    
    
-   	// Fin de la lecture ouverture des RES
 	fclose(fdat); 
 	fclose(fdat1); 
 	fclose(fdat2); /*
@@ -177,8 +170,8 @@ int main() {
     fres1 = fopen("listeFormateur.dat","w");
     fres2 = fopen("listeFormation.dat","w");*/
    
-   
-    //Initialisation de la valeur de valeurMenu
+    // --------------------------------------------------------------------FIN DE LA LECTURE --------------------------------------------------------------------------
+    // ---------------------------------------------------------------------LANCEMENT DU MENU -------------------------------------------------------------------------
     changerMenu(&valeurMenu);
     while(valeurMenu != 0) {
         if(valeurMenu == 1) {
@@ -190,34 +183,72 @@ int main() {
             // ajouter élève
         }
     
+        // 
         if(valeurMenu == 3) {
-            // fonction gestion formation
+            // valeur possible menuGererFormation() :
+            // 1 : ajouter formation
+            // 2 : modifier formation
+            // 3 : afficher liste formation
            queFaire = menuGererFormation();
            if(queFaire != 0) {
-                //Soit lire ou écrire une formation/formateur dans un fichier
                 if(queFaire == 1) {
-                    //Ici on sait que l'utilisateur souhaite érire une nouvelle formation.
                     printf("===================================\n");
-                    //Création d'un espace mémoire pour la nouvelleFormation
                     nouvelleFormation = malloc(sizeof(formation));
                     nouvelleFormation->suivant = formationDebut->suivant;
                     formationDebut->suivant = nouvelleFormation; 
-
-                    //Compléter les caractéristiques de la formation
                     printf("Quel est le nom de la nouvelle formation ?");
-                    scanf("%s",&nouvelleFormation->nom);
-                    printf("Quels cours sont donnés dans la nouvelle formation ?"); //pour le moment on ne met que le premier cours, pour test
-                    scanf("%s",&nouvelleFormation->cours[1]);
-                    printf("En combien d'année se réalise la formation ?\n");
-                    scanf("%d", &nouvelleFormation->nombreAnneeFormation);
-                    printf("Quels cours sont donnés à chaque année ?"); //Complètement skip ca pour le moment, pas le temps de faire les boucles,
-                    //scanf("%s",&nouvelleFormation->);
+                        scanf("%s",&nouvelleFormation->nom); // nom[100]
+                    printf("Quels cours sont donnés dans la nouvelle formation ? (1 cours minimum)");
+                        nouvelleFormation->nbCours = 1;
+                        // On ajoute le cours dans le nouveau slot nbCours + 1
+                        scanf("%s",&nouvelleFormation->cours[1]);
+                        char utilisateurCours[50];
+                        strcpy(utilisateurCours, "vide");
+                        while(strcmp(utilisateurCours, "STOP") != 0) {
+                            // On ajoute ce qu'à mit l'utilisateur dans nouvelleFormation->Cours
+                            nouvelleFormation->nbCours += 1;
+                            strcpy(nouvelleFormation->cours[nouvelleFormation->nbCours], utilisateurCours);
+                            printf("Quels autre cours sont donnés dans la nouvelle formation ? (STOP pour arreter l'insertion)");
+                            scanf("%s",&utilisateurCours);
+                            // ici on peut eventuellement mettre des conditions de verif sur char utilisateurCours[50]
+                        }
+                        nouvelleFormation->nbCours -= 1; // enregistr en trop
                     printf("Combien d'étudiants peut acceuillir la nouvelle formation ?");
-                    scanf("%d",&nouvelleFormation->maxEtudiant);
+                        scanf("%d",&nouvelleFormation->maxEtudiant);
                     printf("Quel est le prix pour chaque étudiant pour cette formation ?");
-                    scanf("%f",&nouvelleFormation->prix);
+                        scanf("%f",&nouvelleFormation->prix);
+                    // Nouvelle formation donc première année, on fera une interface pour ajouter des années
+                    nouvelleFormation->numeroAnnee=1;
+                    nouvelleFormation->nbEtudiant=0;
+                    // Creation de l'horaire
+                    for(i=1;i<=7;i++) {
+                        for(x=1;x<=24;x++) {
+                            nouvelleFormation->horaire[i][x]=0;
+                        }
+                    }
+                    printf("\nFormation ajouté : \n--------------------\nNom : %s\nAnnee : %2d\nNombre de cours :%2d\nNombre maximum d'étudiant: %4d\nNombre d'étudiant : %4d\nPrix : %8.2f\n"
+                    , nouvelleFormation->nom, nouvelleFormation->numeroAnnee, nouvelleFormation->nbCours, nouvelleFormation->maxEtudiant, nouvelleFormation->nbEtudiant, nouvelleFormation->prix);	
+                    printf("--------------------------\n");
+
+
+                    // ***** A FAIRE: AJOUTER nouvelleFormation dans le fdat *******
+
+
+                }
+
+                if(queFaire == 2) {
+
+                    // ****** A FAIRE : MENU POUR MODIFIER UNE FORMATION ET DONC MODIFIER formationDAT ********
+                }
+
+                if(queFaire == 3) {
+
+                    // ********* A FAIRE : AFFICHER LA LISTE DES FORMATIONS + POSSIBILITE D'EN SUPPRIMER *********
                 }
            }
+
+            // tache effectué, on peut reset que faire
+           queFaire = 0;
         }
     
         if(valeurMenu == 4) {
@@ -228,10 +259,8 @@ int main() {
         
     }
         
-    //Fermeture des flux de lecture et d'écriture
     fclose(fres); fclose(fres1); fclose(fres2); printf("Au revoir et a bientot.\n");
-
-}   //Fin du programme principal.
+}   // -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_   FIN  DU  PROGRAMME MAIN -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 
 //ChangerMenu
@@ -241,7 +270,7 @@ void changerMenu(int *valeurMenu) {
     printf("0 : Quitter\n");
     printf("1 : Acceder aux horaires\n");
     printf("2 : Ajouter un etudiant\n");
-    printf("3 : Gerer les formations\n");
+    printf("3 : Gerer les formations ou les formateurs\n");
     printf("4 : Consulter les etudiants\n");
     printf("Votre choix : ");
 
@@ -262,8 +291,10 @@ void menuConsulterHoraire() {
         
     printf("Choix de la formation\n");
     printf("0 : Quitter\n");
-    printf("1 : Formation x\n");
-    printf("2 : Formation y\n");
+    printf("1 : \n");
+    printf("2 : \n");
+
+    // ***** A FAIRE : AFFICHER LA LISTE DES FORMATIONS ET DES QUE L'UTILISATEUR SELECTIONNE UNE FORMATION CA AFFICHE L'HORAIRE ************
 
     scanf("%d", &valeurMenuHoraire);
 
@@ -281,15 +312,18 @@ void menuConsulterHoraire() {
     //Et ainsi de suite
 }
 
-
+// Les valeurs possible de retour :
+// 1 : ajouter formation
+// 2 : modifier formation
+// 3 : afficher liste formation
 int menuGererFormation() {
     int valeurMenuFormation=-1;
-    int queFaire = 0; //0 signifie ne rien faire. Cette valeur est retournée si l'utilisateur n'a pas besoin de lire/ecrire dans un fichier
+    int queFaire = 0; //0 signifie ne rien faire.
         
     printf("Choix de la formation\n");
     printf("0 : Quitter\n");
-    printf("1 : Accéder aux formations\n");
-    printf("2 : Accéder aux Formateurs y\n");
+    printf("1 : Accéder aux formations (ajouter, modifier, supprimer, afficher la liste)\n");
+    printf("2 : Accéder aux formateurs (ajouter, modifier, supprimer, afficher la liste)\n");
     printf("Votre choix : ");
 
     scanf("%d", &valeurMenuFormation);
@@ -316,10 +350,17 @@ int menuGererFormation() {
         //Note : queFaire devra être différent de 0,1,2 et 3 car ces options sont déjà reprises dans le cas 1 et il faut que queFaire soit différent pour chaque
         //option regroupée dans le main -->
         //if(valeurMenu == X) {}
+
+        // ******* A FAIRE : Creer fonction gestionFormateur et renvoyer queFaire 3 valeurs différente (ajouter, modifier, supprimer formateur)
     }
 }
 
+
 //Est appelée depuis menuGererFormation()
+// Les valeurs possible de retour :
+// 1 : ajouter formation
+// 2 : modifier formation
+// 3 : afficher liste formation
 int gestionFormation() {
     int queFaire = 0;
     int menu;
