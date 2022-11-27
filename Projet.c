@@ -15,7 +15,7 @@ typedef struct formateur {
     char nom[30];
     char prenom[30];
     char titre[10][100];
-    int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre;
+    int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre, horaire[8][25];
     struct formateur *suivant;
 }formateur;
 
@@ -23,9 +23,12 @@ typedef struct formation {
     char nom[100];
     char cours[20][50];
     char anneeCours[5][50];
-    int maxEtudiant, nombreAnneeFormation, nbCours, nbAnnee;
+    int maxEtudiant, nombreAnneeFormation, nbCours, nbAnnee, nbEtudiant;
     float prix;
     struct formation *suivant;
+    
+    // Ajout, plus tard faudra supprimer anneeCours
+    int numeroAnnee, horaire[8][25];
 }formation;
 
 
@@ -39,28 +42,23 @@ int main() {
     fdat2 = fopen("listeFormation.dat","r");
 
     //Declaration des variables
-    int valeurMenu, queFaire, i, x;
+    int valeurMenu, queFaire, i, x, y, z;
     //queFaire est une variable qui est modifiée par les fonctions : en effet, on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le
     //main. (Préférence de M. Carpentier) Donc, si un menu nécessite une lecture/écriture, il faut lui faire varier la valeur de queFaire. Voir valeurMenu == 3 pour exemple
 
     // Var formation
-    formation *formationDebut, *formationCourant, *formationSuivant, *nouvelleFormation;
-    formationCourant = malloc(sizeof(formation));
-    formationDebut = formationCourant;
+    int nbFormation=0;
+    formation *formationDebut, *formationCourant, *formationSuivant, *nouvelleFormation, *formationIntercale;
 
     // Var etudiant
-    etudiant *etudiantDebut,*etudiantCourant,*etudiantSuivant,*etudiantIntercale;
     int nbEtudiant = 0;
+    etudiant *etudiantDebut,*etudiantCourant,*etudiantSuivant,*etudiantIntercale;
     
     // Var formateur
-    formateur *formateurDebut,*formateurCourant,*formateurSuivant,*formateurIntercale;
     int nbFormateur=0;
+    formateur *formateurDebut,*formateurCourant,*formateurSuivant,*formateurIntercale;
     
-    //!!!! A SUPPRIMER QUAND ON AURA PLUSIEURS FORMATIONS. JUSTE POUR TESTER LA FEATURE
-    /* Aurelien: ces deux lignes emp�che ton programme de fonctionner mdr
-    formationDebut = NULL;
-    formationDebut->suivant = NULL;
-	*/
+    
     /*------------------------------------------------------Fin declaration des variables----------------------------------------------------------------*/
     /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
     
@@ -103,11 +101,17 @@ int main() {
 	formateurCourant=malloc(sizeof(formateur));
 	formateurDebut=formateurCourant;
 	fscanf(fdat1,"%30s", &formateurCourant->nom);
-	while(!feof(fdat1))
-	{
-		fscanf(fdat1," %30s %2d %2d %4d %2d %2d", &formateurCourant->prenom, 
+	while(!feof(fdat1)) {
+		fscanf(fdat1," %30s %2d %2d %4d %2d %2d ", &formateurCourant->prenom, 
 		&formateurCourant->naissanceJour, &formateurCourant->naissanceMois, &formateurCourant->naissanceAnnee, &formateurCourant->niveauDiplome, 
 		&formateurCourant->nbTitre);
+		// Lecture de l'horaire
+		for(i=1;i<=7;i++) {
+			for(x=1;x<=24;x++) {
+				
+				fscanf(fdat1,"%1d", &formateurCourant->horaire[i][x]);
+			}
+		}
 		// Passage en revu de tout les titres du formateur
 		for(i=1;i<= formateurCourant->nbTitre; i++) {
 			// scan 100 caract�re par nombre de titre
@@ -125,9 +129,44 @@ int main() {
 	}
 	formateurCourant->suivant=NULL;
    
+   
+
+
 
    
-   
+	// LECTURE DES FORMATION, VARIABLE PERTINENTE : nbFormation ET formationDebut
+	// -------------------------------------------------------------------
+	formationCourant=malloc(sizeof(formation));
+	formationDebut=formationCourant;
+	fscanf(fdat2,"%100s", &formationCourant->nom);
+	while(!feof(fdat2)) {
+		fscanf(fdat2," %2d %2d %4d %4d %8f ", &formationCourant->numeroAnnee, &formationCourant->nbCours, &formationCourant->maxEtudiant,
+		&formationCourant->nbEtudiant, &formationCourant->prix);
+		// Lecture de l'horaire, 7jours * 24h
+		for(i=1;i<= 7; i++) {
+			for(x=1;x<=24;x++) {
+				fscanf(fdat2, "%1d", &formationCourant->horaire[i][x]);
+			}
+		}
+		// Lecture des cours
+		for(i=1;i<=formationCourant->nbCours; i++) {
+			fscanf(fdat2, " %50s", &formationCourant->cours[i]);
+		}
+	  	formationSuivant=malloc(sizeof(formation));
+	  	formationCourant->suivant=formationSuivant;
+	  	nbFormation++;
+   	  	formationCourant=formationSuivant;
+		fscanf(fdat2,"%100s", &formationCourant->nom);
+	}
+	formationCourant=formationDebut;
+	for(i=0;i<nbFormation;i++) {
+		formationCourant=formationCourant->suivant;
+	}   
+	formationCourant->suivant=NULL;
+	
+	
+	
+	
    
    
    	// Fin de la lecture ouverture des RES

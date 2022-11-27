@@ -74,6 +74,7 @@ Structure Formateur
 	formateur.titre[]			// un titre = nom d'une qualification/prÃ©requis
 	formateur.nbTitre			//nbTitre vraiment indispensable ?
 	formateur.niveauDiplome
+	formateur.horaire[8][25]	// 8 car 7 jours de la semaine, 25 car 24h dans une journée, chaque valeur déterminera la disponibilité (-1 pour indisponible, 0 pour disponible et 1 pour indisponible)
 	
 
 
@@ -81,10 +82,11 @@ Structure Formation
 	formation.nom
 	formation.prix
 	formation.maxEtudiant
-	formation.nbAnnee
+	formation.numeroAnnee		// Numero de l'année (donc le prérequis va dépendre de ça), en soi chaque année représentera une formation, j'en ai conclu que c'est + simple car sinon pour l'horaire ce sera vraiment horrible à coder
 	formation.anneeCours[i][25]		//les intitulÃ©s des cours pour l'annÃ©e i de la formation
 	formation.cours[50]			//les cours de l'ensemble de la formation
-	
+	formation.horaire[8][25]
+	formation.nbEtudiant
 
 
 
