@@ -6,7 +6,7 @@ par Ã©tudiant. Certaines rÃ©ductions peuvent Ãªtre accordÃ©es. Certaines formati
 
 
 ------------------------------------------ Liste 'obligatoire' ------------------------------------------ 
-- GÃ©rer les formation
+- Gerer les formation
 	+ Ajouter, supprimer et modifier les formation
 	+ Pouvoir les encoder et les garder en mÃ©moire
 	+ GÃ©rer les formateurs : un ou plusieurs/formations.
@@ -82,7 +82,7 @@ Structure Formation
 	formation.nom
 	formation.prix
 	formation.maxEtudiant
-	formation.numeroAnnee		// Numero de l'année (donc le prérequis va dépendre de ça), en soi chaque année représentera une formation, j'en ai conclu que c'est + simple car sinon pour l'horaire ce sera vraiment horrible à coder
+	formation.numeroAnnee			//Numero de l'année (donc le prérequis va dépendre de ça), en soi chaque année représentera une formation, j'en ai conclu que c'est + simple car sinon pour l'horaire ce sera vraiment horrible à coder
 	formation.anneeCours[i][25]		//les intitulÃ©s des cours pour l'annÃ©e i de la formation
 	formation.cours[50]			//les cours de l'ensemble de la formation
 	formation.horaire[8][25]

@@ -1,0 +1,73 @@
+Ce fichier est ici simplement pour remettre de l'ordre dans notre travail.
+Pour eviter au maximum de se rajouter des difficultes de comprehension, essayons ne n'y mettre aucun accent.
+
+En reflechissant, les etudiants sont dependants des formateurs et le formateur est au service d'une formation.
+
+Donc, le coeur du programme du centre, ce sont les formations.
+Pour le moment, elles sont structurees de cette maniere :
+
+typedef struct formation {								
+    char nom[100];								
+    char cours[20][50];
+    char anneeCours[5][50];
+    int maxEtudiant, nombreAnneeFormation, nbCours, nbAnnee, nbEtudiant;
+    float prix;
+    struct formation *suivant;
+    
+    // Ajout, plus tard faudra supprimer anneeCours
+    int numeroAnnee, horaire[8][25];
+}formation;
+
+
+
+J'ai remarque des doublons. -> nombreAnneeFormation et nbAnnee.
+	-> Suppression de nbAnnee
+
+En lisant les commentaires, on voit qu'on peut supprimer char anneeCours[5][50] car cette variable est remplacee par numeroAnnee et le principe de creer une formation par année
+
+En reflechissant, puisqu'un prof peut donner cours dans differentes formations (encore plus depuis que 2 annee d'une meme formation seront traitees comme 2 formations differentes),
+on se retrouve dans un cas complexe : un prof est lie a des cours qu'il donne. Les cours sont differents d'une annee/formation a l'autre et ces cours doivent correspondre aux cours indiques
+dans la cours[][].
+Je me projette deja, mais on peut penser à ce systeme
+
+//NOTE : ALGORITHME PAS FINI, JE LE FINIRAI AVANT D'ENTAMER LE VRAI CODE DU PROJET, FAUDRA QUE TU VALIDES OU NON TOUT CA, ON EN PARLE S'IL FAUT
+A l'encodage d'une formation, on demande : 
+le nom(var:nomBase), le nombre d'annee(nombreAnneeFormation) sur laquelle elle s'etale.
+Et la, ca part sur un algorithme :
+
+i = 1  -> i represente en fait les annees
+- Demander l'ID(idFormation) (3 lettres et 1 chiffre) de la FORMATION dans une variable idFormation: l'utilisateur encode les 3 lettres ET VERIFIER QU'IL NEXISTE PAS ENCORE
+        on cree l'ID unique de cette annee de formation dans la variable idFormationAnnee en concatenant i, _ et l'ID entré par l'utilisateur: i_idFormation
+
+POUR i; i <= nombreAnneeFormation FAIRE   //Parcours des annees
+	on cree l'ID unique de cette annee de formation dans la variable idFormationAnnee en concatenant i, _ et l'ID entré par l'utilisateur: i_idFormation
+        nom = nomBase(espace) i //Ainsi on aura genre : Formation pour futur chef de chantier 1, Formation pour futur chef de chantier 2, ...
+        ECRIRE "Combien de cours sont donnes lors de cette formation ?"
+        nbCours = reponse de l'utilisateur
+
+        POUR j; j <= nbCours FAIRE
+            ECRIRE "Quel est le nom du cours n°j"
+            cours[j] = reponse de l'utilisateur
+        FINPOUR
+        
+FINPOUR
+
+On obtient donc cette table des variables
+
+
+Table des variables
+-------------------
+Nom				Description
+============================================
+nomBase[100];			nom de la formation	
+nomComplete[102]		nom de la formation suivi d'un _numeroAnnee			
+cours[20][50];			nom des cours qui sont proposes a cette annee
+maxEtudiant 			nombre maximum d'étudiants pour l'année UNE (ca ne fait pas de sens de limiter aux autres années, je trouve). 
+nombreAnneeFormation		nombre d'année sur lesquelles s'étale la formation
+nbCours				nombre de cours pour l'annee
+nbEtudiant;			nombre d'étudiants dans l'annee
+prix; 				prix fixés (hors réduction) pour les étudiants.
+numeroAnnee 			numero de l'année de la formation. A noter que cette variable ne PEUT PAS dépasser la valeur de nombreAnneeFormation
+horaire[8][25];			Grille horaire des heures donnees par les formateur de la formation. 
+idFormation[3]			3 lettres communes aux differentes annees d'une formation. Sera utilisee pour presenter les formations dans leur entierete (ensemble des annees)
+idFormationAnnee[5]		ID unique de l'annee de la formation. Permet de differencier les annees d'une meme formation : annee_idFormation
