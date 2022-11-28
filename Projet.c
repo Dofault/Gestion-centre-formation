@@ -108,7 +108,11 @@ int main() {
 		}
 		// Passage en revu de tout les titres du formateur
 		for(i=1;i<= formateurCourant->nbTitre; i++) {
+<<<<<<< Updated upstream
 			// scan 100 caract�re par nombre de titre
+=======
+			// scan 100 caracteres par nombre de titre
+>>>>>>> Stashed changes
 			fscanf(fdat1," %100s", formateurCourant->titre[i]);
 		}
 	  	formateurSuivant=malloc(sizeof(formateur));
@@ -142,6 +146,7 @@ int main() {
 				fscanf(fdat2, "%1d", &formationCourant->horaire[i][x]);
 			}
 		}
+
 		// Lecture des cours
 		for(i=1;i<=formationCourant->nbCours; i++) {
 			fscanf(fdat2, " %50s", &formationCourant->cours[i]);
@@ -152,6 +157,8 @@ int main() {
    	  	formationCourant=formationSuivant;
 		fscanf(fdat2,"%100s", &formationCourant->nom);
 	}
+
+    //Attribution de NULL pour la dernière formation->suivant
 	formationCourant=formationDebut;
 	for(i=0;i<nbFormation;i++) {
 		formationCourant=formationCourant->suivant;

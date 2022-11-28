@@ -36,13 +36,13 @@ le nom(var:nomBase), le nombre d'annee(nombreAnneeFormation) sur laquelle elle s
 Et la, ca part sur un algorithme :
 
 i = 1  -> i represente en fait les annees
-- Demander l'ID(idFormation) (3 lettres et 1 chiffre) de la FORMATION dans une variable idFormation: l'utilisateur encode les 3 lettres ET VERIFIER QU'IL NEXISTE PAS ENCORE
+- Demander l'ID(idFormation) (3 lettres) de la FORMATION dans une variable idFormation: l'utilisateur encode les 3 lettres ET VERIFIER QU'IL NEXISTE PAS ENCORE
         on cree l'ID unique de cette annee de formation dans la variable idFormationAnnee en concatenant i, _ et l'ID entré par l'utilisateur: i_idFormation
 
 POUR i; i <= nombreAnneeFormation FAIRE   //Parcours des annees
 	on cree l'ID unique de cette annee de formation dans la variable idFormationAnnee en concatenant i, _ et l'ID entré par l'utilisateur: i_idFormation
         nom = nomBase(espace) i //Ainsi on aura genre : Formation pour futur chef de chantier 1, Formation pour futur chef de chantier 2, ...
-        ECRIRE "Combien de cours sont donnes lors de cette formation ?"
+        ECRIRE "Combien de cours sont donnes lors de cette annee ?"
         nbCours = reponse de l'utilisateur
 
         POUR j; j <= nbCours FAIRE
@@ -60,7 +60,7 @@ Table des variables
 Nom				Description
 ============================================
 nomBase[100];			nom de la formation	
-nomComplete[102]		nom de la formation suivi d'un _numeroAnnee			
+nomComplete[102]		nom de la formation suivi d'un (espace)numeroAnnee			
 cours[20][50];			nom des cours qui sont proposes a cette annee
 maxEtudiant 			nombre maximum d'étudiants pour l'année UNE (ca ne fait pas de sens de limiter aux autres années, je trouve). 
 nombreAnneeFormation		nombre d'année sur lesquelles s'étale la formation
@@ -70,4 +70,5 @@ prix; 				prix fixés (hors réduction) pour les étudiants.
 numeroAnnee 			numero de l'année de la formation. A noter que cette variable ne PEUT PAS dépasser la valeur de nombreAnneeFormation
 horaire[8][25];			Grille horaire des heures donnees par les formateur de la formation. 
 idFormation[3]			3 lettres communes aux differentes annees d'une formation. Sera utilisee pour presenter les formations dans leur entierete (ensemble des annees)
-idFormationAnnee[5]		ID unique de l'annee de la formation. Permet de differencier les annees d'une meme formation : annee_idFormation
+horaire[8][25]			Horaire de l'annee de la formation
+coursDejaDonne[20]		Des qu'un formateur choisi un cours de la liste cours[][], on le rajoute ici.
