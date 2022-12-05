@@ -30,7 +30,6 @@ on se retrouve dans un cas complexe : un prof est lie a des cours qu'il donne. L
 dans la cours[][].
 Je me projette deja, mais on peut penser à ce systeme
 
-//NOTE : ALGORITHME PAS FINI, JE LE FINIRAI AVANT D'ENTAMER LE VRAI CODE DU PROJET, FAUDRA QUE TU VALIDES OU NON TOUT CA, ON EN PARLE S'IL FAUT
 A l'encodage d'une formation, on demande : 
 le nom(var:nomBase), le nombre d'annee(nombreAnneeFormation) sur laquelle elle s'etale.
 Et la, ca part sur un algorithme :
@@ -42,18 +41,30 @@ i = 1  -> i represente en fait les annees
 POUR i; i <= nombreAnneeFormation FAIRE   //Parcours des annees
 	on cree l'ID unique de cette annee de formation dans la variable idFormationAnnee en concatenant i, _ et l'ID entré par l'utilisateur: i_idFormation
         nom = nomBase(espace) i //Ainsi on aura genre : Formation pour futur chef de chantier 1, Formation pour futur chef de chantier 2, ...
-        ECRIRE "Combien de cours sont donnes lors de cette annee ?"
+        ECRIRE "Combien de cours sont donnes lors de l'annee n°i?"
         nbCours = reponse de l'utilisateur
+
+	
+	Demander combien d'élèves max sont autorisés dans la formation
+	maxEtudiant = reponse de l'utilisateur
+
 
         POUR j; j <= nbCours FAIRE
             ECRIRE "Quel est le nom du cours n°j"
             cours[j] = reponse de l'utilisateur
         FINPOUR
+
+	//Instanciation de la grille horaire
+	POUR j = 1; j<=8; j++ FAIRE
+		POUR k = 1; k<= 25; k++ FAIRE
+			horaire[j][k] = 0
+		FINPOUR
+	FINPOUR
         
 FINPOUR
 
-On obtient donc cette table des variables
 
+On obtient donc cette table des variables
 
 Table des variables
 -------------------
@@ -72,3 +83,15 @@ horaire[8][25];			Grille horaire des heures donnees par les formateur de la form
 idFormation[3]			3 lettres communes aux differentes annees d'une formation. Sera utilisee pour presenter les formations dans leur entierete (ensemble des annees)
 horaire[8][25]			Horaire de l'annee de la formation
 coursDejaDonne[20]		Des qu'un formateur choisi un cours de la liste cours[][], on le rajoute ici.
+
+
+
+
+POUR LA MODIFICATION : QUELLE DONNEES PERMETTRE DE CHANGER ?
+Nom ? -> Si on change le nom, il faut que le nom s'adapte sur tous les années de la formation
+Exemple : De base :"Ciuzine 1", "Ciuzine 2", "Ciuzine 3". Puis on remarque qu'on a fait une faute dans l'encodage donc on modifie
+	  Après changement  : "Cuisine" et ca s'adapte sur les 3 années : Cuisine 1, Cuisine 2, Cuisine 3.
+
+Cours ? -> Je pense que seulement ajouter ou supprimer est intéressant. Pas laisser la possibilité de modifier en cascade comme les noms. Sinon faut ajouter une manière d'identifier 
+	   si un cours est la suite d'un autre, genre POO1 (1ère), POO2(2è), POO3(3ème) et ca complexifie le travail.
+

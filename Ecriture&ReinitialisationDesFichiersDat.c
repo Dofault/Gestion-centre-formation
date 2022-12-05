@@ -2,8 +2,8 @@
 #include<string.h>
 #include<stdlib.h>
 
-// Ce fichier sert à ecrire dans les fichiers dat et à tester la mise en forme
-// il y a aussi les ordres d'écriture à copier coller
+// Ce fichier sert ï¿½ ecrire dans les fichiers dat et ï¿½ tester la mise en forme
+// il y a aussi les ordres d'ï¿½criture ï¿½ copier coller
 main()
 {
 	FILE *fres, *fres1, *fres2; 
@@ -28,7 +28,7 @@ main()
 		printf("\n");
 		// Ecriture horaire formateur
 		// Pas encore defini precisement chaque valeur du tableau
-		// mais en principe -1 = indiponible, 0 : disponible, 1 = a déjà cours
+		// mais en principe -1 = indiponible, 0 : disponible, 1 = a dï¿½jï¿½ cours
 		for(y=1;y<=24;y++) {
 			for(z=1;z<=7;z++) {
 				printf("%1d", formateurCourant->horaire[z][y]);
@@ -87,7 +87,7 @@ main()
 		// ecriture jour et semaine
 		for(z=1;z<=7;z++) {
 			for(y=1;y<=24;y++) {
-				// modulo comme ça c'est pas tjr 0
+				// modulo comme ï¿½a c'est pas tjr 0
 				if(y%3 == 0) {
 					fprintf(fres2,"%1d", 1);
 				}
@@ -99,7 +99,7 @@ main()
 		}
 		
 		for(x=1;x<= nbCours; x++) {
-			// print 20 caractère pour chaque cours
+			// print 20 caractï¿½re pour chaque cours
 			fprintf(fres2," %7s%02d%41s", "UnCours", i, "");
 		}
 		fprintf(fres2,"\n");
@@ -139,7 +139,7 @@ main()
 		// ecriture jour et semaine
 		for(i=1;i<=7;i++) {
 			for(y=1;y<=24;y++) {
-				// modulo comme ça c'est pas tjr 0
+				// modulo comme ï¿½a c'est pas tjr 0
 				if(y%3 == 0) {
 					fprintf(fres1,"%1d", 1);
 				}
@@ -152,7 +152,7 @@ main()
 		
 		
 		for(i=1;i<= nbTitre; i++) {
-			// print 100 caractère pour chaque formation
+			// print 100 caractï¿½re pour chaque formation
 			fprintf(fres1," %7s%02d%91s", "FormationNumero", i, "");
 		}
 		fprintf(fres1,"\n");
