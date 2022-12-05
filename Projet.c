@@ -20,14 +20,11 @@ typedef struct formateur {
 }formateur;
 
 typedef struct formation {
-    char nom[100];
-    char cours[20][50];
-    int maxEtudiant, nbCours, nbEtudiant;
+    char nomBase[100], nomComplete[102], idFormation[3], idFormationAnnee[5];
+    char cours[20][50], coursDejaDonne[20][50];
+    int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee, horaire[8][25];
     float prix;
     struct formation *suivant;
-    
-    // Ajout, plus tard faudra supprimer anneeCours
-    int numeroAnnee, horaire[8][25];
 }formation;
 
 
@@ -41,7 +38,7 @@ int main() {
     fdat2 = fopen("listeFormation.dat","r");
 
     //Decl variables
-    int valeurMenu, queFaire, i, x, y, z;
+    int valeurMenu, queFaire, i, x, y, z, j, k, l, tmpAnnee;
     //queFaire est une variable qui est modifiée par les fonctions : on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le main
 
     // Var formation
@@ -186,78 +183,96 @@ int main() {
             menuConsulterHoraire();
         }
     
+
         if(valeurMenu == 2) {
             // ajouter élève
         }
     
-        // 
-        if(valeurMenu == 3) {
-            // valeur possible menuGererFormation() :
-            // 1 : ajouter formation
-            // 2 : modifier formation
-            // 3 : afficher liste formation
-           queFaire = menuGererFormation();
-           if(queFaire != 0) {
-                if(queFaire == 1) {
-                    printf("===================================\n");
-                    nouvelleFormation = malloc(sizeof(formation));
-                    nouvelleFormation->suivant = formationDebut->suivant;
-                    formationDebut->suivant = nouvelleFormation; 
-                    printf("Quel est le nom de la nouvelle formation ?");
-                        scanf("%s",&nouvelleFormation->nom); // nom[100]
-                    printf("Quels cours sont donnés dans la nouvelle formation ? (1 cours minimum)");
-                        nouvelleFormation->nbCours = 1;
-                        // On ajoute le cours dans le nouveau slot nbCours + 1
-                        scanf("%s",&nouvelleFormation->cours[1]);
-                        char utilisateurCours[50];
-                        strcpy(utilisateurCours, "vide");
-                        while(strcmp(utilisateurCours, "STOP") != 0) {
-                            // On ajoute ce qu'à mit l'utilisateur dans nouvelleFormation->Cours
-                            nouvelleFormation->nbCours += 1;
-                            strcpy(nouvelleFormation->cours[nouvelleFormation->nbCours], utilisateurCours);
-                            printf("Quels autre cours sont donnés dans la nouvelle formation ? (STOP pour arreter l'insertion)");
-                            scanf("%s",&utilisateurCours);
-                            // ici on peut eventuellement mettre des conditions de verif sur char utilisateurCours[50]
-                        }
-                        nouvelleFormation->nbCours -= 1; // enregistr en trop
-                    printf("Combien d'étudiants peut acceuillir la nouvelle formation ?");
-                        scanf("%d",&nouvelleFormation->maxEtudiant);
-                    printf("Quel est le prix pour chaque étudiant pour cette formation ?");
-                        scanf("%f",&nouvelleFormation->prix);
-                    // Nouvelle formation donc première année, on fera une interface pour ajouter des années
-                    nouvelleFormation->numeroAnnee=1;
-                    nouvelleFormation->nbEtudiant=0;
-                    // Creation de l'horaire
-                    for(i=1;i<=7;i++) {
-                        for(x=1;x<=24;x++) {
-                            nouvelleFormation->horaire[i][x]=0;
+        
+        if(valeurMenu == 3) {   //Gestion formation et formateur
+            // valeur possible menuGererFormation() :        1 : ajouter formation        2 : modifier formation      3 : afficher liste formation
+            queFaire = menuGererFormation();
+            if(queFaire == 1) {     //Ajouter formation
+                //allouer la mémoire
+                nouvelleFormation = malloc(sizeof(formation));
+                nouvelleFormation->suivant = formationDebut->suivant;
+                formationDebut->suivant = nouvelleFormation;
+
+
+                printf("\nVeuillez entrer le nom de la formation : ");
+                scanf("%s", &nouvelleFormation->nomBase);
+                printf("\nVeuillez entrer l'ID de la formation (3 lettres) : ");
+                scanf("%s", &nouvelleFormation->idFormation);
+                //TODO : parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
+
+                printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
+                scanf("%d", &tmpAnnee);
+
+                nouvelleFormation->nombreAnneeFormation = tmpAnnee;
+
+                formationIntercale = nouvelleFormation;
+
+                for(i = 1; i <= tmpAnnee; i++ ) {     //Boucle pour parcourir les annees
+                    if(i > 1) {
+                        nouvelleFormation = malloc(sizeof(formation));
+                        nouvelleFormation->nombreAnneeFormation = formationIntercale->nombreAnneeFormation;
+                    }
+
+                    //Creation de l'id unique (i_idFormation)
+                    nouvelleFormation->idFormationAnnee[0] = i;
+                    nouvelleFormation->idFormationAnnee[1] = _;
+                    nouvelleFormation->idFormationAnnee = strcat(nouvelleFormation->idFormationAnnee, nouvelleFormation->idFormation);
+
+                    //Creation du nom de la formation (nomBase [espace] i)
+                    nouvelleFormation->nomComplete = strcpy(nouvelleFormation->nomComplete, nouvelleFormation->nomBase);
+                    nouvelleFormation->nomComplete = strcat(nouvelleFormation->nomComplete, " ");
+                    nouvelleFormation->nomComplete = strcat(nouvelleFormation->nomComplete, i);
+
+                    //Initialisation de la grille horaire
+                    for(k = 1; k <= 7; k ++) {
+                        for(l = 1; l <= 24; l++) {
+                            nouvelleFormation->horaire[k][l] = 0;
                         }
                     }
-                    printf("\nFormation ajouté : \n--------------------\nNom : %s\nAnnee : %2d\nNombre de cours :%2d\nNombre maximum d'étudiant: %4d\nNombre d'étudiant : %4d\nPrix : %8.2f\n"
-                    , nouvelleFormation->nom, nouvelleFormation->numeroAnnee, nouvelleFormation->nbCours, nouvelleFormation->maxEtudiant, nouvelleFormation->nbEtudiant, nouvelleFormation->prix);	
-                    printf("--------------------------\n");
 
+                    //Gestion des cours
+                    printf("\nCombien de cours sont donnes au cours de l'annee %1d ?", i);
+                    scanf("%d", nouvelleFormation->nbCours);
+                    for(j = 1; j <= nouvelleFormation->nbCours; j++) {
+                        printf("\nQuel est le nom du cours n°%02d ? : ", j);
+                        scanf("%s", nouvelleFormation->cours[j]);
+                    }
 
-                    // ***** A FAIRE: AJOUTER nouvelleFormation dans le fdat *******
-
+                    printf("\nFin de l'encodage de l'annee n°%1d", i);
+                    nouvelleFormation->suivant = formationDebut->suivant;
+                    formationDebut->suivant = nouvelleFormation;
 
                 }
 
-                if(queFaire == 2) {
+                printf("\nEncodage de la formation %3s realisee avec succes.\n", nouvelleFormation->idFormation); 
 
-                    // ****** A FAIRE : MENU POUR MODIFIER UNE FORMATION ET DONC MODIFIER formationDAT ********
-                }
 
-                if(queFaire == 3) {
+                //Enregistrement de la formation dans le .dat
+                //TODO : Voir si c'est possible de le faire avec un fonction -> plus facile de gerer l'ouverture et la fermeture des flux d'ecriture et lecture 
 
-                    // ********* A FAIRE : AFFICHER LA LISTE DES FORMATIONS + POSSIBILITE D'EN SUPPRIMER *********
-                }
-           }
+                
 
-            // tache effectué, on peut reset que faire
+
+            if(queFaire == 2) {
+
+                // ****** A FAIRE : MENU POUR MODIFIER UNE FORMATION ET DONC MODIFIER formationDAT ********
+            }
+
+            if(queFaire == 3) {
+
+                // ********* A FAIRE : AFFICHER LA LISTE DES FORMATIONS + POSSIBILITE D'EN SUPPRIMER *********
+            }
+        
+            // tache effectuee, on peut reset que faire
            queFaire = 0;
         }
     
+
         if(valeurMenu == 4) {
             // fonction consulter etudiant
         }
