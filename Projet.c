@@ -129,7 +129,7 @@ int main() {
 	// -------------------------------------------------------------------
 	formationCourant=malloc(sizeof(formation));
 	formationDebut=formationCourant;
-	fscanf(fdat2,"%100s", &formationCourant->nom);
+	fscanf(fdat2,"%100s", &formationCourant->nomBase);
 	while(!feof(fdat2)) {
 		fscanf(fdat2," %2d %2d %4d %4d %8f ", &formationCourant->numeroAnnee, &formationCourant->nbCours, &formationCourant->maxEtudiant,
 		&formationCourant->nbEtudiant, &formationCourant->prix);
@@ -148,7 +148,7 @@ int main() {
 	  	formationCourant->suivant=formationSuivant;
 	  	nbFormation++;
    	  	formationCourant=formationSuivant;
-		fscanf(fdat2,"%100s", &formationCourant->nom);
+		fscanf(fdat2,"%100s", &formationCourant->nomBase);
 	}
 
     //Attribution de NULL pour la dernière formation->suivant
@@ -209,13 +209,13 @@ int main() {
                     if(i > 1) {
                         nouvelleFormation = malloc(sizeof(formation));
                         nouvelleFormation->nombreAnneeFormation = formationIntercale->nombreAnneeFormation;
-                        nouvelleFormation->nomBase = formationIntercale->nomBase;
-                        nouvelleFormation->idFormation = formationIntercale->idFormation;
+                        strcpy(nouvelleFormation->nomBase,formationIntercale->nomBase);
+                        strcpy(nouvelleFormation->idFormation,formationIntercale->idFormation);
                     }
 
                     //Creation de l'id unique (i_idFormation) ID : CUI , ANNEE 1 : 1_CUI, ANNEE 2 : 2_CUI
                     nouvelleFormation->idFormationAnnee[0] = i;
-                    nouvelleFormation->idFormationAnnee[1] = _;
+                    nouvelleFormation->idFormationAnnee[1] = "_";
                     nouvelleFormation->idFormationAnnee = strcat(nouvelleFormation->idFormationAnnee, nouvelleFormation->idFormation);
 
                     //Creation du nom de la formation (nomBase [espace] i)
