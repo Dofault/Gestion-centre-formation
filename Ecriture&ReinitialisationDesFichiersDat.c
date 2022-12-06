@@ -71,8 +71,10 @@ main()
 /*	--------------------------------------------------------
     VARIABLES FORMATION:
 	--------------------------------------------------------
-    char nom[100], cours[20][50];
-    int maxEtudiant, nbCours, numeroAnnee, horaire[8][25];
+    char nomBase[100], nomComplete[102], idFormation[3], idFormationAnnee[5];
+    char cours[20][50];
+    int coursDejaDonne[20][50];
+    int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee, horaire[8][25];
     float prix;
 	---------------------------------------------------------*/
 	int nbCours;
@@ -81,8 +83,8 @@ main()
 	for(i=1;i<=5;i++) {
 		nbCours=i+1;
 		numeroAnnee=i;
-		// nom, numeroAnnee, nbCours, maxEtudiant, nbEtudiant, prix
-		fprintf(fres2,"%-100s %2d %2d %4d %4d %8.2f ", "gNomFormation1", numeroAnnee, nbCours, 234, 32, 4321.23);
+		// nom, idFormation, idFormationAnnee, numeroAnnee, nbCours, maxEtudiant, nbEtudiant, prix, nombreAnneeFormation, numeroAnnee
+		fprintf(fres2,"%-100s %-102s %-3s %-5s %2d %2d %4d %4d %8.2f %2d %2d ", "gNomBaseFormation1", "NomComplete1", "CUI", "CUI_1", numeroAnnee, nbCours, 234, 32, 4321.23, 3, 1);
 		
 		// ecriture jour et semaine
 		for(z=1;z<=7;z++) {
@@ -97,11 +99,17 @@ main()
 				}
 			}
 		}
-		
+
 		for(x=1;x<= nbCours; x++) {
 			// print 20 caract�re pour chaque cours
 			fprintf(fres2," %7s%02d%41s", "UnCours", i, "");
 		}
+
+		for(x=1;x<= nbCours; x++) {
+			// ecriture coursDejaDonne[20][50]
+			fprintf(fres2,"%1d", 0);
+		}
+		
 		fprintf(fres2,"\n");
 		
 	}
