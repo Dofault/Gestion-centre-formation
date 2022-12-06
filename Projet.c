@@ -66,16 +66,16 @@ int main() {
 	// -----------------------------------------------------------------------------------------
 	etudiantCourant=malloc(sizeof(etudiant));
 	etudiantDebut=etudiantCourant;
-	fscanf(fdat,"%30s", &etudiantCourant->nom);
+	fscanf(fdat,"%30s", etudiantCourant->nom);
 	while(!feof(fdat)) {
-		fscanf(fdat," %30s %100s %2d %2d %4d %2d %8f %8f %8f", &etudiantCourant->prenom, &etudiantCourant->nomDeFormation, 
+		fscanf(fdat," %30s %100s %2d %2d %4d %2d %8f %8f %8f", etudiantCourant->prenom, etudiantCourant->nomDeFormation, 
 		&etudiantCourant->naissanceJour, &etudiantCourant->naissanceMois, &etudiantCourant->naissanceAnnee, &etudiantCourant->annee, &etudiantCourant->montantAPayer, 
 		&etudiantCourant->montantPaye, &etudiantCourant->reduction);
 	  	etudiantSuivant=malloc(sizeof(etudiant));
 	  	etudiantCourant->suivant=etudiantSuivant;
 	  	nbEtudiant++;
    	  	etudiantCourant=etudiantSuivant;
-		fscanf(fdat,"%30s", &etudiantCourant->nom);
+		fscanf(fdat,"%30s", etudiantCourant->nom);
 	}      
 	etudiantCourant=etudiantDebut;
 	for(i=0;i<nbEtudiant;i++) {
@@ -91,9 +91,9 @@ int main() {
 	// -------------------------------------------------------------------
 	formateurCourant=malloc(sizeof(formateur));
 	formateurDebut=formateurCourant;
-	fscanf(fdat1,"%30s", &formateurCourant->nom);
+	fscanf(fdat1,"%30s", formateurCourant->nom);
 	while(!feof(fdat1)) {
-		fscanf(fdat1," %30s %2d %2d %4d %2d %2d ", &formateurCourant->prenom, 
+		fscanf(fdat1," %30s %2d %2d %4d %2d %2d ", formateurCourant->prenom, 
 		&formateurCourant->naissanceJour, &formateurCourant->naissanceMois, &formateurCourant->naissanceAnnee, &formateurCourant->niveauDiplome, 
 		&formateurCourant->nbTitre);
 		// Lecture de l'horaire
@@ -112,7 +112,7 @@ int main() {
 	  	formateurCourant->suivant=formateurSuivant;
 	  	nbFormateur++;
    	  	formateurCourant=formateurSuivant;
-		fscanf(fdat1,"%30s", &formateurCourant->nom);
+		fscanf(fdat1,"%30s", formateurCourant->nom);
 	}
 	formateurCourant=formateurDebut;
 	for(i=0;i<nbFormateur;i++){
@@ -129,7 +129,7 @@ int main() {
 	// -------------------------------------------------------------------
 	formationCourant=malloc(sizeof(formation));
 	formationDebut=formationCourant;
-	fscanf(fdat2,"%100s", &formationCourant->nomBase);
+	fscanf(fdat2,"%100s", formationCourant->nomBase);
 	while(!feof(fdat2)) {
 		fscanf(fdat2," %2d %2d %4d %4d %8f ", &formationCourant->numeroAnnee, &formationCourant->nbCours, &formationCourant->maxEtudiant,
 		&formationCourant->nbEtudiant, &formationCourant->prix);
@@ -142,13 +142,13 @@ int main() {
 
 		// Lecture des cours
 		for(i=1;i<=formationCourant->nbCours; i++) {
-			fscanf(fdat2, " %50s", &formationCourant->cours[i]);
+			fscanf(fdat2, " %50s", formationCourant->cours[i]);
 		}
 	  	formationSuivant=malloc(sizeof(formation));
 	  	formationCourant->suivant=formationSuivant;
 	  	nbFormation++;
    	  	formationCourant=formationSuivant;
-		fscanf(fdat2,"%100s", &formationCourant->nomBase);
+		fscanf(fdat2,"%100s", formationCourant->nomBase);
 	}
 
     //Attribution de NULL pour la dernière formation->suivant
@@ -193,9 +193,9 @@ int main() {
                 nouvelleFormation = malloc(sizeof(formation));
 
                 printf("\nVeuillez entrer le nom de la formation : ");
-                scanf("%s", &nouvelleFormation->nomBase);
+                scanf("%s", nouvelleFormation->nomBase);
                 printf("\nVeuillez entrer l'ID de la formation (3 lettres) : ");
-                scanf("%s", &nouvelleFormation->idFormation);
+                scanf("%s", nouvelleFormation->idFormation);
                 //TODO : parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
 
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
@@ -215,13 +215,13 @@ int main() {
 
                     //Creation de l'id unique (i_idFormation) ID : CUI , ANNEE 1 : 1_CUI, ANNEE 2 : 2_CUI
                     nouvelleFormation->idFormationAnnee[0] = i;
-                    nouvelleFormation->idFormationAnnee[1] = "_";
-                    nouvelleFormation->idFormationAnnee = strcat(nouvelleFormation->idFormationAnnee, nouvelleFormation->idFormation);
+                    nouvelleFormation->idFormationAnnee[1] = '_';
+                    strcat(nouvelleFormation->idFormationAnnee, nouvelleFormation->idFormation);
 
                     //Creation du nom de la formation (nomBase [espace] i)
-                    nouvelleFormation->nomComplete = strcpy(nouvelleFormation->nomComplete, nouvelleFormation->nomBase);
-                    nouvelleFormation->nomComplete = strcat(nouvelleFormation->nomComplete, " ");
-                    nouvelleFormation->nomComplete = strcat(nouvelleFormation->nomComplete, i);
+                    strcpy(nouvelleFormation->nomComplete, nouvelleFormation->nomBase);
+                    strcat(nouvelleFormation->nomComplete, " ");
+                    strcat(nouvelleFormation->nomComplete, i);
 
                     //Initialisation de la grille horaire
                     for(k = 1; k <= 7; k ++) {
