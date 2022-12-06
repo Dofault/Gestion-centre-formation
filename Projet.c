@@ -105,11 +105,7 @@ int main() {
 		}
 		// Passage en revu de tout les titres du formateur
 		for(i=1;i<= formateurCourant->nbTitre; i++) {
-<<<<<<< Updated upstream
 			// scan 100 caract�re par nombre de titre
-=======
-			// scan 100 caracteres par nombre de titre
->>>>>>> Stashed changes
 			fscanf(fdat1," %100s", formateurCourant->titre[i]);
 		}
 	  	formateurSuivant=malloc(sizeof(formateur));
@@ -195,9 +191,6 @@ int main() {
             if(queFaire == 1) {     //Ajouter formation
                 //allouer la mémoire
                 nouvelleFormation = malloc(sizeof(formation));
-                nouvelleFormation->suivant = formationDebut->suivant;
-                formationDebut->suivant = nouvelleFormation;
-
 
                 printf("\nVeuillez entrer le nom de la formation : ");
                 scanf("%s", &nouvelleFormation->nomBase);
@@ -216,9 +209,11 @@ int main() {
                     if(i > 1) {
                         nouvelleFormation = malloc(sizeof(formation));
                         nouvelleFormation->nombreAnneeFormation = formationIntercale->nombreAnneeFormation;
+                        nouvelleFormation->nomBase = formationIntercale->nomBase;
+                        nouvelleFormation->idFormation = formationIntercale->idFormation;
                     }
 
-                    //Creation de l'id unique (i_idFormation)
+                    //Creation de l'id unique (i_idFormation) ID : CUI , ANNEE 1 : 1_CUI, ANNEE 2 : 2_CUI
                     nouvelleFormation->idFormationAnnee[0] = i;
                     nouvelleFormation->idFormationAnnee[1] = _;
                     nouvelleFormation->idFormationAnnee = strcat(nouvelleFormation->idFormationAnnee, nouvelleFormation->idFormation);
@@ -244,8 +239,8 @@ int main() {
                     }
 
                     printf("\nFin de l'encodage de l'annee n°%1d", i);
-                    nouvelleFormation->suivant = formationDebut->suivant;
-                    formationDebut->suivant = nouvelleFormation;
+                    
+                    //Appel de la fonction d'écriture pour formation.
 
                 }
 
@@ -255,7 +250,7 @@ int main() {
                 //Enregistrement de la formation dans le .dat
                 //TODO : Voir si c'est possible de le faire avec un fonction -> plus facile de gerer l'ouverture et la fermeture des flux d'ecriture et lecture 
 
-                
+            }  
 
 
             if(queFaire == 2) {
@@ -267,9 +262,9 @@ int main() {
 
                 // ********* A FAIRE : AFFICHER LA LISTE DES FORMATIONS + POSSIBILITE D'EN SUPPRIMER *********
             }
-        
+            
             // tache effectuee, on peut reset que faire
-           queFaire = 0;
+            queFaire = 0;
         }
     
 
@@ -277,7 +272,7 @@ int main() {
             // fonction consulter etudiant
         }
 
-         changerMenu(&valeurMenu);
+        changerMenu(&valeurMenu);
         
     }
         
