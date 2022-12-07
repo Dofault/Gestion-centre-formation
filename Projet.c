@@ -79,7 +79,7 @@ int main() {
     //queFaire est une variable qui est modifiÃ©e par les fonctions : on doit naviguer avec les menus, mais la lecture et l'Ã©criture doit se faire dans le main
 
 	
-	char temporaire[5]; // Variable temporaire pour créer nouvelleFormation->idFormationAnnee dans l'ajout formation
+	char temporaire[5]; // Variable temporaire pour creer nouvelleFormation->idFormationAnnee dans l'ajout formation
 	int test; // Variable temporaire qu'on peut utiliser quand on veut
 	
     // Var formation
@@ -147,7 +147,7 @@ int main() {
 		}
 		// Passage en revu de tout les titres du formateur
 		for(i=1;i<= formateurCourant->nbTitre; i++) {
-			// scan 100 caractï¿½re par nombre de titre
+			// scan 100 caractere par nombre de titre
 			fscanf(fdat1," %100s", formateurCourant->titre[i]);
 		}
 	  	formateurSuivant=malloc(sizeof(formateur));
@@ -250,7 +250,7 @@ int main() {
                 for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++ ) {     //Boucle pour parcourir les annees
                 	nouvelleFormation=malloc(sizeof(formation));
                 	
-                    // Création id unique
+                    // Creation id unique
                     // concatener dans un char : sprintf(<variable char>, <formatage comme printf>, <les valeurs>)
 					sprintf(temporaire, "%d_%s", i, formationIntercale->idFormation);
                     strcpy(nouvelleFormation->idFormationAnnee, temporaire);
@@ -269,7 +269,7 @@ int main() {
                     //Gestion des cours
                     printf("\nCombien de cours sont donnes dans la formation pour l'annee %d ?", i);
                     
-                    // Passage par la variable test car sinon ça marche pas (?)
+                    // Passage par la variable test car sinon ea marche pas (?)
                     scanf("%d", &test);
                     nouvelleFormation->nbCours = test;
                     
@@ -278,7 +278,7 @@ int main() {
                         printf("\nQuel est le nom du cours numero %d/%02d ? : ", j, nouvelleFormation->nbCours);
                         scanf("%s", nouvelleFormation->cours[j]);
                         
-                        // vu que le cours est créer il est dispo donc on met 0 dans deja donné
+                        // vu que le cours est creer il est dispo donc on met 0 dans deja donne
                     }
 
                     printf("\nFin de l'encodage de l'annee : %1d", i);
