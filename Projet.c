@@ -25,7 +25,7 @@ typedef struct formateur {
 typedef struct formation {
     char nomBase[100], nomComplete[102], idFormation[3], idFormationAnnee[5];
     char cours[20][50];
-    int coursDejaDonne[20][5];
+    int coursDejaDonne[20];
     int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee, horaire[8][25];
     float prix;
     struct formation *suivant;
@@ -45,7 +45,7 @@ int main() {
     //queFaire est une variable qui est modifiée par les fonctions : on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le main
 
 	
-	char temporaire[5]; // Variable temporaire pour cr�er nouvelleFormation->idFormationAnnee dans l'ajout formation
+	char temporaire[5]; // Variable temporaire pour creer nouvelleFormation->idFormationAnnee dans l'ajout formation
     char bufferNom[100];
 	int test; // Variable temporaire qu'on peut utiliser quand on veut
 	
@@ -114,7 +114,7 @@ int main() {
 		}
 		// Passage en revu de tout les titres du formateur
 		for(i=1;i<= formateurCourant->nbTitre; i++) {
-			// scan 100 caract�re par nombre de titre
+			// scan 100 caractere par nombre de titre
 			fscanf(fdat1," %100s", formateurCourant->titre[i]);
 		}
 	  	formateurSuivant=malloc(sizeof(formateur));
@@ -222,7 +222,7 @@ int main() {
                     strcpy(nouvelleFormation->idFormation, formationIntercale->idFormation);
                     nouvelleFormation->nombreAnneeFormation = formationIntercale->nombreAnneeFormation;
 
-                    // Cr�ation id unique
+                    // Creation id unique
                     // concatener dans un char : sprintf(<variable char>, <formatage comme printf>, <les valeurs>)
 					sprintf(temporaire, "%d_%s", i, formationIntercale->idFormation);
                     strcpy(nouvelleFormation->idFormationAnnee, temporaire);
@@ -241,7 +241,7 @@ int main() {
                     //Gestion des cours
                     printf("\nCombien de cours sont donnes dans la formation pour l'annee %d ?", i);
                     
-                    // Passage par la variable test car sinon �a marche pas (?)
+                    // Passage par la variable test car sinon ca marche pas (?)
                     scanf("%d", &test);
                     nouvelleFormation->nbCours = test;
                     
@@ -250,7 +250,8 @@ int main() {
                         printf("\nQuel est le nom du cours numero %d/%02d ? : ", j, nouvelleFormation->nbCours);
                         scanf(" %[^\n]", nouvelleFormation->cours[j]);
                         
-                        // vu que le cours est cr�er il est dispo donc on met 0 dans deja donn�
+                        // vu que le cours est creer il est dispo donc on met 0 dans deja donne
+                        nouvelleFormation->coursDejaDonne[j]=0;
                     }
 
                     printf("\nFin de l'encodage de l'annee : %1d", i);
