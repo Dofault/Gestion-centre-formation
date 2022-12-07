@@ -71,8 +71,10 @@ main()
 /*	--------------------------------------------------------
     VARIABLES FORMATION:
 	--------------------------------------------------------
-    char nom[100], cours[20][50];
-    int maxEtudiant, nbCours, numeroAnnee, horaire[8][25];
+    char nomBase[100], nomComplete[102], idFormation[3], idFormationAnnee[5];
+    char cours[20][50];
+    int coursDejaDonne[20][50];
+    int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee, horaire[8][25];
     float prix;
 	---------------------------------------------------------*/
 	int nbCours;
@@ -81,8 +83,8 @@ main()
 	for(i=1;i<=5;i++) {
 		nbCours=i+1;
 		numeroAnnee=i;
-		// nom, numeroAnnee, nbCours, maxEtudiant, nbEtudiant, prix
-		fprintf(fres2,"%-100s %2d %2d %4d %4d %8.2f ", "gNomFormation1", numeroAnnee, nbCours, 234, 32, 4321.23);
+		// nom, idFormation, idFormationAnnee, numeroAnnee, nbCours, maxEtudiant, nbEtudiant, prix, nombreAnneeFormation, numeroAnnee
+		fprintf(fres2,"%-100s %-102s %-3s %-5s %2d %2d %4d %4d %8.2f %2d %2d ", "gNomBaseFormation1", "NomComplete1", "CUI", "CUI_1", numeroAnnee, nbCours, 234, 32, 4321.23, 3, 1);
 		
 		// ecriture jour et semaine
 		for(z=1;z<=7;z++) {
@@ -97,11 +99,17 @@ main()
 				}
 			}
 		}
-		
+
 		for(x=1;x<= nbCours; x++) {
 			// print 20 caract�re pour chaque cours
 			fprintf(fres2," %7s%02d%41s", "UnCours", i, "");
 		}
+
+		for(x=1;x<= nbCours; x++) {
+			// ecriture coursDejaDonne[20][50]
+			fprintf(fres2,"%1d", 0);
+		}
+		
 		fprintf(fres2,"\n");
 		
 	}
@@ -161,7 +169,60 @@ main()
 	}
 	
 	
+/* --------------------------------------------------------------- Creation d'une nvelle formation à la date du 02-12-22 -------------------------------------------*/
+/*Une de nos première version, je la modifie, mais pour garder une backup, je la copie et colle ici. On pourra supprimer sans peur quand le nouveau système d'ajout
+(celui basé sur notre mise en commun de l'algorithme que j'ai propose [voir OrdreDeRealisation.txt])*/
 
+/*
+
+queFaire = menuGererFormation();
+           if(queFaire != 0) {
+                if(queFaire == 1) {
+                    printf("===================================\n");
+                    nouvelleFormation = malloc(sizeof(formation));
+                    nouvelleFormation->suivant = formationDebut->suivant;
+                    formationDebut->suivant = nouvelleFormation; 
+                    printf("Quel est le nom de la nouvelle formation ?");
+                        scanf("%s",&nouvelleFormation->nom); // nom[100]
+                    printf("Quels cours sont donnés dans la nouvelle formation ? (1 cours minimum)");
+                        nouvelleFormation->nbCours = 1;
+                        // On ajoute le cours dans le nouveau slot nbCours + 1
+                        scanf("%s",&nouvelleFormation->cours[1]);
+                        char utilisateurCours[50];
+                        strcpy(utilisateurCours, "vide");
+                        while(strcmp(utilisateurCours, "STOP") != 0) {
+                            // On ajoute ce qu'à mit l'utilisateur dans nouvelleFormation->Cours
+                            nouvelleFormation->nbCours += 1;
+                            strcpy(nouvelleFormation->cours[nouvelleFormation->nbCours], utilisateurCours);
+                            printf("Quels autre cours sont donnés dans la nouvelle formation ? (STOP pour arreter l'insertion)");
+                            scanf("%s",&utilisateurCours);
+                            // ici on peut eventuellement mettre des conditions de verif sur char utilisateurCours[50]
+                        }
+                        nouvelleFormation->nbCours -= 1; // enregistr en trop
+                    printf("Combien d'étudiants peut acceuillir la nouvelle formation ?");
+                        scanf("%d",&nouvelleFormation->maxEtudiant);
+                    printf("Quel est le prix pour chaque étudiant pour cette formation ?");
+                        scanf("%f",&nouvelleFormation->prix);
+                    // Nouvelle formation donc première année, on fera une interface pour ajouter des années
+                    nouvelleFormation->numeroAnnee=1;
+                    nouvelleFormation->nbEtudiant=0;
+                    // Creation de l'horaire
+                    for(i=1;i<=7;i++) {
+                        for(x=1;x<=24;x++) {
+                            nouvelleFormation->horaire[i][x]=0;
+                        }
+                    }
+                    printf("\nFormation ajouté : \n--------------------\nNom : %s\nAnnee : %2d\nNombre de cours :%2d\nNombre maximum d'étudiant: %4d\nNombre d'étudiant : %4d\nPrix : %8.2f\n"
+                    , nouvelleFormation->nom, nouvelleFormation->numeroAnnee, nouvelleFormation->nbCours, nouvelleFormation->maxEtudiant, nouvelleFormation->nbEtudiant, nouvelleFormation->prix);	
+                    printf("--------------------------\n");
+
+
+                    // ***** A FAIRE: AJOUTER nouvelleFormation dans le fdat *******
+
+
+                }
+
+*/
 	
 	
 

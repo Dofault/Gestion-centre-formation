@@ -81,6 +81,7 @@ prix; 				prix fixés (hors réduction) pour les étudiants.
 numeroAnnee 			numero de l'année de la formation. A noter que cette variable ne PEUT PAS dépasser la valeur de nombreAnneeFormation
 horaire[8][25];			Grille horaire des heures donnees par les formateur de la formation. 
 idFormation[3]			3 lettres communes aux differentes annees d'une formation. Sera utilisee pour presenter les formations dans leur entierete (ensemble des annees)
+idFomrationAnnee[5]		Id unique de l'annee de la formation (i_idFormation)
 horaire[8][25]			Horaire de l'annee de la formation
 coursDejaDonne[20]		Des qu'un formateur choisi un cours de la liste cours[][], on le rajoute ici.
 
