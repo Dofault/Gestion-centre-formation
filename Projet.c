@@ -92,7 +92,6 @@ int main() {
 	}      
 	etudiantCourant=etudiantDebut;
 	for(i=0;i<nbEtudiant;i++) {
-        printf("%s\n", etudiantCourant->nom);
 		etudiantCourant=etudiantCourant->suivant;
 	}   
 	etudiantCourant->suivant=NULL;  // free(etudiantSuivant);
@@ -188,10 +187,7 @@ int main() {
    
 	fclose(fdat); 
 	fclose(fdat1); 
-	fclose(fdat2); /*
-    fres = fopen("listeEtudiant.dat","w");
-    fres1 = fopen("listeFormateur.dat","w");
-    fres2 = fopen("listeFormation.dat","w");*/
+	fclose(fdat2);
    
     // --------------------------------------------------------------------FIN DE LA LECTURE --------------------------------------------------------------------------
     // ---------------------------------------------------------------------LANCEMENT DU MENU -------------------------------------------------------------------------
@@ -203,19 +199,7 @@ int main() {
         }
     
 
-        if(valeurMenu == 2) {
-            /*
-                int naissanceJour, naissanceMois, naissanceAnnee, annee;
-                float montantAPayer, montantPaye, reduction;
-                .
-                    char nomBase[100], nomComplete[102], idFormation[4], idFormationAnnee[6];
-                    int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee;
-                    float prix;
-            */
-
-            FILE *fres;
-            fres=fopen("listeFormation.dat", "a");
-
+        if(valeurMenu == 2) { // Menu Ajout étudiant
 
             // Valeur par defaut :
             etudiantNouveau = malloc(sizeof(etudiant));
@@ -263,8 +247,6 @@ int main() {
                 }
 
             }   
-
-
             printf("\nSelectionnez un numero de formation dans lequel vous souhaitez ajouter un nouvel etudiant (0 pour sortir) : ");
             scanf("%d", &x);
             if(x != 0) {
@@ -299,16 +281,13 @@ int main() {
 
                 // TODO : verification annee de naissance
                 printf("\nInformation date de naissance : \n");
-                printf("> Annee : ");
-                scanf("%d", &etudiantNouveau->naissanceAnnee);
-                printf("> Mois de naissance : ");
-                scanf("%d", &etudiantNouveau->naissanceMois);
-                printf("> Jour de naissance : ");
-                scanf("%d", &etudiantNouveau->naissanceJour);
-                
+                printf("> Annee : "); scanf("%d", &etudiantNouveau->naissanceAnnee);
+                printf("> Mois de naissance : "); scanf("%d", &etudiantNouveau->naissanceMois);
+                printf("> Jour de naissance : "); scanf("%d", &etudiantNouveau->naissanceJour);
 
-                
                 ecrireEtudiant(etudiantNouveau);
+
+
 
                 printf("\n=============================================\n");
                 printf("Recapitulatif des informations de l'etudiant\n");
@@ -321,7 +300,15 @@ int main() {
                 printf("\n> Reduction  :            %8.2f\n", etudiantNouveau->reduction);
                 printf("=============================================\n");
 
-
+                // AJOUT DE LETUDIANT A LA CHAINE                   //
+                etudiantCourant=etudiantDebut;                      //
+                for(i=1;i<= nbEtudiant; i++) {                      //
+                    etudiantCourant= etudiantCourant->suivant;      //
+                }                                                   //
+                etudiantCourant->suivant=etudiantNouveau;           //
+                etudiantCourant= etudiantCourant-> suivant;         //
+                etudiantCourant->suivant = NULL;                    //
+                nbEtudiant++;                                       //
             }
             
 
@@ -332,8 +319,6 @@ int main() {
 
 
 
-
-    
         
         if(valeurMenu == 3) {   //Gestion formation et formateur
             // valeur possible menuGererFormation() :        1 : ajouter formation        2 : modifier formation      3 : afficher liste formation
@@ -383,6 +368,15 @@ int main() {
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
 				
+                // VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE
+                // COMME CA ON AJOUTE A LA SUITE TOUTES LES ANNEES dans la boucle
+                formationCourant=formationDebut;                                    //
+                for(i=1;i<= nbFormation; i++) {                                     //
+                    formationCourant= formationCourant->suivant;                    //
+                }                                                                   //
+
+
+
                 for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++) {     //Boucle pour parcourir les annees
                 	nouvelleFormation=malloc(sizeof(formation));
                 	
@@ -448,9 +442,18 @@ int main() {
                     printf("--------------------------------\n");
                     // Ecriture
                     ecrireFormation(nouvelleFormation);
+
+
+                    formationCourant->suivant=nouvelleFormation;        //
+                    formationCourant= formationCourant-> suivant;       //
+                    formationCourant->suivant = NULL;                   //
+                    nbFormation++;
+
+                    printf("Ajoute a la chaine %s", formationCourant->nomBase);
+
+
                     
                 }
-
                 printf("\nEncodage de la formation realisee avec succes.\n"); 
                 printf("==============================================\n\n"); 
 
@@ -472,8 +475,112 @@ int main() {
         }
     
 
-        if(valeurMenu == 4) {
-            // fonction consulter etudiant
+        if(valeurMenu == 4) { // Consulter les étudiants
+
+            queFaire = 1; // osef de la valeur tant que cest different de 0
+            while(queFaire != 0) {
+                // Choix de formations
+                printf("\n=======================================================================================================\n");
+                printf("                                 Choisissez une formation a consulter \n");
+                printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
+                printf("| Numero | Annee(s) | Etudiants | Nombre de cours | Nom de la formation\n");
+                printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
+
+                formationCourant=formationDebut;
+                for(i=1;i<=nbFormation;i++) {
+
+                    printf("|   %02d   | %2d /%2d   |   %2d/%2d   |       %2d        | %s\n", i, formationCourant->numeroAnnee, formationCourant->nombreAnneeFormation, formationCourant->nbEtudiant, formationCourant->maxEtudiant,
+                    formationCourant->nbCours, formationCourant->nomBase);
+                    printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
+
+
+                    formationCourant=formationCourant->suivant;
+                }
+                printf("\nSelectionnez le numero d'une formation (0 pour retourner au menu principal) : ");
+                scanf("%d", &queFaire);
+
+                while(queFaire > nbFormation || queFaire < 0) {
+                    printf("\nErreur, veuillez selectionner une formation entre 1 et %2d : ", nbFormation);
+                    scanf("%d", &x);
+                }
+                if(queFaire != 0) { // si l'utilisateur a mit autre chose que 0 alors il veut selectionner une formation
+
+                    formationCourant = formationDebut;
+                    for(i=1;i<=nbFormation;i++) {
+
+                        if(i== queFaire) { // si une formation est egal à ce que l'utilisateur a entree comme information
+                            // Generation de la liste des etudiants sur base de formationCourant
+                            printf("\nVous avez selectionne %s\n", formationCourant->nomBase);
+                            printf("\n===============================================================================================================================================\n");
+                            printf("                                              Liste des etudiants de la formation %s \n", formationCourant->nomComplete);
+                            printf("+--------+-------------------+-------------------------------+------------------------------+-----------------+-----------+--------------+---------------+\n");
+                            printf("| Numero | Date de naissance | Nom                           | Prenom                       | Montant a payer | reduction | Montant paye | Reste a payer |\n");
+                            printf("+--------+-------------------+-------------------------------+------------------------------+-----------------+-----------+--------------+---------------+\n");
+                            // Affichage de la liste des etudiants de la formation selectionne
+                            etudiantCourant=etudiantDebut;
+                            for(y=1;y<= nbEtudiant; y++) {
+                                if(strcmp(etudiantCourant->idFormationAnnee, formationCourant->idFormationAnnee) == 0) { // si on tombe sur un etudiant qui a la meme id formation que la formation selectionne alors on lecris
+                                    printf("|   %4d |    %02d/%02d/%04d     | %-30s|%-30s| %8.2f        | %8.2f  |    %8.2f  |    %8.2f   |\n", 
+                                    y,
+                                    etudiantCourant->naissanceJour, 
+                                    etudiantCourant->naissanceMois, 
+                                    etudiantCourant->naissanceAnnee,
+                                    etudiantCourant->nom, 
+                                    etudiantCourant->prenom, 
+                                    etudiantCourant->montantAPayer,
+                                    etudiantCourant->reduction, 
+                                    etudiantCourant->montantPaye, 
+                                    (etudiantCourant->montantAPayer - etudiantCourant->montantPaye));
+                                    printf("+--------+-------------------+-------------------------------+------------------------------+-----------------+-----------+--------------+---------------+\n");
+                                }
+                                etudiantCourant=etudiantCourant->suivant;
+                            }
+
+                            printf("===============================================================================================================================================\n");
+                            printf("0 : Retour\n");
+                            printf("1 : Supprimer un etudiant de la liste\n");
+                            printf("2 : Modifier un etudiant de la liste\n");
+
+                            scanf("%d", &x); // x : choix de l'utilisateur (retour, supprimer ou modifier)
+                            if(x == 0) { // si 0 alors l'utilisateur veut quitter menu
+                                queFaire=1; // osef de la valeur tant que cest different de 0
+                            }
+                            else // Sinon on sait que l'utilisateur veut soit supprimer ou modifier un etudiant
+                            {
+
+                                // SUPPRESSION ETUDIANT (si x=1)
+                                if(x == 1) { 
+                                    printf("Selectionnez le numero de l'etudiant a supprimer : ");
+                                    scanf("Choix : %d", z); // z = numero de l'etudiant a supprimer
+                                    // On repasse en revu les etudiant pour trouver celui a supprimer
+                                    etudiantCourant = etudiantDebut;
+                                    for(y=1;y<= nbEtudiant; y++) {
+
+                                        if(y == z) { // si on tombe sur l'etudiant que l'utilisateur veut supprimer alors on le supprime de la chaine
+
+                                            // TODO : ici il faut supprimer etudiantCourant de la chaine 
+                                        }
+                                        etudiantIntercale = etudiantCourant;
+                                        etudiantCourant=etudiantCourant->suivant;
+                                    }
+                                }
+
+                                // MODIFICATION ETUDIANT (si x = 2)
+                                if( x==2 ) { 
+
+                                }
+
+                            }
+
+                        }
+                        formationCourant=formationCourant->suivant;
+                    }
+                }
+            }
+
+
+
+
         }
 
         changerMenu(&valeurMenu);
