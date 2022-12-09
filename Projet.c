@@ -2,6 +2,9 @@
 #include<string.h>
 #include<stdlib.h>      //Gestion de la mémoire avec malloc, free, ...
 
+//TODO : Fixer le probleme de idFormation qui se deforme (??)
+//TODO : Avec la nouvelle ecriture, quand un element est dans le formation.dat, ca fait planter à la lecture enclencée par les lignes 141 à 171
+
 typedef struct etudiant {
     char nom[30];
     char prenom[30];
@@ -20,50 +23,13 @@ typedef struct formateur {
 }formateur;
 
 typedef struct formation {
-    char nomBase[100], nomComplete[102], idFormation[3], idFormationAnnee[5];
+    char nomBase[100], nomComplete[102], idFormation[4], idFormationAnnee[6];
     char cours[20][50];
-    int coursDejaDonne[20][5];
+    int coursDejaDonne[20];
     int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee, horaire[8][25];
     float prix;
     struct formation *suivant;
 }formation;
-
-
-
-void ecrireFormation(struct formation f) {
-
-    FILE *fres;
-    fres=fopen("listeFormation.dat", "w");
-
-    printf("\nFormation en cours d'ajout : %s \n", f.nomBase);
-    int z, y, x;
-
-    // nom, idFormation, idFormationAnnee, numeroAnnee, nbCours, maxEtudiant, nbEtudiant, prix, nombreAnneeFormation, numeroAnnee
-    fprintf(fres,"%-100s %-102s %-3s %-5s %2d %2d %4d %4d %8.2f %2d %2d ", f.nomBase, f.nomComplete, f.idFormation, f.idFormationAnnee, 
-    f.numeroAnnee, f.nbCours, f.maxEtudiant, f.nbEtudiant, f.prix, f.nombreAnneeFormation, f.numeroAnnee);
-    
-    // ecriture jour et semaine horaire
-    for(z=1;z<=7;z++) {
-        for(y=1;y<=24;y++) {
-                fprintf(fres,"%1d", f.horaire[z][y]);
-        }
-    }
-
-    for(x=1;x<= f.nbCours; x++) {
-        // print 50 caractere pour chaque cours
-        fprintf(fres," %50s", f.cours[x]);
-    }
-
-    for(x=1;x<= f.nbCours; x++) {
-        // ecriture coursDejaDonne[20][50]
-        fprintf(fres,"%1d", f.coursDejaDonne[x]);
-    }
-    
-    fprintf(fres,"\n");
-
-    fclose(fres);
-}
-
 
 
 int main() {
@@ -79,7 +45,8 @@ int main() {
     //queFaire est une variable qui est modifiée par les fonctions : on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le main
 
 	
-	char temporaire[5]; // Variable temporaire pour creer nouvelleFormation->idFormationAnnee dans l'ajout formation
+	char temporaire[50]; // Variable temporaire pour creer nouvelleFormation->idFormationAnnee dans l'ajout formation
+    char bufferNom[100];
 	int test; // Variable temporaire qu'on peut utiliser quand on veut
 	
     // Var formation
@@ -97,7 +64,7 @@ int main() {
     
     void changerMenu(int *);
     void menuConsulterHoraire();
-    void ecrireFormation(struct formation);
+    void ecrireFormation(formation *);
     int menuGererFormation();
     int gestionFormation();
 
@@ -237,28 +204,71 @@ int main() {
                 //allouer la mémoire
                 formationIntercale = malloc(sizeof(formation));
 
+                //nomBase
                 printf("\nVeuillez entrer le nom de la formation : ");
-                scanf("%s", formationIntercale->nomBase);
-                printf("\nVeuillez entrer l'ID de la formation (3 lettres) : ");
-                scanf("%s", formationIntercale->idFormation);
+                //PAS SUPPRIMER : scanf(" ") permet de se debarasser des restes des precedents inputs des menus
+                scanf(" ");
+                //boucle qui permet de parcourir 100 caractères
+                for(i = 0; i < 99; i++) {    
+                    formationIntercale->nomBase[i] = getchar();
+                    if(formationIntercale->nomBase[i] == '\n') {
+                        formationIntercale->nomBase[i] = '\0';
+                        break;
+                    }
+                }
+                formationIntercale->nomBase[i] = '\0';
+                formationIntercale->nomBase[99] = '\0';
+
+                //idFormation
+                //Entree de l'idFormation avec 3 caracteres max
+                printf("\nVeuillez entrer l'ID de la formation (3 lettres). Notez que les caracteres excedents ne seront pas pris en compte. : ");
+                i = 0;
+                while(1==1) {
+                    temporaire[i] = getchar();
+                    if(temporaire[i] == '\n') {
+                        break;
+                    }
+                    i++;
+                }
+                
+                //gestion des excedents : Note que si l'utilisateur entre + de 50 caracteres (limite de temporaire[]), alors ca plante quand meme...
+                for(i = 0; i < 3; i++) {
+                    formationIntercale->idFormation[i] = temporaire[i];
+                }
+
+                formationIntercale->idFormation[3] = '\0';
                 //TODO : parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
+
+                printf("Combien d'etudiants sont autorises par annee ? : ");
+                scanf("%d", &formationIntercale->maxEtudiant);
 
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
-                
 				
-                for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++ ) {     //Boucle pour parcourir les annees
+                for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++) {     //Boucle pour parcourir les annees
                 	nouvelleFormation=malloc(sizeof(formation));
                 	
+                    //Reattribution des valeurs donnees en DEHORS de la bouche 
+                    strcpy(nouvelleFormation->nomBase, formationIntercale->nomBase);
+                    strcpy(nouvelleFormation->idFormation, formationIntercale->idFormation);
+                    nouvelleFormation->nombreAnneeFormation = formationIntercale->nombreAnneeFormation;
+                    nouvelleFormation->maxEtudiant = formationIntercale->maxEtudiant;
+
                     // Creation id unique
                     // concatener dans un char : sprintf(<variable char>, <formatage comme printf>, <les valeurs>)
 					sprintf(temporaire, "%d_%s", i, formationIntercale->idFormation);
                     strcpy(nouvelleFormation->idFormationAnnee, temporaire);
+                    //réattribution de l'idFormation non modifié (ne pas supprimer)
+                    strcpy(nouvelleFormation->idFormation, formationIntercale->idFormation);
 
                     //Creation du nom de la formation (nomBase [espace] i)
                     strcpy(nouvelleFormation->nomComplete, formationIntercale->nomBase);
                     sprintf(nouvelleFormation->nomComplete, "%s %d", formationIntercale->nomBase, i);
                     
+                    //Assignation numero annee, nbEtudiant = 0, Max etudiant
+                    nouvelleFormation->numeroAnnee = i;
+                    nouvelleFormation->nbEtudiant = 0;
+
                     //grille horaire
                     for(k = 1; k <= 7; k ++) {
                         for(l = 1; l <= 24; l++) {
@@ -266,32 +276,45 @@ int main() {
                         }
                     }
 
+                    //Prix
+                    printf("Quel est le prix d'inscription a cette annee de formation ? : ");
+                    scanf("%f", &nouvelleFormation->prix);
+
                     //Gestion des cours
-                    printf("\nCombien de cours sont donnes dans la formation pour l'annee %d ?", i);
+                    printf("\nCombien de cours sont donnes dans la formation pour l'annee %d ? ", i);
                     
-                    // Passage par la variable test car sinon ea marche pas (?)
+                    // Passage par la variable test car sinon ca marche pas (?)
                     scanf("%d", &test);
                     nouvelleFormation->nbCours = test;
                     
                     for(j = 1; j <= nouvelleFormation->nbCours; j++) {
                     	
-                        printf("\nQuel est le nom du cours numero %d/%02d ? : ", j, nouvelleFormation->nbCours);
-                        scanf("%s", nouvelleFormation->cours[j]);
+                        printf("\nQuel est le nom du cours numero %d/%2d ? : ", j, nouvelleFormation->nbCours);
+                        scanf(" ");
+                        for(k = 0; k < 49; k++) {
+                            nouvelleFormation->cours[j][k] = getchar();
+                            if(nouvelleFormation->cours[j][k] == '\n') {
+                                nouvelleFormation->cours[j][k]  = '\0';
+                                break;
+                            }
+                            nouvelleFormation->cours[j][49] = '\0'; 
+                        }
+                        
                         
                         // vu que le cours est creer il est dispo donc on met 0 dans deja donne
+                        nouvelleFormation->coursDejaDonne[j]=0;
                     }
 
-                    printf("\nFin de l'encodage de l'annee : %1d", i);
+                    printf("\n--------------------------------\n");
+                    printf("Fin de l'encodage de l'annee : %1d\n", i);
+                    printf("--------------------------------\n");
                     // Ecriture
-                    ecrireFormation(*nouvelleFormation);
+                    ecrireFormation(nouvelleFormation);
                     
                 }
 
                 printf("\nEncodage de la formation realisee avec succes.\n"); 
-
-
-                //Enregistrement de la formation dans le .dat
-                //TODO : Voir si c'est possible de le faire avec un fonction -> plus facile de gerer l'ouverture et la fermeture des flux d'ecriture et lecture 
+                printf("==============================================\n\n"); 
 
             }  
 
@@ -382,8 +405,8 @@ int menuGererFormation() {
         
     printf("Choix de la formation\n");
     printf("0 : Quitter\n");
-    printf("1 : Accéder aux formations (ajouter, modifier, supprimer, afficher la liste)\n");
-    printf("2 : Accéder aux formateurs (ajouter, modifier, supprimer, afficher la liste)\n");
+    printf("1 : Acceder aux formations (ajouter, modifier, supprimer, afficher la liste)\n");
+    printf("2 : Acceder aux formateurs (ajouter, modifier, supprimer, afficher la liste)\n");
     printf("Votre choix : ");
 
     scanf("%d", &valeurMenuFormation);
@@ -442,3 +465,37 @@ int gestionFormation() {
     return queFaire;
 }
 
+
+void ecrireFormation(formation *f) {
+
+    FILE *fres;
+    fres=fopen("listeFormation.dat", "a");
+
+    printf("\nFormation en cours d'ajout : %s \n", f->nomBase);
+    int z, y, x;
+
+    // nom, idFormation, idFormationAnnee, numeroAnnee, nbCours, maxEtudiant, nbEtudiant, prix, nombreAnneeFormation, numeroAnnee
+    fprintf(fres,"%-100s %-102s %-3s %-5s %2d %2d %4d %4d %8.2f %2d %2d ", f->nomBase, f->nomComplete, f->idFormation, f->idFormationAnnee, 
+    f->numeroAnnee, f->nbCours, f->maxEtudiant, f->nbEtudiant, f->prix, f->nombreAnneeFormation, f->numeroAnnee);
+    
+    // ecriture jour et semaine horaire
+    for(z=1;z<=7;z++) {
+        for(y=1;y<=24;y++) {
+                fprintf(fres,"%1d", f->horaire[z][y]);
+        }
+    }
+
+    for(x=1;x<= f->nbCours; x++) {
+        // print 50 caractere pour chaque cours
+        fprintf(fres," %50s", f->cours[x]);
+    }
+
+    for(x=1;x<= f->nbCours; x++) {
+        // ecriture coursDejaDonne[20][50]
+        fprintf(fres,"%1d", f->coursDejaDonne[x]);
+    }
+    
+    fprintf(fres,"\n");
+
+    fclose(fres);
+}
