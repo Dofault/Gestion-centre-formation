@@ -80,7 +80,6 @@ int main() {
 	etudiantCourant=malloc(sizeof(etudiant));
 	etudiantDebut=etudiantCourant;
 	fscanf(fdat,"%30s", etudiantCourant->nom);
-    
 	while(!feof(fdat)) {
 		fscanf(fdat," %30s %5s %2d %2d %4d %2d %8f %8f %8f", etudiantCourant->prenom, etudiantCourant->idFormationAnnee, 
 		&etudiantCourant->naissanceJour, &etudiantCourant->naissanceMois, &etudiantCourant->naissanceAnnee, &etudiantCourant->annee, &etudiantCourant->montantAPayer, 
@@ -93,7 +92,6 @@ int main() {
 	}      
 	etudiantCourant=etudiantDebut;
 	for(i=0;i<nbEtudiant;i++) {
-        
         printf("%s\n", etudiantCourant->nom);
 		etudiantCourant=etudiantCourant->suivant;
 	}   
