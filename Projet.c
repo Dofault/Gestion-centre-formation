@@ -226,6 +226,8 @@ int main() {
                     // concatener dans un char : sprintf(<variable char>, <formatage comme printf>, <les valeurs>)
 					sprintf(temporaire, "%d_%s", i, formationIntercale->idFormation);
                     strcpy(nouvelleFormation->idFormationAnnee, temporaire);
+                    //réattribution de l'idFormation non modifié (ne pas supprimer)
+                    strcpy(nouvelleFormation->idFormation, formationIntercale->idFormation);
 
                     //Creation du nom de la formation (nomBase [espace] i)
                     strcpy(nouvelleFormation->nomComplete, formationIntercale->nomBase);
@@ -254,17 +256,16 @@ int main() {
                         nouvelleFormation->coursDejaDonne[j]=0;
                     }
 
-                    printf("\nFin de l'encodage de l'annee : %1d", i);
+                    printf("\n--------------------------------\n");
+                    printf("Fin de l'encodage de l'annee : %1d\n", i);
+                    printf("--------------------------------\n");
                     // Ecriture
                     ecrireFormation(nouvelleFormation);
                     
                 }
 
                 printf("\nEncodage de la formation realisee avec succes.\n"); 
-
-
-                //Enregistrement de la formation dans le .dat
-                //TODO : Voir si c'est possible de le faire avec un fonction -> plus facile de gerer l'ouverture et la fermeture des flux d'ecriture et lecture 
+                printf("==============================================\n\n"); 
 
             }  
 
