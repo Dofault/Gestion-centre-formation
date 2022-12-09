@@ -23,7 +23,7 @@ typedef struct formateur {
 }formateur;
 
 typedef struct formation {
-    char nomBase[100], nomComplete[102], idFormation[3], idFormationAnnee[5];
+    char nomBase[100], nomComplete[102], idFormation[4], idFormationAnnee[6];
     char cours[20][50];
     int coursDejaDonne[20];
     int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee, horaire[8][25];
@@ -45,7 +45,7 @@ int main() {
     //queFaire est une variable qui est modifiée par les fonctions : on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le main
 
 	
-	char temporaire[5]; // Variable temporaire pour creer nouvelleFormation->idFormationAnnee dans l'ajout formation
+	char temporaire[50]; // Variable temporaire pour creer nouvelleFormation->idFormationAnnee dans l'ajout formation
     char bufferNom[100];
 	int test; // Variable temporaire qu'on peut utiliser quand on veut
 	
@@ -204,15 +204,45 @@ int main() {
                 //allouer la mémoire
                 formationIntercale = malloc(sizeof(formation));
 
+                //nomBase
                 printf("\nVeuillez entrer le nom de la formation : ");
-                scanf(" %[^\n]", formationIntercale->nomBase);
-                printf("\nVeuillez entrer l'ID de la formation (3 lettres) : ");
-                scanf(" %[^\n]", formationIntercale->idFormation);
+                //PAS SUPPRIMER : scanf(" ") permet de se debarasser des restes des precedents inputs des menus
+                scanf(" ");
+                //boucle qui permet de parcourir 100 caractères
+                for(i = 0; i < 99; i++) {    
+                    formationIntercale->nomBase[i] = getchar();
+                    if(formationIntercale->nomBase[i] == '\n') {
+                        formationIntercale->nomBase[i] = '\0';
+                        break;
+                    }
+                }
+                formationIntercale->nomBase[i] = '\0';
+                formationIntercale->nomBase[99] = '\0';
+
+                //idFormation
+                //Entree de l'idFormation avec 3 caracteres max
+                printf("\nVeuillez entrer l'ID de la formation (3 lettres). Notez que les caracteres excedents ne seront pas pris en compte. : ");
+                i = 0;
+                while(1==1) {
+                    temporaire[i] = getchar();
+                    if(temporaire[i] == '\n') {
+                        break;
+                    }
+                    i++;
+                }
+                
+                //gestion des excedents : Note que si l'utilisateur entre + de 50 caracteres (limite de temporaire[]), alors ca plante quand meme...
+                for(i = 0; i < 3; i++) {
+                    formationIntercale->idFormation[i] = temporaire[i];
+                }
+
+                formationIntercale->idFormation[3] = '\0';
+                printf("TEST : %-3s\n", formationIntercale->idFormation);
                 //TODO : parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
 
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
-                
+                //scanf(" ");
 				
                 for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++) {     //Boucle pour parcourir les annees
                 	nouvelleFormation=malloc(sizeof(formation));
@@ -249,8 +279,17 @@ int main() {
                     
                     for(j = 1; j <= nouvelleFormation->nbCours; j++) {
                     	
-                        printf("\nQuel est le nom du cours numero %d/%02d ? : ", j, nouvelleFormation->nbCours);
-                        scanf(" %[^\n]", nouvelleFormation->cours[j]);
+                        printf("\nQuel est le nom du cours numero %d/%2d ? : ", j, nouvelleFormation->nbCours);
+                        scanf(" ");
+                        for(k = 0; k < 49; k++) {
+                            nouvelleFormation->cours[j][k] = getchar();
+                            if(nouvelleFormation->cours[j][k] == '\n') {
+                                nouvelleFormation->cours[j][k]  = '\0';
+                                break;
+                            }
+                            nouvelleFormation->cours[j][49] = '\0'; 
+                        }
+                        
                         
                         // vu que le cours est creer il est dispo donc on met 0 dans deja donne
                         nouvelleFormation->coursDejaDonne[j]=0;
