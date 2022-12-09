@@ -8,7 +8,7 @@
 typedef struct etudiant {
     char nom[30];
     char prenom[30];
-    char nomDeFormation[100];
+    char idFormationAnnee[6];
     int naissanceJour, naissanceMois, naissanceAnnee, annee;
     float montantAPayer, montantPaye, reduction;
     struct etudiant *suivant;
@@ -56,7 +56,7 @@ int main() {
     formation *formationDebut, *formationCourant, *formationSuivant, *nouvelleFormation, *formationIntercale;
     // Var etudiant
     int nbEtudiant = 0;
-    etudiant *etudiantDebut,*etudiantCourant,*etudiantSuivant,*etudiantIntercale;
+    etudiant *etudiantDebut,*etudiantCourant,*etudiantSuivant,*etudiantIntercale, *etudiantNouveau;
     // Var formateur
     int nbFormateur=0;
     formateur *formateurDebut,*formateurCourant,*formateurSuivant,*formateurIntercale;
@@ -67,6 +67,7 @@ int main() {
     void changerMenu(int *);
     void menuConsulterHoraire();
     void ecrireFormation(formation *);
+    void ecrireEtudiant(etudiant *);
     int menuGererFormation();
     void supprimerEspaceBlanc(char[]);
     int gestionFormation();
@@ -79,8 +80,9 @@ int main() {
 	etudiantCourant=malloc(sizeof(etudiant));
 	etudiantDebut=etudiantCourant;
 	fscanf(fdat,"%30s", etudiantCourant->nom);
+    
 	while(!feof(fdat)) {
-		fscanf(fdat," %30s %100s %2d %2d %4d %2d %8f %8f %8f", etudiantCourant->prenom, etudiantCourant->nomDeFormation, 
+		fscanf(fdat," %30s %5s %2d %2d %4d %2d %8f %8f %8f", etudiantCourant->prenom, etudiantCourant->idFormationAnnee, 
 		&etudiantCourant->naissanceJour, &etudiantCourant->naissanceMois, &etudiantCourant->naissanceAnnee, &etudiantCourant->annee, &etudiantCourant->montantAPayer, 
 		&etudiantCourant->montantPaye, &etudiantCourant->reduction);
 	  	etudiantSuivant=malloc(sizeof(etudiant));
@@ -91,6 +93,8 @@ int main() {
 	}      
 	etudiantCourant=etudiantDebut;
 	for(i=0;i<nbEtudiant;i++) {
+        
+        printf("%s\n", etudiantCourant->nom);
 		etudiantCourant=etudiantCourant->suivant;
 	}   
 	etudiantCourant->suivant=NULL;  // free(etudiantSuivant);
@@ -149,11 +153,13 @@ int main() {
         supprimerEspaceBlanc(formationCourant->nomComplete);
 		fscanf(fdat2," %3s %5s %2d %2d %4d %4d %8f %2d %2d ", &formationCourant->idFormation, &formationCourant->idFormationAnnee, &formationCourant->numeroAnnee, &formationCourant->nbCours, &formationCourant->maxEtudiant, &formationCourant->nbEtudiant, &formationCourant->prix, &formationCourant->nombreAnneeFormation, &formationCourant->numeroAnnee);
 		// Lecture de l'horaire, 7jours * 24h
+        
 		for(i=1;i<= 7; i++) {
 			for(x=1;x<=24;x++) {
 				fscanf(fdat2, "%1d", &formationCourant->horaire[i][x]);
 			}
 		}
+        
 		// Lecture des cours
 		for(i=1;i<=formationCourant->nbCours; i++) {
             fscanf(fdat2, " ");
@@ -200,8 +206,135 @@ int main() {
     
 
         if(valeurMenu == 2) {
-            // ajouter élève
+            /*
+                int naissanceJour, naissanceMois, naissanceAnnee, annee;
+                float montantAPayer, montantPaye, reduction;
+                .
+                    char nomBase[100], nomComplete[102], idFormation[4], idFormationAnnee[6];
+                    int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee;
+                    float prix;
+            */
+
+            FILE *fres;
+            fres=fopen("listeFormation.dat", "a");
+
+
+            // Valeur par defaut :
+            etudiantNouveau = malloc(sizeof(etudiant));
+            etudiantNouveau->montantPaye=0;
+            etudiantNouveau->reduction=0;
+            etudiantNouveau->annee = 1;
+
+            // SELECTION DE LA FORMATION
+            printf("+--------+-------------------+-----------------------------------------------------------\n");
+            printf("| Numero |      Statut       |                Intitule de la formation\n");
+            printf("+--------+-------------------+-----------------------------------------------------------\n");
+            char matriceAffichageNomFormation[nbFormation][100]; // matrice de taille nbFormation comme maximum possible, contiendra id formation comme ca des que l'utilisateur choisis une formation on trouvera la formation avec matriceAffichageNomFormation[x]
+            float prixQueDoitPayerEtudiant[nbFormation]; // on trouvera le prix selon x à payer selon ce que l'utilisateur choisis
+            x=0; // x : va juste indiquer si la formation fait deja parti de la liste affiche ou non, ca evite les doublonsn, 0 par defaut car on va deja ajouter la premiere formation
+            formationCourant = formationDebut;
+            int nbAffichageFormation=1; // Nombre de formation dans la matrice
+            while(formationCourant->numeroAnnee != 1) { // les annee > a 1 sont interdit donc le premier enregistrement doit pas etre > 1
+                formationCourant=formationCourant->suivant;
+            }
+            for(i=0;i<nbFormation;i++) { // Pour chaque formation
+                if(x==0) { // si pas déjà présente dans la matrice (valeur : 0) on l'ajoute et on écris
+                    if(formationCourant->maxEtudiant > formationCourant->nbEtudiant) { // Si place dispo on peut add la formation à la matrice et ecrire pour l'utilisateur
+                        strcpy(matriceAffichageNomFormation[nbAffichageFormation], formationCourant->idFormationAnnee); // on met idFormationAnnee dans la matrice comme ça on la rajoutera après dans etudiant.idFormationAnnee
+                        prixQueDoitPayerEtudiant[nbAffichageFormation] = formationCourant->prix;
+                        y = formationCourant->maxEtudiant - formationCourant->nbEtudiant; // Calcul de la place restante dans la formation
+                        printf("| %02d     | Disponible (%d/%d) | %s\n", nbAffichageFormation, formationCourant->nbEtudiant, formationCourant->maxEtudiant, formationCourant->nomBase);
+                        nbAffichageFormation++;   
+                    }
+                    else // sinon on écris quand même sans l'associer à la matrice
+                    {
+                        printf("| --     | Complet (%d/%d)   | %s\n", formationCourant->nbEtudiant, formationCourant->maxEtudiant, formationCourant->nomBase);
+                    }
+                    printf("+--------+-------------------+-----------------------------------------------------------\n");
+                }
+                formationCourant=formationCourant->suivant; // Formation suivante
+                while(formationCourant->numeroAnnee != 1  && i<nbFormation-1) { // Tant qu'on tombe pas sur une premiere annee on skip
+                    formationCourant=formationCourant->suivant;
+                    i++; // Incrementation i car elle est associe a la boucle jusque nbFormation
+                }
+                x=0; // Nouvelle recherche de x
+                for(z=1;z<=nbAffichageFormation;z++) { // Pour chaque élément dans la matrice d'affichage formation
+                    if(strcmp(matriceAffichageNomFormation[z], formationCourant->nomBase) == 0) { 
+                        x=1; // Si déjà présent x=1
+                    }
+                }
+
+            }   
+
+
+            printf("\nSelectionnez un numero de formation dans lequel vous souhaitez ajouter un nouvel etudiant (0 pour sortir) : ");
+            scanf("%d", &x);
+            if(x != 0) {
+                strcpy(etudiantNouveau->idFormationAnnee, matriceAffichageNomFormation[x]);
+
+                etudiantNouveau->montantAPayer = prixQueDoitPayerEtudiant[x]; // prix à payer de l'etudiant
+
+
+                printf("\nPrix de la formation que l'etudiant devra regler : %8.2f\n", etudiantNouveau->montantAPayer);
+                printf("\nVeuillez entrer le nom du nouvelle etudiant : ");
+                scanf(" ");
+                for(i = 0; i < 29; i++) {    
+                    etudiantNouveau->nom[i] = getchar();
+                    if(etudiantNouveau->nom[i] == '\n') {
+                        etudiantNouveau->nom[i] = '\0';
+                        break;
+                    }
+                }
+                etudiantNouveau->nom[i] = '\0';
+                etudiantNouveau->nom[29] = '\0';
+                printf("\nVeuillez entrer le prenom de l'etudiant : "); scanf(" ");
+                for(i = 0; i < 29; i++) {    
+                    etudiantNouveau->prenom[i] = getchar();
+                    if(etudiantNouveau->prenom[i] == '\n') {
+                        etudiantNouveau->prenom[i] = '\0';
+                        break;
+                    }
+                }
+                etudiantNouveau->prenom[i] = '\0';
+                etudiantNouveau->prenom[29] = '\0';
+                
+
+                // TODO : verification annee de naissance
+                printf("\nInformation date de naissance : \n");
+                printf("> Annee : ");
+                scanf("%d", &etudiantNouveau->naissanceAnnee);
+                printf("> Mois de naissance : ");
+                scanf("%d", &etudiantNouveau->naissanceMois);
+                printf("> Jour de naissance : ");
+                scanf("%d", &etudiantNouveau->naissanceJour);
+                
+
+                
+                ecrireEtudiant(etudiantNouveau);
+
+                printf("\n=============================================\n");
+                printf("Recapitulatif des informations de l'etudiant\n");
+                printf("=============================================");
+                printf("\n> Nom :                   %s", etudiantNouveau->nom);
+                printf("\n> Prenom :                %s", etudiantNouveau->prenom);
+                printf("\n> Annee :                 %d", etudiantNouveau->annee);
+                printf("\n> Montant a payer  :      %8.2f", etudiantNouveau->montantAPayer);
+                printf("\n> Naissance :             %02d/%02d/%4d", etudiantNouveau->naissanceJour, etudiantNouveau->naissanceMois, etudiantNouveau->naissanceAnnee);
+                printf("\n> Reduction  :            %8.2f\n", etudiantNouveau->reduction);
+                printf("=============================================\n");
+
+
+            }
+            
+
+
+
+
         }
+
+
+
+
     
         
         if(valeurMenu == 3) {   //Gestion formation et formateur
@@ -473,6 +606,19 @@ int gestionFormation() {
 }
 
 
+void ecrireEtudiant(etudiant *e) {
+   FILE *fres;
+   fres=fopen("listeEtudiant.dat", "a");
+   printf("reza");
+   fprintf(fres,"%-30s %-30s %5s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", 
+   e->nom, e->prenom, e->idFormationAnnee, e->naissanceJour, e->naissanceMois, e->naissanceAnnee, e->annee, e->montantAPayer, e->montantPaye, e->reduction);
+   fclose(fres);
+}
+
+
+
+
+
 void ecrireFormation(formation *f) {
 
     FILE *fres;
@@ -521,7 +667,6 @@ void supprimerEspaceBlanc(char *str)
         {
             index= i;
         }
-
         i++;
     }
     str[index + 1] = '\0';
