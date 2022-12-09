@@ -237,12 +237,10 @@ int main() {
                 }
 
                 formationIntercale->idFormation[3] = '\0';
-                printf("TEST : %-3s\n", formationIntercale->idFormation);
                 //TODO : parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
 
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
-                //scanf(" ");
 				
                 for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++) {     //Boucle pour parcourir les annees
                 	nouvelleFormation=malloc(sizeof(formation));
@@ -269,6 +267,10 @@ int main() {
                             nouvelleFormation->horaire[k][l] = 0;
                         }
                     }
+
+                    //Prix
+                    printf("Quel est le prix d'inscription a cette annee de formation ? : ");
+                    scanf("%f", &nouvelleFormation->prix);
 
                     //Gestion des cours
                     printf("\nCombien de cours sont donnes dans la formation pour l'annee %d ?", i);
