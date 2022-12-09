@@ -16,7 +16,7 @@ typedef struct etudiant {
 
 typedef struct formateur {
     char nom[30];
-    char prenom[30];
+    char prenom[30];    
     char titre[10][100];
     int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre, horaire[8][25];
     struct formateur *suivant;
@@ -30,6 +30,8 @@ typedef struct formation {
     float prix;
     struct formation *suivant;
 }formation;
+
+
 
 
 int main() {
@@ -66,6 +68,7 @@ int main() {
     void menuConsulterHoraire();
     void ecrireFormation(formation *);
     int menuGererFormation();
+    void supprimerEspaceBlanc(char[]);
     int gestionFormation();
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
@@ -138,10 +141,13 @@ int main() {
 	// -------------------------------------------------------------------
 	formationCourant=malloc(sizeof(formation));
 	formationDebut=formationCourant;
-	fscanf(fdat2,"%100s", formationCourant->nomBase);
+    fgets(formationCourant->nomBase, 100, fdat2);
+    supprimerEspaceBlanc(formationCourant->nomBase);
 	while(!feof(fdat2)) {
-		fscanf(fdat2," %102s %3s %5s %2d %2d %4d %4d %8f %2d %2d ", &formationCourant->nomComplete, &formationCourant->idFormation, &formationCourant->idFormationAnnee, &formationCourant->numeroAnnee, &formationCourant->nbCours, &formationCourant->maxEtudiant,
-		&formationCourant->nbEtudiant, &formationCourant->prix, &formationCourant->nombreAnneeFormation, &formationCourant->numeroAnnee);
+        fscanf(fdat2, " ");
+        fgets(formationCourant->nomComplete, 102, fdat2);
+        supprimerEspaceBlanc(formationCourant->nomComplete);
+		fscanf(fdat2," %3s %5s %2d %2d %4d %4d %8f %2d %2d ", &formationCourant->idFormation, &formationCourant->idFormationAnnee, &formationCourant->numeroAnnee, &formationCourant->nbCours, &formationCourant->maxEtudiant, &formationCourant->nbEtudiant, &formationCourant->prix, &formationCourant->nombreAnneeFormation, &formationCourant->numeroAnnee);
 		// Lecture de l'horaire, 7jours * 24h
 		for(i=1;i<= 7; i++) {
 			for(x=1;x<=24;x++) {
@@ -150,7 +156,8 @@ int main() {
 		}
 		// Lecture des cours
 		for(i=1;i<=formationCourant->nbCours; i++) {
-			fscanf(fdat2, " %50s", formationCourant->cours[i]);
+            fscanf(fdat2, " ");
+            fgets(formationCourant->cours[i], 50, fdat2);
 		}
         // Lecture des cours deja donnee
         for(i=1;i<=formationCourant->nbCours; i++) {
@@ -160,12 +167,12 @@ int main() {
 	  	formationCourant->suivant=formationSuivant;
 	  	nbFormation++;
    	  	formationCourant=formationSuivant;
-		fscanf(fdat2,"%100s", formationCourant->nomBase);
+        fscanf(fdat2, " "); // Lecture du saut de ligne
+        fgets(formationCourant->nomBase, 100, fdat2);
 	}
     //Attribution de NULL pour la dernière formation->suivant
 	formationCourant=formationDebut;
 	for(i=0;i<nbFormation;i++) {
-
 		formationCourant=formationCourant->suivant;
 	}   
 	formationCourant->suivant=NULL;
@@ -487,9 +494,8 @@ void ecrireFormation(formation *f) {
 
     for(x=1;x<= f->nbCours; x++) {
         // print 50 caractere pour chaque cours
-        fprintf(fres," %50s", f->cours[x]);
+        fprintf(fres," %-50s", f->cours[x]);
     }
-
     for(x=1;x<= f->nbCours; x++) {
         // ecriture coursDejaDonne[20][50]
         fprintf(fres,"%1d", f->coursDejaDonne[x]);
@@ -498,4 +504,25 @@ void ecrireFormation(formation *f) {
     fprintf(fres,"\n");
 
     fclose(fres);
+}
+
+void supprimerEspaceBlanc(char *str)
+{
+    int index, i;
+
+    /* Index par défaut */
+    index = -1;
+
+    /* Trouver dernier index du character non espace blanc */
+    i = 0;
+    while(str[i] != '\0')
+    {
+        if(str[i] != ' ' && str[i] != '\t' && str[i] != '\n')
+        {
+            index= i;
+        }
+
+        i++;
+    }
+    str[index + 1] = '\0';
 }
