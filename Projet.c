@@ -239,6 +239,9 @@ int main() {
                 formationIntercale->idFormation[3] = '\0';
                 //TODO : parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
 
+                printf("Combien d'etudiants sont autorises par annee ? : ");
+                scanf("%d", &formationIntercale->maxEtudiant);
+
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
 				
@@ -249,6 +252,7 @@ int main() {
                     strcpy(nouvelleFormation->nomBase, formationIntercale->nomBase);
                     strcpy(nouvelleFormation->idFormation, formationIntercale->idFormation);
                     nouvelleFormation->nombreAnneeFormation = formationIntercale->nombreAnneeFormation;
+                    nouvelleFormation->maxEtudiant = formationIntercale->maxEtudiant;
 
                     // Creation id unique
                     // concatener dans un char : sprintf(<variable char>, <formatage comme printf>, <les valeurs>)
@@ -261,6 +265,10 @@ int main() {
                     strcpy(nouvelleFormation->nomComplete, formationIntercale->nomBase);
                     sprintf(nouvelleFormation->nomComplete, "%s %d", formationIntercale->nomBase, i);
                     
+                    //Assignation numero annee, nbEtudiant = 0, Max etudiant
+                    nouvelleFormation->numeroAnnee = i;
+                    nouvelleFormation->nbEtudiant = 0;
+
                     //grille horaire
                     for(k = 1; k <= 7; k ++) {
                         for(l = 1; l <= 24; l++) {
@@ -273,7 +281,7 @@ int main() {
                     scanf("%f", &nouvelleFormation->prix);
 
                     //Gestion des cours
-                    printf("\nCombien de cours sont donnes dans la formation pour l'annee %d ?", i);
+                    printf("\nCombien de cours sont donnes dans la formation pour l'annee %d ? ", i);
                     
                     // Passage par la variable test car sinon ca marche pas (?)
                     scanf("%d", &test);
