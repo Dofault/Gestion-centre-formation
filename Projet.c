@@ -397,7 +397,7 @@ int main() {
                     strcpy(nouvelleFormation->nomComplete, formationIntercale->nomBase);
                     sprintf(nouvelleFormation->nomComplete, "%s %d", formationIntercale->nomBase, i);
                     
-                    //Assignation numero annee, nbEtudiant = 0, Max etudiant
+                    //Assignation numero annee, nbEtudiant = 0
                     nouvelleFormation->numeroAnnee = i;
                     nouvelleFormation->nbEtudiant = 0;
 
