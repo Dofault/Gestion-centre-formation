@@ -260,13 +260,17 @@ int main() {
 
                 // AJOUT DE LETUDIANT A LA CHAINE                   //
                 etudiantCourant=etudiantDebut;                      //
-                for(i=1;i<= nbEtudiant; i++) {                      //
+                for(i=1;i<nbEtudiant;i++) {                      //
                     etudiantCourant= etudiantCourant->suivant;      //
+                    
                 }                                                   //
+                printf("====%s=======%s==========-------------=============\n", etudiantCourant->nom, etudiantCourant->prenom);
                 etudiantCourant->suivant=etudiantNouveau;           //
-                etudiantCourant= etudiantCourant-> suivant;         //
-                etudiantCourant->suivant = NULL;                    //
+                etudiantNouveau->suivant = NULL;                    //
+                etudiantCourant=etudiantCourant->suivant;
                 nbEtudiant++;                                       //
+                
+                printf("====%s=======%s==========-------------=============\n", etudiantCourant->nom, etudiantCourant->prenom);
             }
             
 
