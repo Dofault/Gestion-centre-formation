@@ -71,6 +71,7 @@ int main() {
     void supprimerEspaceBlanc(char[]);
     int gestionFormation();
     formation* initialisationFormation(int *);
+    void afficherListeFormation(formation *, int);
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*--------------------------------------------------------Debut de la lecture -----------------------------------------------------------------------*/
@@ -141,7 +142,6 @@ int main() {
 	// LECTURE DES FORMATION, VARIABLE PERTINENTE : nbFormation ET formationDebut
 	// -------------------------------------------------------------------
 	formationDebut = initialisationFormation(&nbFormation);
-    printf("%-100s", formationDebut->nomBase);
 
     //formationCourant = formationDebut;
     /*while(formationCourant != NULL) {
@@ -429,7 +429,7 @@ int main() {
             }
 
             if(queFaire == 3) {
-
+                afficherListeFormation(formationDebut, nbFormation);
                 // ********* A FAIRE : AFFICHER LA LISTE DES FORMATIONS + POSSIBILITE D'EN SUPPRIMER *********
             }
             
@@ -658,7 +658,7 @@ int gestionFormation() {
     printf("0 : Quitter\n");
     printf("1. Ajouter une formation\n");
     printf("2. Modifier une formation\n");
-    printf("3. Afficher la liste des formations");
+    printf("3. Afficher la liste des formations\n");
 
     printf("Votre choix : ");
     scanf("%d", &menu);
@@ -795,12 +795,54 @@ formation* initialisationFormation(int *nbFormation) {
 	}   
 	courant->suivant=NULL;
 
-    /*courant = debut;
-    while(courant != NULL) {
-        printf("%-100s\n", courant->nomComplete);
-        courant = courant->suivant;
-    }*/
-
     return debut;
     fclose(fdat2);
+}
+
+void afficherListeFormation(formation *courant, int nombreFormation) {
+
+    formation *debut = malloc(sizeof(*debut));
+    formation *fSuite = malloc(sizeof(*fSuite));
+
+    debut = courant;
+
+    if(courant == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
+    int i, j, nombreFormationBase = 1, numero = 1;
+
+    //compter formation base differentes
+    for(i = 1; i < nombreFormation; i++) {
+        fSuite = courant->suivant;
+        if(strcmp(courant->idFormation, fSuite->idFormation) != 0) {
+            nombreFormationBase = nombreFormationBase + 1;
+        }
+        courant = fSuite;
+    }
+
+    courant = debut;
+
+    //Presentation
+    printf("\n\nNotre centre vous propose %02d formations differentes", nombreFormationBase);
+    printf("\n==================================================================================================================================================\n");
+    printf("                                                             Liste des formations");
+
+    //ecriture des formations bases
+    for(j = 0; j < nombreFormationBase; j++) {
+        printf("\n==================================================================================================================================================\n");
+        printf("ID de la formation complete : %-3s     Nom : %-100s\n", courant->idFormation, courant->nomBase);
+        printf("+--------+-------+------------------------------------------------------------------------------------------------------+-----------+------------+\n");
+        printf("| Numero | ID    |  Nom                                                                                                 | Etudiants |    Prix    |\n");
+        printf("+--------+-------+------------------------------------------------------------------------------------------------------+-----------+------------+\n");
+        for(i = 0; i < courant->nombreAnneeFormation; i++) {
+            printf("|   %02d   | %-5s | %-100s |   %02d/%02d   |   %6.2f   |\n", numero, courant->idFormationAnnee, courant->nomComplete, courant->nbEtudiant, courant->maxEtudiant, courant->prix);
+            numero++;
+            //avancer dans la liste
+            if(courant->suivant != NULL) {
+                courant = courant->suivant;
+            }
+        }
+        printf("+--------+-------+------------------------------------------------------------------------------------------------------+-----------+------------+\n");
+    }
 }
