@@ -258,19 +258,19 @@ int main() {
                 printf("\n> Reduction  :            %8.2f\n", etudiantNouveau->reduction);
                 printf("=============================================\n");
 
+                //////////////////////////////////////////////////////
                 // AJOUT DE LETUDIANT A LA CHAINE                   //
                 etudiantCourant=etudiantDebut;                      //
-                for(i=1;i<nbEtudiant;i++) {                      //
+                for(i=1;i<nbEtudiant;i++) {                         //
                     etudiantCourant= etudiantCourant->suivant;      //
-                    
+                                                                    //
                 }                                                   //
-                printf("====%s=======%s==========-------------=============\n", etudiantCourant->nom, etudiantCourant->prenom);
                 etudiantCourant->suivant=etudiantNouveau;           //
                 etudiantNouveau->suivant = NULL;                    //
-                etudiantCourant=etudiantCourant->suivant;
+                etudiantCourant=etudiantCourant->suivant;           //
                 nbEtudiant++;                                       //
+                //////////////////////////////////////////////////////
                 
-                printf("====%s=======%s==========-------------=============\n", etudiantCourant->nom, etudiantCourant->prenom);
             }
             
 
@@ -329,14 +329,15 @@ int main() {
 
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
-				
-                // VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE
-                // COMME CA ON AJOUTE A LA SUITE TOUTES LES ANNEES dans la boucle
-                formationCourant=formationDebut;                                    //
-                for(i=1;i<= nbFormation; i++) {                                     //
-                    formationCourant= formationCourant->suivant;                    //
-                }                                                                   //
 
+				//////////////////////////////////////////////////////////////////////////////////
+                // VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE   //
+                // COMME CA ON AJOUTE A LA SUITE TOUTES LES ANNEES dans la boucle               //
+                formationCourant=formationDebut;                                                //
+                for(i=1;i< nbFormation; i++) {                                                 //
+                    formationCourant= formationCourant->suivant;                                //
+                }                                                                               //
+                //////////////////////////////////////////////////////////////////////////////////
 
 
                 for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++) {     //Boucle pour parcourir les annees
@@ -405,13 +406,13 @@ int main() {
                     // Ecriture
                     ecrireFormation(nouvelleFormation);
 
-
+                    ///AJOUT FORMATION A LA CHAINE////////////////////////
+                                                                        //
                     formationCourant->suivant=nouvelleFormation;        //
-                    formationCourant= formationCourant-> suivant;       //
-                    formationCourant->suivant = NULL;                   //
-                    nbFormation++;
-
-                    //printf("Ajoute a la chaine %s", formationCourant->nomBase);
+                    nouvelleFormation->suivant = NULL;                  //
+                    formationCourant=formationCourant->suivant;         //
+                    nbFormation++;                                      //
+                    //////////////////////////////////////////////////////
 
 
                     
