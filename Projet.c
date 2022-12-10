@@ -331,12 +331,12 @@ int main() {
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
 				
-                // VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE
+                /*// VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE
                 // COMME CA ON AJOUTE A LA SUITE TOUTES LES ANNEES dans la boucle
                 formationCourant=formationDebut;                                    //
                 for(i=1;i<= nbFormation; i++) {                                     //
                     formationCourant= formationCourant->suivant;                    //
-                }                                                                   //
+                }*/                                                                   //
 
 
 
@@ -407,13 +407,16 @@ int main() {
                     ecrireFormation(nouvelleFormation);
 
 
-                    formationCourant->suivant=nouvelleFormation;        //
-                    formationCourant= formationCourant-> suivant;       //
-                    formationCourant->suivant = NULL;                   //
+                    //actualiser la liste chainee
+                    formationCourant = formationDebut;
+                    for(j = 1; j < nbFormation; j++) {
+                        formationCourant = formationCourant->suivant;
+                    }
+
+                    formationCourant->suivant = nouvelleFormation;
+                    nouvelleFormation->suivant = NULL;
+                    formationCourant = formationCourant->suivant;
                     nbFormation++;
-
-                    //printf("Ajoute a la chaine %s", formationCourant->nomBase);
-
 
                     
                 }
@@ -810,7 +813,7 @@ void afficherListeFormation(formation *courant, int nombreFormation) {
         exit(EXIT_FAILURE);
     }
 
-    int i, j, nombreFormationBase = 1, numero = 1;
+    int i, j, nombreFormationBase = 1, numero = 1, tmp;
 
     //compter formation base differentes
     for(i = 1; i < nombreFormation; i++) {
@@ -835,7 +838,8 @@ void afficherListeFormation(formation *courant, int nombreFormation) {
         printf("+--------+-------+------------------------------------------------------------------------------------------------------+-----------+------------+\n");
         printf("| Numero | ID    |  Nom                                                                                                 | Etudiants |    Prix    |\n");
         printf("+--------+-------+------------------------------------------------------------------------------------------------------+-----------+------------+\n");
-        for(i = 0; i < courant->nombreAnneeFormation; i++) {
+        tmp = courant->nombreAnneeFormation;
+        for(i = 0; i < tmp; i++) {
             printf("|   %02d   | %-5s | %-100s |   %02d/%02d   |   %6.2f   |\n", numero, courant->idFormationAnnee, courant->nomComplete, courant->nbEtudiant, courant->maxEtudiant, courant->prix);
             numero++;
             //avancer dans la liste
