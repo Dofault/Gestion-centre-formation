@@ -141,8 +141,6 @@ int main() {
 	// LECTURE DES FORMATION, VARIABLE PERTINENTE : nbFormation ET formationDebut
 	// -------------------------------------------------------------------
 	formationDebut = initialisationFormation(&nbFormation);
-    printf("%-100s", formationDebut->nomBase);
-   
 	fclose(fdat); 
 	fclose(fdat1); 
    
@@ -191,8 +189,11 @@ int main() {
                     }
                     printf("+--------+-------------------+-----------------------------------------------------------\n");
                 }
-                formationCourant=formationCourant->suivant; // Formation suivante
-                while(formationCourant->numeroAnnee != 1  && i<nbFormation-1) { // Tant qu'on tombe pas sur une premiere annee on skip
+                if(formationCourant->suivant != NULL) {
+                    formationCourant=formationCourant->suivant; // Formation suivante
+                }
+                
+                while(formationCourant->numeroAnnee != 1  && i<nbFormation) { // Tant qu'on tombe pas sur une premiere annee on skip
                     formationCourant=formationCourant->suivant;
                     i++; // Incrementation i car elle est associe a la boucle jusque nbFormation
                 }
