@@ -37,10 +37,9 @@ typedef struct formation {
 int main() {
 	
     //Ouverture des fichiers *dat et *res
-    FILE *fdat, *fdat1, *fdat2, *fres, *fres1, *fres2;
+    FILE *fdat, *fdat1, *fres, *fres1, *fres2;
     fdat = fopen("listeEtudiant.dat","r");
     fdat1 = fopen("listeFormateur.dat","r");
-    fdat2 = fopen("listeFormation.dat","r");
 
     //Decl variables
     int valeurMenu, queFaire, i, x, y, z, j, k, l, tmpAnnee;
@@ -71,6 +70,7 @@ int main() {
     int menuGererFormation();
     void supprimerEspaceBlanc(char[]);
     int gestionFormation();
+    formation* initialisationFormation(int *);
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*--------------------------------------------------------Debut de la lecture -----------------------------------------------------------------------*/
@@ -140,54 +140,11 @@ int main() {
    
 	// LECTURE DES FORMATION, VARIABLE PERTINENTE : nbFormation ET formationDebut
 	// -------------------------------------------------------------------
-	formationCourant=malloc(sizeof(formation));
-	formationDebut=formationCourant;
-    fgets(formationCourant->nomBase, 100, fdat2);
-    supprimerEspaceBlanc(formationCourant->nomBase);
-	while(!feof(fdat2)) {
-        fscanf(fdat2, " ");
-        fgets(formationCourant->nomComplete, 102, fdat2);
-        supprimerEspaceBlanc(formationCourant->nomComplete);
-		fscanf(fdat2," %3s %5s %2d %2d %4d %4d %8f %2d %2d ", &formationCourant->idFormation, &formationCourant->idFormationAnnee, &formationCourant->numeroAnnee, &formationCourant->nbCours, &formationCourant->maxEtudiant, &formationCourant->nbEtudiant, &formationCourant->prix, &formationCourant->nombreAnneeFormation, &formationCourant->numeroAnnee);
-		// Lecture de l'horaire, 7jours * 24h
-        
-		for(i=1;i<= 7; i++) {
-			for(x=1;x<=24;x++) {
-				fscanf(fdat2, "%1d", &formationCourant->horaire[i][x]);
-			}
-		}
-        
-		// Lecture des cours
-		for(i=1;i<=formationCourant->nbCours; i++) {
-            fscanf(fdat2, " ");
-            fgets(formationCourant->cours[i], 50, fdat2);
-		}
-        // Lecture des cours deja donnee
-        for(i=1;i<=formationCourant->nbCours; i++) {
-			fscanf(fdat2, "%1d", &formationCourant->coursDejaDonne[i]);
-		}
-	  	formationSuivant=malloc(sizeof(formation));
-	  	formationCourant->suivant=formationSuivant;
-	  	nbFormation++;
-   	  	formationCourant=formationSuivant;
-        fscanf(fdat2, " "); // Lecture du saut de ligne
-        fgets(formationCourant->nomBase, 100, fdat2);
-	}
-    //Attribution de NULL pour la dernière formation->suivant
-	formationCourant=formationDebut;
-	for(i=0;i<nbFormation;i++) {
-		formationCourant=formationCourant->suivant;
-	}   
-	formationCourant->suivant=NULL;
-	
-	
-	
-	
-   
+	formationDebut = initialisationFormation(&nbFormation);
+    printf("%-100s", formationDebut->nomBase);
    
 	fclose(fdat); 
 	fclose(fdat1); 
-	fclose(fdat2);
    
     // --------------------------------------------------------------------FIN DE LA LECTURE --------------------------------------------------------------------------
     // ---------------------------------------------------------------------LANCEMENT DU MENU -------------------------------------------------------------------------
@@ -449,7 +406,7 @@ int main() {
                     formationCourant->suivant = NULL;                   //
                     nbFormation++;
 
-                    printf("Ajoute a la chaine %s", formationCourant->nomBase);
+                    //printf("Ajoute a la chaine %s", formationCourant->nomBase);
 
 
                     
@@ -775,4 +732,69 @@ void supprimerEspaceBlanc(char *str)
         i++;
     }
     str[index + 1] = '\0';
+}
+
+formation* initialisationFormation(int *nbFormation) {
+    FILE *fdat2;
+    fdat2 = fopen("listeFormation.dat","r");
+
+    formation *fSuivant;
+    formation *debut = malloc(sizeof(*debut));
+    formation *courant = malloc(sizeof(*courant));
+    debut = courant;
+
+    int i, x;
+
+    fgets(courant->nomBase, 100, fdat2);
+    supprimerEspaceBlanc(courant->nomBase);
+
+	while(!feof(fdat2)) {
+        fscanf(fdat2, " ");
+
+        fgets(courant->nomComplete, 102, fdat2);
+        supprimerEspaceBlanc(courant->nomComplete);
+
+		fscanf(fdat2," %3s %5s %2d %2d %4d %4d %8f %2d %2d ", &courant->idFormation, &courant->idFormationAnnee, &courant->numeroAnnee, &courant->nbCours, &courant->maxEtudiant, &courant->nbEtudiant, &courant->prix, &courant->nombreAnneeFormation, &courant->numeroAnnee);
+		// Lecture de l'horaire, 7jours * 24h
+        
+		for(i=1;i<= 7; i++) {
+			for(x=1;x<=24;x++) {
+				fscanf(fdat2, "%1d", &courant->horaire[i][x]);
+			}
+		}
+        
+		// Lecture des cours
+		for(i=1;i<=courant->nbCours; i++) {
+            fscanf(fdat2, " ");
+            fgets(courant->cours[i], 50, fdat2);
+		}
+        // Lecture des cours deja donnee
+        for(i=1;i<=courant->nbCours; i++) {
+			fscanf(fdat2, "%1d", &courant->coursDejaDonne[i]);
+		}
+
+        fSuivant = malloc(sizeof(*fSuivant));
+        courant->suivant=fSuivant;
+        *nbFormation = *nbFormation + 1;
+
+   	  	courant=fSuivant;
+        fscanf(fdat2, " "); // Lecture du saut de ligne
+        fgets(courant->nomBase, 100, fdat2);
+	}
+
+    //Attribution de NULL pour la dernière formation->suivant
+	courant=debut;
+	for(i = 1; i < *nbFormation; i++) {
+		courant=courant->suivant;
+	}   
+	courant->suivant=NULL;
+
+    /*courant = debut;
+    while(courant != NULL) {
+        printf("%-100s\n", courant->nomComplete);
+        courant = courant->suivant;
+    }*/
+
+    return debut;
+    fclose(fdat2);
 }
