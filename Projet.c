@@ -72,6 +72,7 @@ int main() {
     int gestionFormation();
     formation* initialisationFormation(int *);
     void afficherListeFormation(formation *, int);
+    void supprimerFormationAnnee(int , int *, formation *);
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*--------------------------------------------------------Debut de la lecture -----------------------------------------------------------------------*/
@@ -849,4 +850,91 @@ void afficherListeFormation(formation *courant, int nombreFormation) {
         }
         printf("+--------+-------+------------------------------------------------------------------------------------------------------+-----------+------------+\n");
     }
+}
+
+//Supprime l'annee de formation indique.
+//!!!! TODO : !! actualiser le .dat en ecrivant la nouvelle liste !!
+void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formation *debut) {
+    int i;
+    formation *aSupprimer = malloc(sizeof(*aSupprimer));
+    formation *courant = malloc(sizeof(*courant));
+
+    aSupprimer = debut;
+
+    if(numIdASupprimer >= 1 && numIdASupprimer <= *nombreFormation) {
+        if(numIdASupprimer == 1) {
+            debut = debut->suivant;
+            free(aSupprimer);
+        } else {
+            courant = debut;
+            //On se deplace jusqu a la bonne adresse
+            for(i = 1 < i < numIdASupprimer - 1; i++) {
+                courant = courant->suivant;
+            }
+
+            if(numIdASupprimer != *nombreFormation) {
+                aSupprimer = courant->suivant;
+                courant->suivant = aSupprimer->suivant;
+                free(aSupprimer);
+            } else {
+                aSupprimer = courant->suivant;
+                courant->suivant = NULL;
+                free(aSupprimer);
+            } 
+            *nombreFormation = *nombreFormation - 1;
+        }
+    }
+}
+
+
+//Supprimer une formation entiere : toutes les annees qui la composent
+//TODO : Prevoir cas premier a supprimer ou dernier
+//TODO : actualiser le .dat
+void supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, formation *debut) {
+    int i, j, positionAvantFormation, nb;
+    formation *aSupprimer = malloc(sizeof(*aSupprimer));
+    formation *courant = malloc(sizeof(*courant));
+    formation *avant = malloc(sizeof(*avant));
+
+    //3 caracteres de la formation
+    char id[4];
+
+    //recherche de l'id
+    aSupprimer = debut;
+    for(i = 1; i < numIdASupprimer; i++) {
+        aSupprimer = aSupprimer->suivant;
+    }
+    strcpy(id, aSupprimer->idFormation);
+    nb = aSupprimer->nombreAnneeFormation;
+
+    //recherche de la premiere annee de la formation a supprimer
+    aSupprimer = debut;
+    i = 1;
+    while(strcmp(aSupprimer, id) != 0) {
+        aSupprimer = aSupprimer->suivant;
+        i++;
+    }
+    i--;
+    positionAvantFormation = i;
+
+    //suppression
+    courant = debut;
+    for(i = 1; i < positionAvantFormation; i++) {
+        courant = courant->suivant;
+    }    
+
+    for(j = 1; j <= nb; j++) {
+        aSupprimer = courant->suivant;
+        courant->suivant = aSupprimer->suivant;
+        free(aSupprimer);
+        *nombreFormation = *nombreFormation - 1;
+    }
+
+    /*if(numIdASupprimer != *nombreFormation) {
+                aSupprimer = courant->suivant;
+                courant->suivant = aSupprimer->suivant;
+                free(aSupprimer);
+    }*/
+    
+
 }
