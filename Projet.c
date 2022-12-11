@@ -473,15 +473,15 @@ void changerMenu(int *valeurMenu) {
     printf(" | Veuillez entrer la valeur correspondante au menu souhaite    |\n");
     printf("-+---+----------------------------------------------------------+\n");
     printf(" | 0 | Quitter                                                  |\n");
-    printf("-+---+                                                          |\n");
+    printf("-+---+----------------------------------------------------------+\n");
     printf(" | 1 | Acceder aux horaires                                     |\n");
-    printf("-+---+                                                          |\n");
+    printf("-+---+----------------------------------------------------------+\n");
     printf(" | 2 | Ajouter un etudiant                                      |\n");
-    printf("-+---+                                                          |\n");
+    printf("-+---+----------------------------------------------------------+\n");
     printf(" | 3 | Gerer les formations ou les formateurs                   |\n");
-    printf("-+---+                                                          |\n");
+    printf("-+---+----------------------------------------------------------+\n");
     printf(" | 4 | Consulter les etudiants                                  |\n");
-    printf("-+---+                                                          |\n");
+    printf("-+---+----------------------------------------------------------+\n");
     printf("Votre choix : ");
     scanf("%d", &*valeurMenu);
 
