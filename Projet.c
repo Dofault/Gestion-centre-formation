@@ -2,8 +2,9 @@
 #include<string.h>
 #include<stdlib.h>      //Gestion de la mémoire avec malloc, free, ...
 
-//TODO : Fixer le probleme de idFormation qui se deforme (??)
-//TODO : Avec la nouvelle ecriture, quand un element est dans le formation.dat, ca fait planter à la lecture enclencée par les lignes 141 à 171
+//TODO : ajouter les prerequis des formations
+//TODO : Verifier suppression des formations quand c'est premier et dernier
+//TODO : Combien d'heure par cours -> Par la formation
 
 typedef struct etudiant {
     char nom[30];
@@ -25,8 +26,11 @@ typedef struct formateur {
 typedef struct formation {
     char nomBase[100], nomComplete[102], idFormation[4], idFormationAnnee[6];
     char cours[20][50];
-    int coursDejaDonne[20];
+    char prerequisProf[5][81]; //Prerequis pour qu'un prof puisse enseigner dans la formation
+    char prerequisEleve[5][50]; //Prerequis pour qu'un eleve puisse s'inscrire dans la formation
+    int coursDejaDonne[20], nombreHeureCours[20];   //nombreHeureCours[i] est associe au cours[i]
     int maxEtudiant, nbCours, nbEtudiant, nombreAnneeFormation, numeroAnnee, horaire[8][25];
+    int nombrePrerequisProf, nombrePrerequisEleve;
     float prix;
     struct formation *suivant;
 }formation;
@@ -72,6 +76,7 @@ int main() {
     int gestionFormation();
     formation* initialisationFormation(int *);
     void afficherListeFormation(formation *, int);
+    void afficherListeFormationBase(formation *, int);
     void supprimerFormationAnnee(int , int *, formation *);
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
@@ -331,15 +336,51 @@ int main() {
 
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
-				
-                /*// VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE
-                // COMME CA ON AJOUTE A LA SUITE TOUTES LES ANNEES dans la boucle
-                formationCourant=formationDebut;                                    //
-                for(i=1;i<= nbFormation; i++) {                                     //
-                    formationCourant= formationCourant->suivant;                    //
-                }*/                                                                   //
 
+                //TODO : Copier les prerequis prof et eleves dans toutes les annees de la formation
+                //Prerequis des profs
+                printf("Combien de titres seront necessaires a l'ensemble des enseignants de la formation ? ");
+                scanf("%d", &formationIntercale->nombrePrerequisProf);
 
+                if(formationIntercale->nombrePrerequisProf != 0) {
+                    printf("Quel est l'ensemble des titres que les formateurs doivent avoir en possession pour enseigner dans cette formation ?");
+                    for(i = 1; i <= formationIntercale->nombrePrerequisProf; i++) {
+                        printf("\nNom du prerequis %02d/%02d : ", i, formationIntercale->nombrePrerequisProf);
+                        scanf(" ");
+                        for(k = 0; k < 80; k++) {
+                            formationIntercale->prerequisProf[i][k] = getchar();
+                            if(formationIntercale->prerequisProf[i][k] == '\n') {
+                                formationIntercale->prerequisProf[i][k] = '\0';
+                                break;
+                            }
+                            formationIntercale->prerequisProf[i][80] = '\0';
+                        }
+                    }
+                } else {
+                    strcpy(formationIntercale->prerequisProf[1], "Aucun prerequis demande\0");
+                }
+
+                //Prerequis des eleves
+                printf("Combien de titres seront necessaires a un etudiants pour s'inscire ? ");
+                scanf("%d", &formationIntercale->nombrePrerequisEleve);
+
+                if(formationIntercale->nombrePrerequisEleve != 0) {
+                    printf("Quels sont-ils ?\n");
+                    for(i = 1; i <= formationIntercale->nombrePrerequisEleve; i++) {
+                        printf("\nNom du prerequis %02d/%02d : ", i, formationIntercale->nombrePrerequisEleve);
+                        scanf(" ");
+                        for(k = 0; k < 49; k++) {
+                            formationIntercale->prerequisEleve[i][k] = getchar();
+                            if(formationIntercale->prerequisEleve[i][k] == '\n') {
+                                formationIntercale->prerequisEleve[i][k] = '\0';
+                                break;
+                            }
+                            formationIntercale->prerequisEleve[i][49] = '\0';
+                        }
+                    }
+                } else {
+                    strcpy(formationIntercale->prerequisEleve[1], "Aucun prerequis demande\0")
+                }
 
                 for(i = 1; i <= formationIntercale->nombreAnneeFormation; i++) {     //Boucle pour parcourir les annees
                 	nouvelleFormation=malloc(sizeof(formation));
@@ -349,6 +390,16 @@ int main() {
                     strcpy(nouvelleFormation->idFormation, formationIntercale->idFormation);
                     nouvelleFormation->nombreAnneeFormation = formationIntercale->nombreAnneeFormation;
                     nouvelleFormation->maxEtudiant = formationIntercale->maxEtudiant;
+                    //Reattribution des prerequis prof
+                    strcpy(nouvelleFormation->prerequisProf[1], formationIntercale->prerequisProf[1]);
+                    strcpy(nouvelleFormation->prerequisEleve[1], formationIntercale->prerequisEleve[1]);
+                    for(j = 1; j <= formationIntercale->nombrePrerequisProf; j++) {
+                        strcpy(nouvelleFormation->prerequisProf[j], formationIntercale->prerequisProf[j]);
+                    }
+                    //Reattribution des prerequis eleves
+                    for(j = 1; j <= formationIntercale->nombrePrerequisEleve; j++) {
+                        strcpy(nouvelleFormation->prerequisEleve[j], formationIntercale->prerequisEleve[j]);
+                    }
 
                     // Creation id unique
                     // concatener dans un char : sprintf(<variable char>, <formatage comme printf>, <les valeurs>)
@@ -803,6 +854,55 @@ formation* initialisationFormation(int *nbFormation) {
     fclose(fdat2);
 }
 
+//Affiche les formations sans indiquer les annees
+void afficherListeFormationBase(formation *courant, int nombreFormation) {
+    formation *debut = malloc(sizeof(*debut));
+    formation *fSuite = malloc(sizeof(*fSuite));
+
+    debut = courant;
+
+    if(courant == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
+    int i, j, nombreFormationBase = 1, numero = 1, tmp;
+
+    //compter formation base differentes
+    for(i = 1; i < nombreFormation; i++) {
+        fSuite = courant->suivant;
+        if(strcmp(courant->idFormation, fSuite->idFormation) != 0) {
+            nombreFormationBase = nombreFormationBase + 1;
+        }
+        courant = fSuite;
+    }
+
+    courant = debut;    
+    printf("\n=========================================================================================================================\n");
+    printf("                                            Liste des formations disponibles\n");
+    printf("+--------+-------+------------------------------------------------------------------------------------------------------+\n");
+    printf("| Numero | ID    |  Nom                                                                                                 |\n");
+    printf("+--------+-------+------------------------------------------------------------------------------------------------------+\n");
+
+    //ecriture des formations bases
+    for(j = 0; j < nombreFormationBase; j++) {
+        
+        
+        printf("|   %02d   |  %-3s  | %-100s | \n", numero, courant->idFormation, courant->nomBase);
+        numero++;
+        tmp = courant->nombreAnneeFormation;
+        for(i = 0; i < tmp; i++) {
+            //avancer dans la liste
+            if(courant->suivant != NULL) {
+                courant = courant->suivant;
+            }
+        }
+    }
+    printf("+--------+-------+------------------------------------------------------------------------------------------------------+\n");
+    printf("\n=========================================================================================================================\n");
+
+}
+
+//Affiche les formations et toutes les annees qui les composent
 void afficherListeFormation(formation *courant, int nombreFormation) {
 
     formation *debut = malloc(sizeof(*debut));
@@ -868,7 +968,7 @@ void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formatio
         } else {
             courant = debut;
             //On se deplace jusqu a la bonne adresse
-            for(i = 1 < i < numIdASupprimer - 1; i++) {
+            for(i = 1; i < numIdASupprimer - 1; i++) {
                 courant = courant->suivant;
             }
 
@@ -929,12 +1029,4 @@ void supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, format
         free(aSupprimer);
         *nombreFormation = *nombreFormation - 1;
     }
-
-    /*if(numIdASupprimer != *nombreFormation) {
-                aSupprimer = courant->suivant;
-                courant->suivant = aSupprimer->suivant;
-                free(aSupprimer);
-    }*/
-    
-
 }
