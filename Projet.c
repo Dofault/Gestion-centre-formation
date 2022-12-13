@@ -381,10 +381,18 @@ int main() {
                             }
                             nouvelleFormation->cours[j][49] = '\0'; 
                         }
+
+                        printf("Combien d'heures par semaine ce cours est-il donne ? ");
+                        scanf("%d", &nouvelleFormation->nombreHeureCours[j]);
                         
                         
-                        // vu que le cours est creer il est dispo donc on met 0 dans deja donne
+                        //vu que le cours est creer il est dispo donc on met 0 dans deja donne
                         nouvelleFormation->coursDejaDonne[j]=0;
+                    }
+
+                    //TEST
+                    for(j = 1; j <= nouvelleFormation->nbCours; j++) {
+                        printf("%02d\n", nouvelleFormation->nombreHeureCours[j]);
                     }
 
                     printf("\n--------------------------------\n");
@@ -805,8 +813,32 @@ void ecrireFormation(formation *f) {
         fprintf(fres," %-50s", f->cours[x]);
     }
     for(x=1;x<= f->nbCours; x++) {
-        // ecriture coursDejaDonne[20][50]
         fprintf(fres,"%1d", f->coursDejaDonne[x]);
+    }
+
+    //Ecriture des prerequis eleve
+    fprintf(fres,"%1d", f->nombrePrerequisEleve);
+    if(f->nombrePrerequisEleve == 0) {
+        fprintf(fres,"%-49s", f->prerequisEleve[1]);
+    } else {
+        for(x = 1; x <= f->nombrePrerequisEleve; x++) {
+            fprintf(fres,"%-49s", f->prerequisEleve[x]);
+        }
+    }
+
+    //Ecriture des prerequis prof
+    fprintf(fres,"%1d" f->nombrePrerequisProf);
+    if(f->nombrePrerequisProf == 0) {
+        fprintf(fres,"%-80s", f->prerequisProf[1]);
+    } else {
+        for(x = 1; x <= f->nombrePrerequisProf; x++){
+            fprintf(fres,"%-80s", f->prerequisProf[x]);
+        }
+    }
+
+    //Ecriture des nombres d'heures de cours
+    for(x = 1; x <= f->nbCours; x++) {
+        fprintf(fres, "%02d", f->nombreHeureCours[x]);
     }
     
     fprintf(fres,"\n");
@@ -961,6 +993,32 @@ formation* initialisationFormation(int *nbFormation) {
 			fscanf(fdat2, "%1d", &courant->coursDejaDonne[i]);
 		}
 
+        //Ecriture des prerequis eleve
+        fscanf(fdat2,"%1d", &f->nombrePrerequisEleve);
+        if(f->nombrePrerequisEleve == 0) {
+            fscanf(fdat2,"%50s", f->prerequisEleve[1]);
+        } else {
+            for(x = 1; x <= f->nombrePrerequisEleve; x++) {
+                fscanf(fdat2,"%50s", f->prerequisEleve[x]);
+            }
+        }
+
+        //Ecriture des prerequis prof
+        fscanf(fdat2,"%1d", &f->nombrePrerequisProf);
+        if(f->nombrePrerequisProf == 0) {
+            fscanf(fdat2,"%81s", f->prerequisProf[1]);
+        } else {
+            for(x = 1; x <= f->nombrePrerequisProf; x++){
+                fscanf(fdat2,"%81s", f->prerequisProf[x]);
+            }
+        }
+
+        //Ecriture des nombres d'heures de cours
+        for(x = 1; x <= f->nbCours; x++) {
+            fscanf(fres, "%02d", f->nombreHeureCours[x]);
+        }
+
+        //lecture des 
         fSuivant = malloc(sizeof(*fSuivant));
         courant->suivant=fSuivant;
         *nbFormation = *nbFormation + 1;
@@ -968,6 +1026,7 @@ formation* initialisationFormation(int *nbFormation) {
    	  	courant=fSuivant;
         fscanf(fdat2, " "); // Lecture du saut de ligne
         fgets(courant->nomBase, 100, fdat2);
+
 	}
 
     //Attribution de NULL pour la dernière formation->suivant
