@@ -420,7 +420,7 @@ int main() {
                 queFaire = 1; // osef de la valeur tant que cest different de 0
                 while(queFaire != 0) {
                     // Choix de formations
-                    
+
                     afficherListeFormation(formationDebut, nbFormation);
 
                     printf("\nSelectionnez le numero d'une formation à consulter (0 pour retourner au menu principal) : ");
@@ -515,23 +515,8 @@ int main() {
             queFaire = 1; // osef de la valeur tant que cest different de 0
             while(queFaire != 0) {
 
-                // Choix de formations
-                printf("\n=======================================================================================================\n");
-                printf("                                 Choisissez une formation a consulter \n");
-                printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
-                printf("| Numero | Annee(s) | Etudiants | Nombre de cours | Nom de la formation\n");
-                printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
-
-                formationCourant=formationDebut;
-                for(i=1;i<=nbFormation;i++) {
-
-                    printf("|   %02d   | %2d /%2d   |   %2d/%2d   |       %2d        | %s\n", i, formationCourant->numeroAnnee, formationCourant->nombreAnneeFormation, formationCourant->nbEtudiant, formationCourant->maxEtudiant,
-                    formationCourant->nbCours, formationCourant->nomBase);
-                    printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
-
-
-                    formationCourant=formationCourant->suivant;
-                }
+                afficherListeFormation(formationDebut, nbFormation);
+                afficherListeFormationBase(formationDebut, nbFormation);
                 printf("\nSelectionnez le numero d'une formation (0 pour retourner au menu principal) : ");
                 scanf("%d", &queFaire);
 
@@ -956,8 +941,8 @@ formation* initialisationFormation(int *nbFormation) {
 
         fgets(courant->nomComplete, 102, fdat2);
         supprimerEspaceBlanc(courant->nomComplete);
-
 		fscanf(fdat2," %3s %5s %2d %2d %4d %4d %8f %2d %2d ", &courant->idFormation, &courant->idFormationAnnee, &courant->numeroAnnee, &courant->nbCours, &courant->maxEtudiant, &courant->nbEtudiant, &courant->prix, &courant->nombreAnneeFormation, &courant->numeroAnnee);
+
 		// Lecture de l'horaire, 7jours * 24h
         
 		for(i=1;i<= 7; i++) {
