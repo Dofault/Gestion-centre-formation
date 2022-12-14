@@ -795,7 +795,7 @@ void ecrireFormation(formation *f) {
     FILE *fres;
     fres=fopen("listeFormation.dat", "a");
 
-    printf("\nFormation en cours d'ajout : %s \n", f->nomBase);
+    //printf("\nFormation en cours d'ajout : %s \n", f->nomBase);
     int z, y, x;
 
     // nom, idFormation, idFormationAnnee, numeroAnnee, nbCours, maxEtudiant, nbEtudiant, prix, nombreAnneeFormation, numeroAnnee
