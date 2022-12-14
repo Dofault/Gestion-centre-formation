@@ -39,7 +39,7 @@ int main() {
     FILE *fres;
 
     /*------------------------------------------------------Declaration variable -------------------------------------------------------------------------*/
-    int valeurMenu, queFaire, i, x, y, z, j, k, l, tmpAnnee;
+    int valeurMenu, queFaire, i, x, y, z, j, k, l, tmpAnnee, numAffiche;
     //queFaire est une variable qui est modifiée par les fonctions : on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le main
     //numAffiche est une variable utilisee lors de la selection d'une formation pour la supprimer.
 
