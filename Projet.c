@@ -827,7 +827,7 @@ void ecrireFormation(formation *f) {
     }
 
     //Ecriture des prerequis prof
-    fprintf(fres,"%1d" f->nombrePrerequisProf);
+    fprintf(fres,"%1d", f->nombrePrerequisProf);
     if(f->nombrePrerequisProf == 0) {
         fprintf(fres,"%-80s", f->prerequisProf[1]);
     } else {
@@ -994,28 +994,28 @@ formation* initialisationFormation(int *nbFormation) {
 		}
 
         //Ecriture des prerequis eleve
-        fscanf(fdat2,"%1d", &f->nombrePrerequisEleve);
-        if(f->nombrePrerequisEleve == 0) {
-            fscanf(fdat2,"%50s", f->prerequisEleve[1]);
+        fscanf(fdat2,"%1d", &courant->nombrePrerequisEleve);
+        if(courant->nombrePrerequisEleve == 0) {
+            fscanf(fdat2,"%50s", courant->prerequisEleve[1]);
         } else {
-            for(x = 1; x <= f->nombrePrerequisEleve; x++) {
-                fscanf(fdat2,"%50s", f->prerequisEleve[x]);
+            for(x = 1; x <= courant->nombrePrerequisEleve; x++) {
+                fscanf(fdat2,"%50s", courant->prerequisEleve[x]);
             }
         }
 
         //Ecriture des prerequis prof
-        fscanf(fdat2,"%1d", &f->nombrePrerequisProf);
-        if(f->nombrePrerequisProf == 0) {
-            fscanf(fdat2,"%81s", f->prerequisProf[1]);
+        fscanf(fdat2,"%1d", &courant->nombrePrerequisProf);
+        if(courant->nombrePrerequisProf == 0) {
+            fscanf(fdat2,"%81s", courant->prerequisProf[1]);
         } else {
-            for(x = 1; x <= f->nombrePrerequisProf; x++){
-                fscanf(fdat2,"%81s", f->prerequisProf[x]);
+            for(x = 1; x <= courant->nombrePrerequisProf; x++){
+                fscanf(fdat2,"%81s", courant->prerequisProf[x]);
             }
         }
 
         //Ecriture des nombres d'heures de cours
-        for(x = 1; x <= f->nbCours; x++) {
-            fscanf(fres, "%02d", f->nombreHeureCours[x]);
+        for(x = 1; x <= courant->nbCours; x++) {
+            fscanf(fdat2, "%02d", courant->nombreHeureCours[x]);
         }
 
         //lecture des 
