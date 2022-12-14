@@ -69,6 +69,7 @@ int main() {
     void supprimerFormationAnnee(int , int *, formation *);
     formation* supprimerFormationEntiere(int , int *, formation *);
     void reinitialiserFormationDat();
+    formation* ajouterFormation(formation *, int *, int);
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*--------------------------------------------------------Lecture des fichiers .dat -----------------------------------------------------------------------*/
@@ -215,6 +216,10 @@ int main() {
         if(valeurMenu == 3) {   //Gestion formation et formateur
             // valeur possible menuGererFormation() :        1 : ajouter formation        2 : Supprimer formation      3 : afficher liste formation
             queFaire = menuGererFormation();
+//S'il te plait, n'utilise pas cette methode (goto) car elle fait perdre enormement en lisibilite.
+//Je l'utilise exceptionnellement car je ne pouvais pas sortir de l'ajout de formation avec un break ou un changement de condition (j'ai essaye mais sans succes)
+//C'est donc en dernier recours que j'utilise le goto. Mais j'insiste, ne l'utilise pas, s'il te plait. C'est pas une bonne pratique en general
+erreurID:
             if(queFaire == 1) {     //Ajouter formation
                 //allouer la mémoire
                 formationIntercale = malloc(sizeof(formation));
@@ -252,7 +257,16 @@ int main() {
                 }
 
                 formationIntercale->idFormation[3] = '\0';
-                //TODO : parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
+                
+                //parcourir les formation deja existante et verifier leur ID. Si l'ID choisi existe deja -> redemander l'entree d'un nv ID
+                formationSuivant = formationDebut;
+                for(i = 1; i < nbFormation; i++) {
+                    if(strcmp(formationSuivant->idFormation, formationIntercale->idFormation) == 0) {
+                        printf("Erreur : cet ID est deja utilise.\n");
+                        goto erreurID;
+                    }
+                    formationSuivant = formationSuivant->suivant;
+                }
 
                 printf("Combien d'etudiants sont autorises par annee ? : ");
                 scanf("%d", &formationIntercale->maxEtudiant);
@@ -940,7 +954,6 @@ etudiant* initialisationEtudiant(int *nbEtudiant) {
     return debut;
     fclose(fdat);
 }
-
 
 
 
