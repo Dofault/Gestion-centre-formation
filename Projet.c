@@ -2,7 +2,7 @@
 #include<string.h>
 #include<stdlib.h>      //Gestion de la mémoire avec malloc, free, ...
 
-//TODO : Verifier suppression des formations quand c'est premier et dernier
+//TODO : Finir l'appel de suppression des formations base
 //TODO : Vérifier les ID a l'encodage
 
 typedef struct etudiant {
@@ -34,39 +34,26 @@ typedef struct formation {
     struct formation *suivant;
 }formation;
 
+int main() {    
+    
+    FILE *fres;
 
-
-
-int main() {
-	
-    //Ouverture des fichiers *dat et *res
-    FILE *fdat, *fdat1, *fres, *fres1, *fres2;
-    fdat = fopen("listeEtudiant.dat","r");
-    fdat1 = fopen("listeFormateur.dat","r");
-
-    //Decl variables
+    /*------------------------------------------------------Declaration variable -------------------------------------------------------------------------*/
     int valeurMenu, queFaire, i, x, y, z, j, k, l, tmpAnnee, numAffiche;
     //queFaire est une variable qui est modifiée par les fonctions : on doit naviguer avec les menus, mais la lecture et l'écriture doit se faire dans le main
     //numAffiche est une variable utilisee lors de la selection d'une formation pour la supprimer.
 
-	
 	char temporaire[50]; // Variable temporaire pour creer nouvelleFormation->idFormationAnnee dans l'ajout formation
     char bufferNom[100];
 	int test; // Variable temporaire qu'on peut utiliser quand on veut
 	
-    // Var formation
-    int nbFormation=0;
+    // Var des structures
+    int nbFormation=0, nbEtudiant = 0, nbFormateur=0;
     formation *formationDebut, *formationCourant, *formationSuivant, *nouvelleFormation, *formationIntercale;
-    // Var etudiant
-    int nbEtudiant = 0;
     etudiant *etudiantDebut,*etudiantCourant,*etudiantSuivant,*etudiantIntercale, *etudiantNouveau;
-    // Var formateur
-    int nbFormateur=0;
     formateur *formateurDebut,*formateurCourant,*formateurSuivant,*formateurIntercale;
-    
-    /*------------------------------------------------------Fin declaration des variables----------------------------------------------------------------*/
-    /*------------------------------------------------------Debut declaration fonction ------------------------------------------------------------------*/
-    
+
+    /*------------------------------------------------------Declaration fonction ------------------------------------------------------------------------*/
     void changerMenu(int *);
     void menuConsulterHoraire();
     void ecrireFormation(formation *);
@@ -75,109 +62,33 @@ int main() {
     void supprimerEspaceBlanc(char[]);
     int gestionFormation();
     formation* initialisationFormation(int *);
+    etudiant* initialisationEtudiant(int *);
+    formateur* initialisationFormateur(int *);
     void afficherListeFormation(formation *, int);
     void afficherListeFormationBase(formation *, int);
     void supprimerFormationAnnee(int , int *, formation *);
+    formation* supprimerFormationEntiere(int , int *, formation *);
     void reinitialiserFormationDat();
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
-    /*--------------------------------------------------------Debut de la lecture -----------------------------------------------------------------------*/
-   
-	// LECTURE DES ETUDIANTS, VARIABLE PERTINENTE : nbEtudiant ET etudiantDebut pour les chaines
-	// -----------------------------------------------------------------------------------------
-	etudiantCourant=malloc(sizeof(etudiant));
-	etudiantDebut=etudiantCourant;
-	fscanf(fdat,"%30s", etudiantCourant->nom);
-	while(!feof(fdat)) {
-		fscanf(fdat," %30s %5s %2d %2d %4d %2d %8f %8f %8f", etudiantCourant->prenom, etudiantCourant->idFormationAnnee, 
-		&etudiantCourant->naissanceJour, &etudiantCourant->naissanceMois, &etudiantCourant->naissanceAnnee, &etudiantCourant->annee, &etudiantCourant->montantAPayer, 
-		&etudiantCourant->montantPaye, &etudiantCourant->reduction);
-	  	etudiantSuivant=malloc(sizeof(etudiant));
-	  	etudiantCourant->suivant=etudiantSuivant;
-	  	nbEtudiant++;
-   	  	etudiantCourant=etudiantSuivant;
-		fscanf(fdat,"%30s", etudiantCourant->nom);
-	}      
-	etudiantCourant=etudiantDebut;
-	for(i=0;i<nbEtudiant;i++) {
-		etudiantCourant=etudiantCourant->suivant;
-	}   
-	etudiantCourant->suivant=NULL;  // free(etudiantSuivant);
-	
-	
-	
-
-
-	// LECTURE DES FORMATEUR VARIABLE PERTINENTE : nbFormateur ET formateurDebut
-	// -------------------------------------------------------------------
-	formateurCourant=malloc(sizeof(formateur));
-	formateurDebut=formateurCourant;
-	fscanf(fdat1,"%30s", formateurCourant->nom);
-	while(!feof(fdat1)) {
-		fscanf(fdat1," %30s %2d %2d %4d %2d %2d ", formateurCourant->prenom, 
-		&formateurCourant->naissanceJour, &formateurCourant->naissanceMois, &formateurCourant->naissanceAnnee, &formateurCourant->niveauDiplome, 
-		&formateurCourant->nbTitre);
-		// Lecture de l'horaire
-		for(i=1;i<=7;i++) {
-			for(x=1;x<=24;x++) {
-				
-				fscanf(fdat1,"%1d", &formateurCourant->horaire[i][x]);
-			}
-		}
-		// Passage en revu de tout les titres du formateur
-		for(i=1;i<= formateurCourant->nbTitre; i++) {
-			// scan 100 caractere par nombre de titre
-			fscanf(fdat1," %100s", formateurCourant->titre[i]);
-		}
-	  	formateurSuivant=malloc(sizeof(formateur));
-	  	formateurCourant->suivant=formateurSuivant;
-	  	nbFormateur++;
-   	  	formateurCourant=formateurSuivant;
-		fscanf(fdat1,"%30s", formateurCourant->nom);
-	}
-	formateurCourant=formateurDebut;
-	for(i=0;i<nbFormateur;i++){
-		formateurCourant=formateurCourant->suivant;
-	}
-	formateurCourant->suivant=NULL;
-   
-   
-
-
-
-   
-	// LECTURE DES FORMATION, VARIABLE PERTINENTE : nbFormation ET formationDebut
-	// -------------------------------------------------------------------
+    /*--------------------------------------------------------Lecture des fichiers .dat -----------------------------------------------------------------------*/
+    formateurDebut = initialisationFormateur(&nbFormateur);
+    etudiantDebut = initialisationEtudiant(&nbEtudiant);
 	formationDebut = initialisationFormation(&nbFormation);
-    
-    //TEST
-    /*printf("%d\n", nbFormation);
-    formationCourant = formationDebut;
-    for(i = 1; i <= nbFormation; i++) {
-        printf("%-101s\n", formationCourant->nomComplete);
-        formationCourant = formationDebut;
-    }*/
-
-    //formationCourant = formationDebut;
-    /*while(formationCourant != NULL) {
-        printf("%-100s\n", formationCourant->nomComplete);
-        formationCourant = formationCourant->suivant;
-    }*/
    
-	fclose(fdat); 
-	fclose(fdat1); 
    
     // --------------------------------------------------------------------FIN DE LA LECTURE --------------------------------------------------------------------------
     // ---------------------------------------------------------------------LANCEMENT DU MENU -------------------------------------------------------------------------
     changerMenu(&valeurMenu);
     while(valeurMenu != 0) {
-        if(valeurMenu == 1) {
+
+        if(valeurMenu == 1) {//  --------------------------------------------------- MENU CONSULTER ----------------------------------------------------------------------------
             // consulter horaire
             menuConsulterHoraire();
         }
     
 
-        if(valeurMenu == 2) { // Menu Ajout étudiant
+        if(valeurMenu == 2) { //  --------------------------------------------------- MENU AJOUTER ETUDIANT ----------------------------------------------------------------------------
 
             // Valeur par defaut :
             etudiantNouveau = malloc(sizeof(etudiant));
@@ -197,7 +108,7 @@ int main() {
             while(formationCourant->numeroAnnee != 1) { // les annee > a 1 sont interdit donc le premier enregistrement doit pas etre > 1
                 formationCourant=formationCourant->suivant;
             }
-            for(i=0;i<nbFormation;i++) { // Pour chaque formation
+            for(i=2;i<nbFormation;i++) { // Pour chaque formation,   2 car on a deja fait le premier
                 if(x==0) { // si pas déjà présente dans la matrice (valeur : 0) on l'ajoute et on écris
                     if(formationCourant->maxEtudiant > formationCourant->nbEtudiant) { // Si place dispo on peut add la formation à la matrice et ecrire pour l'utilisateur
                         strcpy(matriceAffichageNomFormation[nbAffichageFormation], formationCourant->idFormationAnnee); // on met idFormationAnnee dans la matrice comme ça on la rajoutera après dans etudiant.idFormationAnnee
@@ -212,8 +123,9 @@ int main() {
                     }
                     printf("+--------+-------------------+-----------------------------------------------------------\n");
                 }
+                
                 formationCourant=formationCourant->suivant; // Formation suivante
-                while(formationCourant->numeroAnnee != 1  && i<nbFormation-1) { // Tant qu'on tombe pas sur une premiere annee on skip
+                while(formationCourant->numeroAnnee != 1  && i<nbFormation) { // Tant qu'on tombe pas sur une premiere annee on skip
                     formationCourant=formationCourant->suivant;
                     i++; // Incrementation i car elle est associe a la boucle jusque nbFormation
                 }
@@ -223,7 +135,7 @@ int main() {
                         x=1; // Si déjà présent x=1
                     }
                 }
-
+                
             }   
             printf("\nSelectionnez un numero de formation dans lequel vous souhaitez ajouter un nouvel etudiant (0 pour sortir) : ");
             scanf("%d", &x);
@@ -278,15 +190,19 @@ int main() {
                 printf("\n> Reduction  :            %8.2f\n", etudiantNouveau->reduction);
                 printf("=============================================\n");
 
+                //////////////////////////////////////////////////////
                 // AJOUT DE LETUDIANT A LA CHAINE                   //
                 etudiantCourant=etudiantDebut;                      //
-                for(i=1;i<= nbEtudiant; i++) {                      //
+                for(i=1;i<nbEtudiant;i++) {                         //
                     etudiantCourant= etudiantCourant->suivant;      //
+                                                                    //
                 }                                                   //
                 etudiantCourant->suivant=etudiantNouveau;           //
-                etudiantCourant= etudiantCourant-> suivant;         //
-                etudiantCourant->suivant = NULL;                    //
+                etudiantNouveau->suivant = NULL;                    //
+                etudiantCourant=etudiantCourant->suivant;           //
                 nbEtudiant++;                                       //
+                //////////////////////////////////////////////////////
+                
             }
             
 
@@ -346,13 +262,21 @@ int main() {
 
                 //TODO : Copier les prerequis prof et eleves dans toutes les annees de la formation
                 //Prerequis des profs
-                printf("Combien de titres seront necessaires a l'ensemble des enseignants de la formation ? ");
+                printf("\nCombien de titres seront necessaires a l'ensemble des enseignants de la formation ? ");
                 scanf("%d", &formationIntercale->nombrePrerequisProf);
 
+				//////////////////////////////////////////////////////////////////////////////////
+                // VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE   //
+                // COMME CA ON AJOUTE A LA SUITE TOUTES LES ANNEES dans la boucle               //
+                formationCourant=formationDebut;                                                //
+                for(i=1;i< nbFormation; i++) {                                                 //
+                    formationCourant= formationCourant->suivant;                                //
+                }                                                                               //
+                //////////////////////////////////////////////////////////////////////////////////
                 if(formationIntercale->nombrePrerequisProf != 0) {
-                    printf("Quel est l'ensemble des titres que les formateurs doivent avoir en possession pour enseigner dans cette formation ?");
+                    printf("Quel est l'ensemble des titres que les formateurs doivent avoir en possession pour enseigner dans cette formation ?\n");
                     for(i = 1; i <= formationIntercale->nombrePrerequisProf; i++) {
-                        printf("\nNom du prerequis %02d/%02d : ", i, formationIntercale->nombrePrerequisProf);
+                        printf("Nom du prerequis %02d/%02d : ", i, formationIntercale->nombrePrerequisProf);
                         scanf(" ");
                         for(k = 0; k < 80; k++) {
                             formationIntercale->prerequisProf[i][k] = getchar();
@@ -368,13 +292,13 @@ int main() {
                 }
 
                 //Prerequis des eleves
-                printf("Combien de titres seront necessaires a un etudiants pour s'inscire ? ");
+                printf("\nCombien de titres seront necessaires a un etudiants pour s'inscire ? ");
                 scanf("%d", &formationIntercale->nombrePrerequisEleve);
 
                 if(formationIntercale->nombrePrerequisEleve != 0) {
                     printf("Quels sont-ils ?\n");
                     for(i = 1; i <= formationIntercale->nombrePrerequisEleve; i++) {
-                        printf("\nNom du prerequis %02d/%02d : ", i, formationIntercale->nombrePrerequisEleve);
+                        printf("Nom du prerequis %02d/%02d : ", i, formationIntercale->nombrePrerequisEleve);
                         scanf(" ");
                         for(k = 0; k < 49; k++) {
                             formationIntercale->prerequisEleve[i][k] = getchar();
@@ -433,7 +357,7 @@ int main() {
                     }
 
                     //Prix
-                    printf("Quel est le prix d'inscription a cette annee de formation ? : ");
+                    printf("\nQuel est le prix d'inscription a cette annee de formation ? : ");
                     scanf("%f", &nouvelleFormation->prix);
 
                     //Gestion des cours
@@ -470,17 +394,14 @@ int main() {
                     // Ecriture
                     ecrireFormation(nouvelleFormation);
 
+                    ///AJOUT FORMATION A LA CHAINE////////////////////////
+                                                                        //
+                    formationCourant->suivant=nouvelleFormation;        //
+                    nouvelleFormation->suivant = NULL;                  //
+                    formationCourant=formationCourant->suivant;         //
+                    nbFormation++;                                      //
+                    //////////////////////////////////////////////////////
 
-                    //actualiser la liste chainee
-                    formationCourant = formationDebut;
-                    for(j = 1; j < nbFormation; j++) {
-                        formationCourant = formationCourant->suivant;
-                    }
-
-                    formationCourant->suivant = nouvelleFormation;
-                    nouvelleFormation->suivant = NULL;
-                    formationCourant = formationCourant->suivant;
-                    nbFormation++;
 
                     
                 }
@@ -489,19 +410,24 @@ int main() {
 
             }  
 
-
             if(queFaire == 2) {
                 // ****** A FAIRE : MENU POUR Supprimer UNE FORMATION ET DONC MODIFIER formationDAT ********
-                printf("Menu de suppression des formations\n");
-                printf("1 : Supprimer une annee\n");
-                printf("2 : Supprimer une formation complete\n");
-                printf("0 : Retour\n");
+                printf("+---------------------------------------+\n");
+                printf("| Menu de suppression des formations    |\n");
+                printf("+---+-----------------------------------+\n");
+                printf("| 1 | Supprimer une annee               |\n");
+                printf("+---+-----------------------------------+\n");
+                printf("| 2 | Supprimer une formation complete  |\n");
+                printf("+---+-----------------------------------+\n");
+                printf("| 0 | Retour                            |\n");
+                printf("+---+-----------------------------------+\n");
                 printf("Votre choix : ");
                 scanf("%d", &test);
                 while(test < 0 || test > 2) {
                     printf("Valeur incorrecte : ");
                     scanf("%d", &test);
                 }
+                printf("\n");
 
                 //Cas de suppression d'une annee uniquement
                 if(test == 1) {
@@ -529,6 +455,30 @@ int main() {
                         ecrireFormation(formationCourant);
                         formationCourant = formationCourant->suivant;
                     }
+                } else {
+                    //Cas de la suppression de la formation complete
+                    afficherListeFormationBase(formationDebut, nbFormation);
+                    printf("Veuillez entrer le numero correspondant a la formation que vous souhaitez supprimer : ");
+                    scanf("%d", &numAffiche);
+                    while(numAffiche < 0 || numAffiche > nbFormation) {
+                        printf("Valeur incorrecte : ");
+                        scanf("%d", &numAffiche);
+                    }
+
+                    //suppression
+                    formationDebut = supprimerFormationEntiere(numAffiche, &nbFormation, formationDebut);
+                    printf("Element supprime avec succes.\n");
+                    afficherListeFormationBase(formationDebut, nbFormation);
+
+                    //Reecrire le Dat
+                    reinitialiserFormationDat();
+
+                    //remplir avec nouvelles donnees
+                    formationCourant = formationDebut;
+                    for(i = 1; i <= nbFormation; i++){
+                        ecrireFormation(formationCourant);
+                        formationCourant = formationCourant->suivant;
+                    }
                 }
             }
 
@@ -541,33 +491,19 @@ int main() {
         }
     
 
-        if(valeurMenu == 4) { // Consulter les étudiants
+        if(valeurMenu == 4) { // //  --------------------------------------------------- MENU CONSULTER ETUDIANT ----------------------------------------------------------------------------
 
             queFaire = 1; // osef de la valeur tant que cest different de 0
             while(queFaire != 0) {
-                // Choix de formations
-                printf("\n=======================================================================================================\n");
-                printf("                                 Choisissez une formation a consulter \n");
-                printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
-                printf("| Numero | Annee(s) | Etudiants | Nombre de cours | Nom de la formation\n");
-                printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
 
-                formationCourant=formationDebut;
-                for(i=1;i<=nbFormation;i++) {
-
-                    printf("|   %02d   | %2d /%2d   |   %2d/%2d   |       %2d        | %s\n", i, formationCourant->numeroAnnee, formationCourant->nombreAnneeFormation, formationCourant->nbEtudiant, formationCourant->maxEtudiant,
-                    formationCourant->nbCours, formationCourant->nomBase);
-                    printf("+--------+----------+-----------+-----------------+-----------------------------------------------------\n");
-
-
-                    formationCourant=formationCourant->suivant;
-                }
+                afficherListeFormation(formationDebut, nbFormation);
+                afficherListeFormationBase(formationDebut, nbFormation);
                 printf("\nSelectionnez le numero d'une formation (0 pour retourner au menu principal) : ");
                 scanf("%d", &queFaire);
 
                 while(queFaire > nbFormation || queFaire < 0) {
                     printf("\nErreur, veuillez selectionner une formation entre 1 et %2d : ", nbFormation);
-                    scanf("%d", &x);
+                    scanf("%d", &queFaire);
                 }
                 if(queFaire != 0) { // si l'utilisateur a mit autre chose que 0 alors il veut selectionner une formation
 
@@ -605,7 +541,7 @@ int main() {
                             printf("===============================================================================================================================================\n");
                             printf("0 : Retour\n");
                             printf("1 : Supprimer un etudiant de la liste\n");
-                            printf("2 : Modifier un etudiant de la liste\n");
+                            printf("2 : Modifier un etudiant de la liste (fonctionnalite pas encore implemente)\n");
 
                             scanf("%d", &x); // x : choix de l'utilisateur (retour, supprimer ou modifier)
                             if(x == 0) { // si 0 alors l'utilisateur veut quitter menu
@@ -616,18 +552,53 @@ int main() {
 
                                 // SUPPRESSION ETUDIANT (si x=1)
                                 if(x == 1) { 
-                                    printf("Selectionnez le numero de l'etudiant a supprimer : ");
-                                    scanf("Choix : %d", z); // z = numero de l'etudiant a supprimer
+                                    printf("Selectionnez le numero de l'etudiant a supprimer : \nChoix (0 pour ne rien faire) :");
+                                    scanf("%d", &z); // z = numero de l'etudiant a supprimer
                                     // On repasse en revu les etudiant pour trouver celui a supprimer
                                     etudiantCourant = etudiantDebut;
-                                    for(y=1;y<= nbEtudiant; y++) {
+                                    if(z > 1) { // L'utilisateur veut supprimer l'etudiant z
+                                    
+                                        for(y=1;y<= nbEtudiant; y++) {
 
-                                        if(y == z) { // si on tombe sur l'etudiant que l'utilisateur veut supprimer alors on le supprime de la chaine
+                                            if(y == z) { // si on tombe sur l'etudiant que l'utilisateur veut supprimer alors on le supprime de la chaine
 
-                                            // TODO : ici il faut supprimer etudiantCourant de la chaine 
+                                                // TODO : ici il faut supprimer etudiantCourant de la chaine 
+
+                                                printf("*********************************************INFORMATION DE L'ETUDIANT SUPPRIME******************************************************************************\n");
+                                                printf("*| Numero | Date de naissance | Nom                           | Prenom                       | Montant a payer | reduction | Montant paye | Reste a payer |*\n");
+                                                printf("*|   %4d |    %02d/%02d/%04d     | %-30s|%-30s| %8.2f        | %8.2f  |    %8.2f  |    %8.2f   |*\n", 
+                                                y, etudiantCourant->naissanceJour, etudiantCourant->naissanceMois, etudiantCourant->naissanceAnnee, etudiantCourant->nom, etudiantCourant->prenom, etudiantCourant->montantAPayer, etudiantCourant->reduction,  etudiantCourant->montantPaye, (etudiantCourant->montantAPayer - etudiantCourant->montantPaye));
+                                                printf("*************************************************************************************************************************************************************");
+
+                                                etudiantIntercale->suivant=etudiantCourant->suivant;
+                                                free(etudiantCourant);
+                                                nbEtudiant--;
+                                                etudiantCourant=etudiantIntercale;
+                                            }
+                                            etudiantIntercale = etudiantCourant;
+                                            etudiantCourant=etudiantCourant->suivant; 
                                         }
-                                        etudiantIntercale = etudiantCourant;
-                                        etudiantCourant=etudiantCourant->suivant;
+                                    }
+
+                                    if(z==1) { // Si il veut supprimer le premier etudiant (etudiantDebut) c'est pas la meme facon que si c'etait en plein milieu d'une liste
+                                        etudiantIntercale=etudiantDebut;
+                                        etudiantDebut=etudiantDebut->suivant;
+                                        free(etudiantIntercale);
+                                        nbEtudiant--;
+                                    }
+
+                                    if( z > 0 ) {// si supperieur à 0 c'est qu'il y a eu une suppression donc on met à jour la liste d'étudiant
+
+
+                                        fres=fopen("listeEtudiant.dat", "w");
+                                        fclose(fres);
+
+                                        etudiantCourant=etudiantDebut;
+                                        for(y=1;y<=nbEtudiant;y++) {
+                                            ecrireEtudiant(etudiantCourant);
+                                            etudiantCourant=etudiantCourant->suivant; 
+                                        }
+                                    
                                     }
                                 }
 
@@ -659,15 +630,21 @@ int main() {
 
 //ChangerMenu
 void changerMenu(int *valeurMenu) {
-    
-    printf("Veuillez entrer la valeur correspondante au menu souhaite :\n");
-    printf("0 : Quitter\n");
-    printf("1 : Acceder aux horaires\n");
-    printf("2 : Ajouter un etudiant\n");
-    printf("3 : Gerer les formations ou les formateurs\n");
-    printf("4 : Consulter les etudiants\n");
-    printf("Votre choix : ");
 
+    printf("-+--------------------------------------------------------------+\n");
+    printf(" | Veuillez entrer la valeur correspondante au menu souhaite    |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 0 | Quitter                                                  |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 1 | Acceder aux horaires                                     |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 2 | Ajouter un etudiant                                      |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 3 | Gerer les formations ou les formateurs                   |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 4 | Consulter les etudiants                                  |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf("Votre choix : ");
     scanf("%d", &*valeurMenu);
 
     //Gestion d'erreur
@@ -676,6 +653,7 @@ void changerMenu(int *valeurMenu) {
         printf("Votre choix : ");
         scanf("%d", &*valeurMenu);
     }
+    printf("\n");
 
 }
 
@@ -713,11 +691,16 @@ void menuConsulterHoraire() {
 int menuGererFormation() {
     int valeurMenuFormation=-1;
     int queFaire = 0; //0 signifie ne rien faire.
-        
-    printf("Choix de la formation\n");
-    printf("0 : Quitter\n");
-    printf("1 : Acceder aux formations (ajouter, modifier, supprimer, afficher la liste)\n");
-    printf("2 : Acceder aux formateurs (ajouter, modifier, supprimer, afficher la liste)\n");
+
+    printf("+--------------------------------+\n");
+    printf("| Choix de la formation          |\n");
+    printf("+--------------------------------+\n");
+    printf("| 1 | Acceder aux formations     |\n");
+    printf("+--------------------------------+\n");
+    printf("| 2 | Acceder aux formateurs     |\n");
+    printf("+--------------------------------+\n");
+    printf("| 0 | Quitter                    |\n");
+    printf("+--------------------------------+\n");
     printf("Votre choix : ");
 
     scanf("%d", &valeurMenuFormation);
@@ -728,6 +711,8 @@ int menuGererFormation() {
         printf("Votre choix : ");
         scanf("%d", &valeurMenuFormation);
     }
+
+    printf("\n");
 
     if(valeurMenuFormation == 1) {
         queFaire = gestionFormation(); 
@@ -758,10 +743,16 @@ int menuGererFormation() {
 int gestionFormation() {
     int queFaire = 0;
     int menu;
-    printf("0 : Quitter\n");
-    printf("1. Ajouter une formation\n");
-    printf("2. Supprimer une formation\n");
-    printf("3. Afficher la liste des formations\n");
+    
+    printf("+---+-----------------------------------+\n");
+    printf("| 1 | Ajouter une formation             |\n");
+    printf("+---+-----------------------------------+\n");
+    printf("| 2 | Supprimer une formation           |\n");
+    printf("+---+-----------------------------------+\n");
+    printf("| 3 | Afficher la liste des formations  |\n");
+    printf("+---+-----------------------------------+\n");
+    printf("| 0 | Quitter                           |\n");
+    printf("+---+-----------------------------------+\n");
 
     printf("Votre choix : ");
     scanf("%d", &menu);
@@ -772,6 +763,7 @@ int gestionFormation() {
         scanf("%d", &menu);
     }
 
+    printf("\n");
     queFaire = menu;
     return queFaire;
 }
@@ -785,10 +777,6 @@ void ecrireEtudiant(etudiant *e) {
    e->nom, e->prenom, e->idFormationAnnee, e->naissanceJour, e->naissanceMois, e->naissanceAnnee, e->annee, e->montantAPayer, e->montantPaye, e->reduction);
    fclose(fres);
 }
-
-
-
-
 
 void ecrireFormation(formation *f) {
 
@@ -805,7 +793,7 @@ void ecrireFormation(formation *f) {
     // ecriture jour et semaine horaire
     for(z=1;z<=7;z++) {
         for(y=1;y<=24;y++) {
-                fprintf(fres,"%1d", f->horaire[z][y]);
+                fprintf(fres,"%02d", f->horaire[z][y]);
         }
     }
 
@@ -870,6 +858,92 @@ void supprimerEspaceBlanc(char *str)
     str[index + 1] = '\0';
 }
 
+
+
+formateur* initialisationFormateur(int *nbFormateur) {
+
+    FILE *fdat1;
+    fdat1=fopen("listeFormateur.dat", "r");
+
+    formateur *fSuivant;
+    formateur *debut=malloc(sizeof(*debut));
+    formateur *courant=malloc(sizeof(*courant));
+    debut = courant;
+
+    int i, x;
+
+
+    
+	fscanf(fdat1,"%30s", courant->nom);
+	while(!feof(fdat1)) {
+		fscanf(fdat1," %30s %2d %2d %4d %2d %2d ", courant->prenom, 
+		&courant->naissanceJour, &courant->naissanceMois, &courant->naissanceAnnee, &courant->niveauDiplome, 
+		&courant->nbTitre);
+		// Lecture de l'horaire
+		for(i=1;i<=7;i++) {
+			for(x=1;x<=24;x++) {
+				
+				fscanf(fdat1,"%1d", &courant->horaire[i][x]);
+			}
+		}
+		// Passage en revu de tout les titres du formateur
+		for(i=1;i<= courant->nbTitre; i++) {
+			// scan 100 caractere par nombre de titre
+			fscanf(fdat1," %100s", courant->titre[i]);
+		}
+	  	fSuivant=malloc(sizeof(formateur));
+	  	courant->suivant=fSuivant;
+	  	*nbFormateur= *nbFormateur+1;
+   	  	courant=fSuivant;
+		fscanf(fdat1,"%30s", courant->nom);
+	}
+	courant=debut;
+	for(i=0;i<*nbFormateur;i++){
+		courant=courant->suivant;
+	}
+	courant->suivant=NULL;
+    return debut;
+    fclose(fdat1);
+}
+
+
+etudiant* initialisationEtudiant(int *nbEtudiant) {
+
+    FILE *fdat;
+    fdat=fopen("listeEtudiant.dat", "r");
+
+    etudiant *eSuivant;
+    etudiant *debut = malloc(sizeof(*debut));
+    etudiant *courant = malloc(sizeof(*courant));
+    debut = courant;
+
+    int i, x;
+
+
+	fscanf(fdat,"%30s", courant->nom);
+	while(!feof(fdat)) {
+		fscanf(fdat," %30s %5s %2d %2d %4d %2d %8f %8f %8f", courant->prenom, courant->idFormationAnnee, 
+		&courant->naissanceJour, &courant->naissanceMois, &courant->naissanceAnnee, &courant->annee, &courant->montantAPayer, 
+		&courant->montantPaye, &courant->reduction);
+	  	eSuivant=malloc(sizeof(etudiant));
+	  	courant->suivant=eSuivant;
+	  	*nbEtudiant = *nbEtudiant + 1;
+   	  	courant=eSuivant;
+		fscanf(fdat,"%30s", courant->nom);
+	}      
+	courant=debut;
+	for(i=0;i<*nbEtudiant;i++) {
+		courant=courant->suivant;
+	}   
+	courant->suivant=NULL;  // free(eSuivant);
+
+    return debut;
+    fclose(fdat);
+}
+
+
+
+
 formation* initialisationFormation(int *nbFormation) {
     FILE *fdat2;
     fdat2 = fopen("listeFormation.dat","r");
@@ -895,7 +969,7 @@ formation* initialisationFormation(int *nbFormation) {
         // Lecture de l'horaire, 7jours * 24h
 		for(i=1;i<= 7; i++) {
 			for(x=1;x<=24;x++) {
-				fscanf(fdat2, "%1d", &courant->horaire[i][x]);
+				fscanf(fdat2, "%2d", &courant->horaire[i][x]);
 			}
 		}
         
@@ -1062,7 +1136,6 @@ void afficherListeFormation(formation *courant, int nombreFormation) {
 }
 
 //Supprime l'annee de formation indique.
-//!!!! TODO : !! actualiser le .dat en ecrivant la nouvelle liste !!
 void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formation *debut) {
     int i, nb;
     formation *aSupprimer = malloc(sizeof(*aSupprimer));
@@ -1122,7 +1195,7 @@ void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formatio
 //Supprimer une formation entiere : toutes les annees qui la composent
 //TODO : Prevoir cas premier a supprimer ou dernier
 //TODO : actualiser le .dat
-void supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, formation *debut) {
+formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, formation *debut) {
     int i, j, positionAvantFormation, nb;
     formation *aSupprimer = malloc(sizeof(*aSupprimer));
     formation *courant = malloc(sizeof(*courant));
@@ -1133,34 +1206,74 @@ void supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, format
 
     //recherche de l'id
     aSupprimer = debut;
-    for(i = 1; i < numIdASupprimer; i++) {
-        aSupprimer = aSupprimer->suivant;
+    courant = debut;
+    i = 1;
+    while(i != numIdASupprimer) {
+        aSupprimer = courant->suivant;
+        if(strcmp(courant->idFormation, aSupprimer->idFormation) != 0) {
+            i++;
+        }
+        courant = aSupprimer;
     }
+
     strcpy(id, aSupprimer->idFormation);
     nb = aSupprimer->nombreAnneeFormation;
 
-    //recherche de la premiere annee de la formation a supprimer
-    aSupprimer = debut;
-    i = 1;
-    while(strcmp(aSupprimer->idFormation, id) != 0) {
-        aSupprimer = aSupprimer->suivant;
-        i++;
-    }
-    i--;
-    positionAvantFormation = i;
+    //Cas ou la formation est la premiere
+    if(strcmp(id, debut->idFormation) == 0) {
+        //Nouveau debut
+        for(i = 1; i <= nb; i++) {
+            aSupprimer = aSupprimer->suivant;
+        }
 
-    //suppression
+        avant = aSupprimer;
+        aSupprimer = debut;
+        for(i=1; i <= nb; i++) {
+            courant = aSupprimer->suivant;
+            printf("Suppression de %-101s\n", aSupprimer->nomComplete);
+            free(aSupprimer);
+            aSupprimer = courant;
+            *nombreFormation = *nombreFormation - 1;
+        }
+
+        debut = avant;  //Nouveau debut
+
+
+    } else {
+        //Cas ou la formation n'est pas la premiere
+        //recherche de la premiere annee de la formation a supprimer
+        aSupprimer = debut;
+        i = 1;
+        while(strcmp(aSupprimer->idFormation, id) != 0) {
+            aSupprimer = aSupprimer->suivant;
+            i++;
+        }
+        i--;
+        positionAvantFormation = i;
+
+        //suppression
+        courant = debut;
+        for(i = 1; i < positionAvantFormation; i++) {
+            courant = courant->suivant;
+        }    
+
+        for(j = 1; j <= nb; j++) {
+            aSupprimer = courant->suivant;
+            courant->suivant = aSupprimer->suivant;
+            free(aSupprimer);
+            *nombreFormation = *nombreFormation - 1;
+        }
+    }
+
+    //S'assure que le dernier maillon soit NULL (si la derniere formation etait ciblee)
     courant = debut;
-    for(i = 1; i < positionAvantFormation; i++) {
+    for(i = 1; i < *nombreFormation; i++) {
         courant = courant->suivant;
-    }    
-
-    for(j = 1; j <= nb; j++) {
-        aSupprimer = courant->suivant;
-        courant->suivant = aSupprimer->suivant;
-        free(aSupprimer);
-        *nombreFormation = *nombreFormation - 1;
     }
+    courant->suivant = NULL;
+
+    return debut;
+
 }
 
 void reinitialiserFormationDat() {
