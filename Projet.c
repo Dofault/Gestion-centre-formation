@@ -19,6 +19,7 @@ typedef struct formateur {
     char prenom[30];    
     char titre[10][100];
     int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre, horaire[8][25];
+    char horaireId[8][25][6];
     struct formateur *suivant;
 }formateur;
 
