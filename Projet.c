@@ -72,7 +72,7 @@ int main() {
     void reinitialiserFormationDat();
     formation* ajouterFormation(formation *, int *, int);
     formateur* ajoutFormateur(formateur *, int *, formation *, int);
-    int verificationHoraire(formation *, int);
+    int verificationHoraire(formation *, int, formateur *);
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*--------------------------------------------------------Lecture des fichiers .dat -----------------------------------------------------------------------*/
@@ -1341,7 +1341,7 @@ void reinitialiserFormationDat() {
 
 formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, int nombreFormation) {
 
-    int verificationHoraire(formation*, int);
+    int verificationHoraire(formation*, int, formateur*);
 
     formation *fSuite;
     fSuite = malloc(sizeof(fSuite));
@@ -1516,8 +1516,11 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
             //Gestion de l'horaire
             while(accord == 0)  {
-                accord = verificationHoraire(fSuite, envie);
+                accord = verificationHoraire(fSuite, envie, nouveauFormateur);
             }
+
+            
+
         }
     }
     
@@ -1530,10 +1533,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 //S'en suit une comparaison avec l'horaire de la formation entree en argument
 //Si les plages horaires de la formation sont libres, alors on renvoie 1, sinon, 0
 //NOTE : Quand on renvoie 0, cette fonction est a nouveau appelee
-
-
-
-int verificationHoraire(formation *fSuite, int numeroCoursChoisi) {
+int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *formateurCourant) {
     int heureRestante, heureDonnee = 0, jour, heure, i;
 
     //Initialisation du nombre d'heure restante
@@ -1596,6 +1596,7 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi) {
         for(i = heure; i < heure + heureDonnee; i++) {
 
             fSuite->horaire[jour][i] = numeroCoursChoisi;
+            strcpy(formateurCourant->horaireId[jour][i], fSuite->idFormationAnnee);
 
         }
 
