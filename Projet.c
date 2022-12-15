@@ -2,8 +2,7 @@
 #include<string.h>
 #include<stdlib.h>      //Gestion de la mémoire avec malloc, free, ...
 
-//TODO : Finir l'appel de suppression des formations base
-//TODO : Vérifier les ID a l'encodage
+//TODO : Lire le nom et prenom des formateurs avec fgets au cas ou il y aie des espaces
 
 typedef struct etudiant {
     char nom[30];
@@ -18,10 +17,11 @@ typedef struct formateur {
     char nom[30];
     char prenom[30];    
     char titre[10][100];
+    char horaireId[8][25][6];
     int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre, horaire[8][25];
     struct formateur *suivant;
 }formateur;
-
+ 
 typedef struct formation {
     char nomBase[100], nomComplete[102], idFormation[4], idFormationAnnee[6];
     char cours[20][50];
@@ -58,9 +58,10 @@ int main() {
     void menuConsulterHoraire();
     void ecrireFormation(formation *);
     void ecrireEtudiant(etudiant *);
-    int menuGererFormation();
+    int menuGererFormateur();
     void supprimerEspaceBlanc(char[]);
     int gestionFormation();
+    int gestionFormateur();
     formation* initialisationFormation(int *);
     etudiant* initialisationEtudiant(int *);
     formateur* initialisationFormateur(int *);
@@ -70,6 +71,8 @@ int main() {
     formation* supprimerFormationEntiere(int , int *, formation *);
     void reinitialiserFormationDat();
     formation* ajouterFormation(formation *, int *, int);
+    formateur* ajoutFormateur(formateur *, int *, formation *, int);
+    int verificationHoraire(formation *, int);
 
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*--------------------------------------------------------Lecture des fichiers .dat -----------------------------------------------------------------------*/
@@ -275,8 +278,6 @@ erreurID:
                 printf("\nSur combien d'annee la formation s'etale-t-elle ? ");
                 scanf("%d", &formationIntercale->nombreAnneeFormation);
 
-                //TODO : Copier les prerequis prof et eleves dans toutes les annees de la formation
-                //Prerequis des profs
                 printf("\nCombien de titres seront necessaires a l'ensemble des enseignants de la formation ? ");
                 scanf("%d", &formationIntercale->nombrePrerequisProf);
 
@@ -425,8 +426,7 @@ erreurID:
 
             }  
 
-            if(queFaire == 2) {
-                // ****** A FAIRE : MENU POUR Supprimer UNE FORMATION ET DONC MODIFIER formationDAT ********
+            if(queFaire == 2) {     //Supprimer formation
                 printf("+---------------------------------------+\n");
                 printf("| Menu de suppression des formations    |\n");
                 printf("+---+-----------------------------------+\n");
@@ -497,8 +497,13 @@ erreurID:
                 }
             }
 
-            if(queFaire == 3) {
+            if(queFaire == 3) {     //Afficher les formations
                 afficherListeFormation(formationDebut, nbFormation);
+            }
+
+            if(queFaire == 4) {     //Ajouter formateur
+                formateurDebut = ajoutFormateur(formateurDebut, &nbFormateur, formationDebut, nbFormation);
+
             }
             
             // tache effectuee, on peut reset que faire
@@ -740,14 +745,49 @@ int menuGererFormation() {
     }
 
     if(valeurMenuFormation == 2) {
-        //TODO : prévoir ce cas
-        //Note : queFaire devra être différent de 0,1,2 et 3 car ces options sont déjà reprises dans le cas 1 et il faut que queFaire soit différent pour chaque
-        //option regroupée dans le main -->
-        //if(valeurMenu == X) {}
+        queFaire = gestionFormateur();
+        return queFaire;
 
         // ******* A FAIRE : Creer fonction gestionFormateur et renvoyer queFaire 3 valeurs différente (ajouter, modifier, supprimer formateur)
     }
 }
+
+
+//Est appelée depuis menuGererFormation()
+//Les valeurs possibles sont :
+// 1 : ajouter un formateur
+// 2 : supprimer un formateur
+// 3 : afficher la liste des formateurs
+int gestionFormateur() {
+
+    int queFaire = 0;
+    int menu;
+    
+    printf("+---+-----------------------------------+\n");
+    printf("| 1 | Ajouter un formateur              |\n");
+    printf("+---+-----------------------------------+\n");
+    printf("| 2 | Supprimer un formateur            |\n");
+    printf("+---+-----------------------------------+\n");
+    printf("| 3 | Afficher la liste des formateurs  |\n");
+    printf("+---+-----------------------------------+\n");
+    printf("| 0 | Quitter                           |\n");
+    printf("+---+-----------------------------------+\n");
+
+    printf("Votre choix : ");
+    scanf("%d", &menu);
+
+    while(menu < 0 || menu > 3) {
+        printf("Valeur incorrecte.\n");
+        printf("Votre choix : ");
+        scanf("%d", &menu);
+    }
+
+    printf("\n");
+    queFaire = menu + 3;
+    return queFaire;
+
+}
+
 
 
 //Est appelée depuis menuGererFormation()
@@ -833,7 +873,7 @@ void ecrireFormation(formation *f) {
     }
 
     //Ecriture des prerequis prof
-    //Si nombrePrerequisProf vaut 0, prerequisProfs[1] contient ce qui doit être ecrit
+    //Si nombrePrerequisProf vaut 0, prerequisProf[1] contient ce qui doit être ecrit
     fprintf(fres,"%1d", f->nombrePrerequisProf);
     if(f->nombrePrerequisProf == 0) {
         fprintf(fres,"%-80s", f->prerequisProf[1]);
@@ -1294,4 +1334,252 @@ void reinitialiserFormationDat() {
     FILE *fres;
     fres = fopen("listeFormation.dat","w");
     fclose(fres);
+}
+
+
+formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, int nombreFormation) {
+
+
+    formateur *nouveauFormateur;
+    nouveauFormateur = malloc(sizeof(nouveauFormateur));
+    formation *fSuite;
+    fSuite = malloc(sizeof(fSuite));
+
+    int i, j, choixDeFormation = 1, reponse, heureDebutIndisponibilite, heureFinIndisponibilite, jour, heure, nbHeure, accord = 0, envie = 1;
+    printf("Quel est votre nom ? ");
+    scanf(" "); //Absorbtion de newline
+    for(i = 0; i < 29; i++) {
+        nouveauFormateur->nom[i] = getchar();
+        if(nouveauFormateur->nom[i] == '\n') {
+            nouveauFormateur->nom[i] = '\0';
+            break;
+        }
+    }
+    nouveauFormateur->nom[29] = '\0';
+
+    printf("\nQuel est votre prenom ? ");
+    //scanf(" "); //Absorbtion de newline
+    for(i = 0; i < 29; i++) {
+        nouveauFormateur->prenom[i] = getchar();
+        if(nouveauFormateur->prenom[i] == '\n') {
+            nouveauFormateur->prenom[i] = '\0';
+            break;
+        }
+    }
+
+
+    //Gestion des indisponibilites
+    printf("Avez-vous des indisponibilites ? \n");
+    printf("0 : Non\n");
+    printf("1 : Oui\n");
+    printf("Votre reponse : ");
+    scanf("%d", &reponse);
+    while(reponse < 0 || reponse > 2) {
+        printf("\nReponse incorrecte. Essayez à nouveau : %d", &reponse);
+    }
+
+    //Initialisation de son horaire (disponible tout le temps dans un premier temps) 
+    for(i =1; i <=7; i++) {
+        for(j = 1; j <= 24; j++) {
+            nouveauFormateur->horaire[i][j] = 0;
+        }
+    }
+
+    //Selection du jour et ensuite des heures. Quand une indisponibilite est remplie
+    //on repropose la liste des jours. L'utilisateur peut choisir retour pour sortir de la boucle
+    reponse = 99;
+    while(reponse != 0) {
+        printf("Quel jour êtes-vous indisponible ?\n");
+        printf("1 : Lundi\n");
+        printf("2 : Mardi\n");
+        printf("3 : Mercredi\n");
+        printf("4 : Jeudi\n");
+        printf("5 : Vendredi\n");
+        printf("6 : Samedi\n");
+        printf("7 : Dimanche\n");
+        printf("0 : Retour\n");
+        printf("Votre reponse : ");
+        scanf("%d", &reponse);
+
+        //Verification reponse possible
+        while(reponse < 0 || reponse > 7) {
+            printf("\nJour incorrect, essayez a nouveau : ");
+            scanf("%d", &reponse); 
+        }
+
+        //debut de l'indisponibilite
+        printf("\nA partir de quelle heure etes-vous indisponible ? ");
+        scanf("%d", &heureDebutIndisponibilite);
+        while(heureDebutIndisponibilite < 0 || heureDebutIndisponibilite > 23) {
+            printf("\nHeure incorrect, essayez a nouveau : ");
+            scanf("%d", &heureDebutIndisponibilite);
+        }
+
+        //fin de l'indisponibilite.
+        //NOTE : Si l'utilisateur entre 10, alors on considere qu'il peut donner cours a 10h. Donc c'est [heureDeb, heureFin[
+        printf("\nA partir de quelle heure pourriez-vous reprendre votre activite ? ");
+        scanf("%d", &heureFinIndisponibilite);
+        while(heureFinIndisponibilite <= heureDebutIndisponibilite || heureFinIndisponibilite > 23 ) {
+            printf("\nHeure incorrect, essayez a nouveau : ");
+            scanf("%d", &heureFinIndisponibilite);
+        }
+
+        //Remplissage des indisponibilites
+        jour = reponse;
+        for(i = heureDebutIndisponibilite; i < heureFinIndisponibilite; i++) {
+            nouveauFormateur->horaire[jour][i] = -1;
+        }
+    }
+
+    while(choixDeFormation != 0 ) {
+
+        printf("Voici la liste des formations : \n");
+        afficherListeFormation(formationDebut, nombreFormation);
+        printf("0 : Retour\n");
+
+        //Prevention de mauvaise valeur
+        printf("\nVeuillez entrer le numero de la formation dans laquelle vous souhaitez enseigner : ");
+        scanf("%d", &choixDeFormation);
+        while(choixDeFormation < 0 || choixDeFormation > nombreFormation) {
+            printf("Valeur invalide.");
+            printf("\nVotre choix : ");
+            scanf("%d", &choixDeFormation);
+        }
+
+        //recuperation de la formation ciblee
+        fSuite = formationDebut;
+        for(i = 1; i < choixDeFormation; i++) {
+            fSuite = fSuite->suivant;
+        }
+
+        //Verification des prerequis
+        if(fSuite->nombrePrerequisProf > 0) {
+            printf("La formation necessite %1d prerequis pour y enseigner. \nVeuillez repondre a ces questions : ", fSuite->nombrePrerequisProf);
+            for(i = 1; i <= fSuite->nombrePrerequisProf; i++) {
+                printf("Possedez-vous : %-80s ?", fSuite->prerequisProf[i]);
+                printf("\n0 : Non");
+                printf("\n1 : Oui");
+                printf("\nVotre reponse : ");
+                scanf("%d", &reponse);
+                while(reponse < 0 || reponse > fSuite->nombrePrerequisProf) {
+                    printf("Reponse invalide.\n");
+                    printf("Votre reponse : ");
+                    scanf("%d", &reponse);
+                }
+
+                //reponse positive, on copie
+                if(reponse == 1) {
+                    strcpy(nouveauFormateur->titre[i], fSuite->prerequisProf[i]);
+                    nouveauFormateur->nbTitre = nouveauFormateur->nbTitre + 1;
+                } else {
+                    //Reponse negative, fin de la fonction et annulation de l'inscription du formateur
+                    printf("Vous ne remplissez pas les conditions d'inscription en tant que formateur.\n");
+                    printf("Nous vous souhaitons une bonne continuation.\n\n\n");
+                    return;
+                }
+            }
+        }
+
+        //Choix des cours donnes
+        //Affichage des cours pas encore donne
+        while(envie != 0) {
+            printf("Voici les cours disponibles pour cette formation : \n");
+            for(i = 1; i <= fSuite->nbCours; i++) {
+                if(fSuite->coursDejaDonne[i] == 0) {
+                    printf("%02d : %-49s\n", i, fSuite->cours[i]);
+                }
+            }
+
+            printf("0 : Retour\n");
+            printf("Votre choix : ");
+            scanf("%d", &envie);
+            while(envie < 0 || envie > fSuite->nbCours) {
+                printf("Choix incorrect. Essayer a nouveau : ");
+                scanf("%d", &envie);
+            }
+
+            //Gestion de l'horaire
+            while(accord == 0)  {
+                accord = verificationHoraire(fSuite, envie);
+            }
+        }
+    }
+    
+    return debut;
+}
+
+//fonction appelee dans ajouterFormateur
+//Le but de cette fonction est de demander a l'utilisateur un jour, une heure et une periode (1h, 2h, 3h, ...) pendant laquelle
+//il donne son cours.
+//S'en suit une comparaison avec l'horaire de la formation entree en argument
+//Si les plages horaires de la formation sont libres, alors on renvoie 1, sinon, 0
+//NOTE : Quand on renvoie 0, cette fonction est a nouveau appelee
+int verificationHoraire(formation *fSuite, int numeroCoursChoisi) {
+    int heureRestante, heureDonnee = 0, jour, heure, i;
+
+    //Initialisation du nombre d'heure restante
+    heureRestante = fSuite->nombreHeureCours[numeroCoursChoisi];
+
+    while(heureRestante != 0) {
+        printf("\nHeure(s) restante(s) pour ce cours : %02d\n", heureRestante - heureDonnee);
+        //Demander le jour et heures pendant lesquelles il donne cours.
+        printf("1 : Lundi\n");
+        printf("2 : Mardi\n");
+        printf("3 : Mercredi\n");
+        printf("4 : Jeudi\n");
+        printf("5 : Vendredi\n");
+        printf("6 : Samedi\n");
+        printf("7 : Dimanche\n");
+        printf("0 : Retour\n")
+        printf("Quel jour souhaiteriez-vous donne ce cours ? ");
+        scanf("%d", &jour);
+
+        while(jour < 0 || jour > 7) {
+            printf("\nJour incorrect, essayez a nouveau : ");
+            scanf("%d", &jour);
+        }
+
+        printf("A quelle heure souhaitez-vous commencer votre cours ? ");
+        scanf("%d", &heure);
+        while(heure < 0 || heure > 23 || fSuite->horaire[jour][heure] != 0) {   //3e condition : Verification qu'aucun cours ne soit deja donne ce jours, a cette heure la
+            printf("\nHeure incorrecte, essayez a nouveau : ");
+            scanf("%d", &heure);
+        }
+
+        printf("Pendant combien d'heure(s) durera votre session ? ");
+        scanf("%d", &heureDonnee);
+
+        while(heureDonnee < 0 || heureDonnee > heureRestante || heure + heureDonnee > 23) {
+            printf("Le nombre d'heure est incorrect");
+            scanf("%d", &heureDonnee);
+        }
+
+        //Verification horaire formation
+        for(i = heure; i < heure + heureDonnee; i++) {
+            if(fSuite->horaire[jour][i] != 0) {
+                printf("Erreur : conflit d'horaire dans la formation !\n");
+                return 0;
+            }
+        }
+
+        //Verification indisponibilite
+        for(i = heure; i < heure + heureDonnee; i++) {
+            if(horaire[jour][i] == -1) {
+                printf("Erreur : heure pendant une indisponibilite !\n");
+                return 0;
+            }
+        }
+
+        //Modification de l'horaire et du nombre d'heure restante
+        for(i = heure; i < heure + heureDonnee; i++) {
+            horaire[jour][i] = numeroCoursChoisi;
+            strcpy(horaireId[jour][i], fSuite->idFormation);
+        }
+        fsuite->coursDejaDonne[numeroCoursChoisi] = 1;
+        heureRestante = heureRestante - heureDonnee;
+        printf("Horaire mis a jour !\n");
+    }
+
+    return 1;
+
 }
