@@ -80,7 +80,9 @@ int main() {
     etudiantDebut = initialisationEtudiant(&nbEtudiant);
 	formationDebut = initialisationFormation(&nbFormation);
    
-   
+    formateurDebut = ajoutFormateur(formateurDebut, &nbFormateur, formationDebut, nbFormation);
+
+
     // --------------------------------------------------------------------FIN DE LA LECTURE --------------------------------------------------------------------------
     // ---------------------------------------------------------------------LANCEMENT DU MENU -------------------------------------------------------------------------
     changerMenu(&valeurMenu);
@@ -502,7 +504,7 @@ erreurID:
             }
 
             if(queFaire == 4) {     //Ajouter formateur
-                formateurDebut = ajoutFormateur(formateurDebut, &nbFormateur, formationDebut, nbFormation);
+                
 
             }
             
@@ -997,7 +999,6 @@ etudiant* initialisationEtudiant(int *nbEtudiant) {
 }
 
 
-
 formation* initialisationFormation(int *nbFormation) {
     FILE *fdat2;
     fdat2 = fopen("listeFormation.dat","r");
@@ -1250,6 +1251,7 @@ void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formatio
 //TODO : Prevoir cas premier a supprimer ou dernier
 //TODO : actualiser le .dat
 formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, formation *debut) {
+
     int i, j, positionAvantFormation, nb;
     formation *aSupprimer = malloc(sizeof(*aSupprimer));
     formation *courant = malloc(sizeof(*courant));
@@ -1339,11 +1341,11 @@ void reinitialiserFormationDat() {
 
 formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, int nombreFormation) {
 
+    int verificationHoraire(formation*, int);
 
-    formateur *nouveauFormateur;
-    nouveauFormateur = malloc(sizeof(nouveauFormateur));
     formation *fSuite;
     fSuite = malloc(sizeof(fSuite));
+    formateur *nouveauFormateur = malloc(sizeof(*nouveauFormateur));
 
     int i, j, choixDeFormation = 1, reponse, heureDebutIndisponibilite, heureFinIndisponibilite, jour, heure, nbHeure, accord = 0, envie = 1;
     printf("Quel est votre nom ? ");
@@ -1355,6 +1357,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
             break;
         }
     }
+    nouveauFormateur->nom[i] = '\0';
     nouveauFormateur->nom[29] = '\0';
 
     printf("\nQuel est votre prenom ? ");
@@ -1366,28 +1369,29 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
             break;
         }
     }
-
-
+    nouveauFormateur->prenom[i] = '\0';
+    nouveauFormateur->prenom[29] = '\0';
+    printf("%s", nouveauFormateur->prenom);
     //Gestion des indisponibilites
     printf("Avez-vous des indisponibilites ? \n");
     printf("0 : Non\n");
     printf("1 : Oui\n");
     printf("Votre reponse : ");
     scanf("%d", &reponse);
+
     while(reponse < 0 || reponse > 2) {
         printf("\nReponse incorrecte. Essayez à nouveau : %d", &reponse);
     }
 
     //Initialisation de son horaire (disponible tout le temps dans un premier temps) 
     for(i =1; i <=7; i++) {
-        for(j = 1; j <= 24; j++) {
-            nouveauFormateur->horaire[i][j] = 0;
+        for(j = 0; j <= 23; j++) {
+            strcpy(nouveauFormateur->horaireId[i][j], "RIENN"); // j'ai mis un deuxieme N comme ca on sait que les id font TOUS 5 caracteres, idee pas ouf peut etre
         }
     }
 
     //Selection du jour et ensuite des heures. Quand une indisponibilite est remplie
     //on repropose la liste des jours. L'utilisateur peut choisir retour pour sortir de la boucle
-    reponse = 99;
     while(reponse != 0) {
         printf("Quel jour êtes-vous indisponible ?\n");
         printf("1 : Lundi\n");
@@ -1397,10 +1401,11 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
         printf("5 : Vendredi\n");
         printf("6 : Samedi\n");
         printf("7 : Dimanche\n");
-        printf("0 : Retour\n");
         printf("Votre reponse : ");
         scanf("%d", &reponse);
+        if(reponse != 0) {
 
+        
         //Verification reponse possible
         while(reponse < 0 || reponse > 7) {
             printf("\nJour incorrect, essayez a nouveau : ");
@@ -1410,6 +1415,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
         //debut de l'indisponibilite
         printf("\nA partir de quelle heure etes-vous indisponible ? ");
         scanf("%d", &heureDebutIndisponibilite);
+
         while(heureDebutIndisponibilite < 0 || heureDebutIndisponibilite > 23) {
             printf("\nHeure incorrect, essayez a nouveau : ");
             scanf("%d", &heureDebutIndisponibilite);
@@ -1419,6 +1425,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
         //NOTE : Si l'utilisateur entre 10, alors on considere qu'il peut donner cours a 10h. Donc c'est [heureDeb, heureFin[
         printf("\nA partir de quelle heure pourriez-vous reprendre votre activite ? ");
         scanf("%d", &heureFinIndisponibilite);
+
         while(heureFinIndisponibilite <= heureDebutIndisponibilite || heureFinIndisponibilite > 23 ) {
             printf("\nHeure incorrect, essayez a nouveau : ");
             scanf("%d", &heureFinIndisponibilite);
@@ -1427,8 +1434,13 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
         //Remplissage des indisponibilites
         jour = reponse;
         for(i = heureDebutIndisponibilite; i < heureFinIndisponibilite; i++) {
-            nouveauFormateur->horaire[jour][i] = -1;
+            strcpy(nouveauFormateur->horaireId[jour][i], "INDSP");
         }
+
+        printf("Avez-vous d'autres indisponibilite ? (0 : Oui, 1: non) : ");
+        scanf("%d", &reponse);
+        }
+
     }
 
     while(choixDeFormation != 0 ) {
@@ -1440,6 +1452,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
         //Prevention de mauvaise valeur
         printf("\nVeuillez entrer le numero de la formation dans laquelle vous souhaitez enseigner : ");
         scanf("%d", &choixDeFormation);
+
         while(choixDeFormation < 0 || choixDeFormation > nombreFormation) {
             printf("Valeur invalide.");
             printf("\nVotre choix : ");
@@ -1451,6 +1464,8 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
         for(i = 1; i < choixDeFormation; i++) {
             fSuite = fSuite->suivant;
         }
+        printf("Vous avez selectionne %s\n", fSuite->nomComplete);
+        
 
         //Verification des prerequis
         if(fSuite->nombrePrerequisProf > 0) {
@@ -1461,7 +1476,8 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
                 printf("\n1 : Oui");
                 printf("\nVotre reponse : ");
                 scanf("%d", &reponse);
-                while(reponse < 0 || reponse > fSuite->nombrePrerequisProf) {
+                
+                while(reponse < 0 || reponse > 1) {
                     printf("Reponse invalide.\n");
                     printf("Votre reponse : ");
                     scanf("%d", &reponse);
@@ -1479,7 +1495,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
                 }
             }
         }
-
+        
         //Choix des cours donnes
         //Affichage des cours pas encore donne
         while(envie != 0) {
@@ -1514,14 +1530,19 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 //S'en suit une comparaison avec l'horaire de la formation entree en argument
 //Si les plages horaires de la formation sont libres, alors on renvoie 1, sinon, 0
 //NOTE : Quand on renvoie 0, cette fonction est a nouveau appelee
+
+
+
 int verificationHoraire(formation *fSuite, int numeroCoursChoisi) {
     int heureRestante, heureDonnee = 0, jour, heure, i;
 
     //Initialisation du nombre d'heure restante
     heureRestante = fSuite->nombreHeureCours[numeroCoursChoisi];
 
-    while(heureRestante != 0) {
-        printf("\nHeure(s) restante(s) pour ce cours : %02d\n", heureRestante - heureDonnee);
+    while(heureRestante > 0) {
+
+
+        printf("\nHeure(s) restante(s) pour ce cours : %02d\n", heureRestante);
         //Demander le jour et heures pendant lesquelles il donne cours.
         printf("1 : Lundi\n");
         printf("2 : Mardi\n");
@@ -1530,10 +1551,10 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi) {
         printf("5 : Vendredi\n");
         printf("6 : Samedi\n");
         printf("7 : Dimanche\n");
-        printf("0 : Retour\n")
+        printf("0 : Retour\n");
         printf("Quel jour souhaiteriez-vous donne ce cours ? ");
         scanf("%d", &jour);
-
+        
         while(jour < 0 || jour > 7) {
             printf("\nJour incorrect, essayez a nouveau : ");
             scanf("%d", &jour);
@@ -1562,9 +1583,10 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi) {
             }
         }
 
+
         //Verification indisponibilite
         for(i = heure; i < heure + heureDonnee; i++) {
-            if(horaire[jour][i] == -1) {
+            if(fSuite->horaire[jour][i] == -1) {
                 printf("Erreur : heure pendant une indisponibilite !\n");
                 return 0;
             }
@@ -1572,10 +1594,13 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi) {
 
         //Modification de l'horaire et du nombre d'heure restante
         for(i = heure; i < heure + heureDonnee; i++) {
-            horaire[jour][i] = numeroCoursChoisi;
-            strcpy(horaireId[jour][i], fSuite->idFormation);
+
+            fSuite->horaire[jour][i] = numeroCoursChoisi;
+
         }
-        fsuite->coursDejaDonne[numeroCoursChoisi] = 1;
+
+        
+        fSuite->coursDejaDonne[numeroCoursChoisi] = 1;
         heureRestante = heureRestante - heureDonnee;
         printf("Horaire mis a jour !\n");
     }
