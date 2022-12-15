@@ -216,9 +216,10 @@ int main() {
         if(valeurMenu == 3) {   //Gestion formation et formateur
             // valeur possible menuGererFormation() :        1 : ajouter formation        2 : Supprimer formation      3 : afficher liste formation
             queFaire = menuGererFormation();
+
 //S'il te plait, n'utilise pas cette methode (goto) car elle fait perdre enormement en lisibilite.
-//Je l'utilise exceptionnellement car je ne pouvais pas sortir de l'ajout de formation avec un break ou un changement de condition (j'ai essaye mais sans succes)
-//C'est donc en dernier recours que j'utilise le goto. Mais j'insiste, ne l'utilise pas, s'il te plait. C'est pas une bonne pratique en general
+//Je l'utilise exceptionnellement car je ne pouvais pas sortir de l'ajout de formation avec un break ou un changement de condition (j'ai essaye, mais sans succes)
+//C'est donc en dernier recours que j'utilise le goto. Mais j'insiste, ne l'utilise pas, s'il te plait. C'est pas une bonne pratique en general (selon internet en tout cas)
 erreurID:
             if(queFaire == 1) {     //Ajouter formation
                 //allouer la mémoire
