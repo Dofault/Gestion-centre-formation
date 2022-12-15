@@ -74,6 +74,9 @@ int main() {
     formateur* ajoutFormateur(formateur *, int *, formation *, int);
     int verificationHoraire(formation *, int, formateur *);
 
+    void afficherHoraireFormation(formation *);
+    //void afficherHoraireFormateur(formateur *, formation*, int);
+
     /*------------------------------------------------------Fin declaration des fonctions ---------------------------------------------------------------*/
     /*--------------------------------------------------------Lecture des fichiers .dat -----------------------------------------------------------------------*/
     formateurDebut = initialisationFormateur(&nbFormateur);
@@ -82,6 +85,8 @@ int main() {
    
     formateurDebut = ajoutFormateur(formateurDebut, &nbFormateur, formationDebut, nbFormation);
 
+
+    //afficherHoraireFormateur(formateurDebut, formationDebut, nbFormation);
 
     // --------------------------------------------------------------------FIN DE LA LECTURE --------------------------------------------------------------------------
     // ---------------------------------------------------------------------LANCEMENT DU MENU -------------------------------------------------------------------------
@@ -369,7 +374,7 @@ erreurID:
 
                     //grille horaire
                     for(k = 1; k <= 7; k ++) {
-                        for(l = 1; l <= 24; l++) {
+                        for(l = 0; l <= 23; l++) {
                             nouvelleFormation->horaire[k][l] = 0;
                         }
                     }
@@ -650,6 +655,7 @@ erreurID:
 }   // -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_   FIN  DU  PROGRAMME MAIN -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 
+
 //ChangerMenu
 void changerMenu(int *valeurMenu) {
 
@@ -849,7 +855,7 @@ void ecrireFormation(formation *f) {
     
     // ecriture jour et semaine horaire
     for(z=1;z<=7;z++) {
-        for(y=1;y<=24;y++) {
+        for(y=0;y<=23;y++) {
                 fprintf(fres,"%02d", f->horaire[z][y]);
         }
     }
@@ -916,6 +922,75 @@ void supprimerEspaceBlanc(char *str)
 }
 
 
+/*
+void afficherHoraireFormateur(formateur *formateurCourant, formation *formationDebut, int nbFormation) {
+    
+
+    formation *formationCourant = malloc(sizeof(*formationCourant));
+
+    int i, j, x;
+
+
+
+    printf("|----------+----------+----------+----------+----------+----------+----------+----------|\n");
+    printf("|  Heure   |  Lundi   |   Mardi  |  Mecredi |  Jeudi   | Vendredi |  Samedi  | Dimanche |\n");
+    printf("|----------+----------+----------+----------+----------+----------+----------+----------|");
+
+    for(j=0;j<= 23; j++) {
+        printf("\n|   %02dh00  |", j);
+        for(i=1;i<=7;i++) {
+            if(formateurCourant->horaire[i][j] != 0) {
+
+                printf("    %02d    |", formateurCourant->horaire[i][j]);
+
+
+            }
+            else
+            {
+                printf("    --    |", formationCourant->horaire[i][j]);
+            }
+        }
+    }
+
+    printf("\n|----------+----------+----------+----------+----------+----------+----------+----------|");
+    printf("\n");
+}
+*/
+void afficherHoraireFormation(formation *formationCourant){
+    
+    int i, j, x;
+
+
+
+    printf("|----------+----------+----------+----------+----------+----------+----------+----------|\n");
+    printf("|  Heure   |  Lundi   |   Mardi  |  Mecredi |  Jeudi   | Vendredi |  Samedi  | Dimanche |\n");
+    printf("|----------+----------+----------+----------+----------+----------+----------+----------|");
+
+    for(j=0;j<= 23; j++) {
+        
+        printf("\n|   %02dh00  |", j);
+        for(i=1;i<=7;i++) {
+            if(formationCourant->horaire[i][j] != 0) {
+                printf("    %02d    |", formationCourant->horaire[i][j]);
+            }
+            else
+            {
+                printf("    --    |", formationCourant->horaire[i][j]);
+            }
+            
+        }
+    }
+    printf("\n|----------+----------+----------+----------+----------+----------+----------+----------|");
+
+    for(j=1;j<=formationCourant->nbCours; j++) {
+        if((j-1) %3 == 0) { // 3 enregistrement par ligne
+            printf("\n");
+        }
+        printf("%2d : %-s, ", j, formationCourant->cours[j]);
+    }
+    printf("\n");
+
+}
 
 formateur* initialisationFormateur(int *nbFormateur) {
 
@@ -938,7 +1013,7 @@ formateur* initialisationFormateur(int *nbFormateur) {
 		&courant->nbTitre);
 		// Lecture de l'horaire
 		for(i=1;i<=7;i++) {
-			for(x=1;x<=24;x++) {
+			for(x=0;x<=23;x++) {
 				
 				fscanf(fdat1,"%1d", &courant->horaire[i][x]);
 			}
@@ -1023,7 +1098,7 @@ formation* initialisationFormation(int *nbFormation) {
 
         // Lecture de l'horaire, 7jours * 24h
 		for(i=1;i<= 7; i++) {
-			for(x=1;x<=24;x++) {
+			for(x=0;x<=23;x++) {
 				fscanf(fdat2, "%2d", &courant->horaire[i][x]);
 			}
 		}
@@ -1032,6 +1107,7 @@ formation* initialisationFormation(int *nbFormation) {
 		for(i=1;i<=courant->nbCours; i++) {
             fscanf(fdat2, " ");
             fgets(courant->cours[i], 50, fdat2);
+            supprimerEspaceBlanc(courant->cours[i]);
 		}
 
         // Lecture des cours deja donnee
