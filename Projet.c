@@ -944,9 +944,10 @@ formateur* initialisationFormateur(int *nbFormateur) {
 		}
 
         //TEST
+        printf("%-30s %-30s %02d/%02d/%4d %02d\n", courant->nom, courant->prenom, courant->naissanceJour, courant->naissanceMois, courant->naissanceAnnee, courant->nbTitre);
         for(i=1; i<=22; i++){
             for(x = 1; x<=7; x++) {
-                printf("%6s ", courant->horaireId[x][i]);
+                printf("%5s ", courant->horaireId[x][i]);
             }
             printf("\n");
         }
@@ -1358,7 +1359,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
     void ecrireFormateur(formateur *);
 
-    int i, j, choixDeFormation = 1, reponse, heureDebutIndisponibilite, heureFinIndisponibilite, jour, heure, nbHeure, accord = 0, envie = 1;
+    int i, j, x, choixDeFormation = 1, reponse, heureDebutIndisponibilite, heureFinIndisponibilite, jour, heure, nbHeure, accord = 0, envie = 1;
     int tmpJourN, tmpMoisN, tmpAnneeN;
 
     printf("Quel est votre nom ? ");
@@ -1386,21 +1387,21 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     printf("\nInformation date de naissance : \n");
     //Entree de annee + controle de donnees
     printf("> Annee : "); 
-    scanf("%d", &tmpAnneeN);
+    scanf(" %d", &tmpAnneeN);
     while(tmpAnneeN < 1932 || tmpAnneeN > 2004) {
         printf("Annee incorrecte : ");
         scanf(" %d", &tmpAnneeN);
     }
     //Entree du mois + controle de donnees
     printf("> Mois de naissance : "); 
-    scanf("%d", &tmpMoisN);
+    scanf(" %d", &tmpMoisN);
     while(tmpMoisN < 1 || tmpMoisN > 12) {
         printf("Mois incorrect : ");
         scanf(" %d", &tmpMoisN);
     }
     //Entree du jour + controle de donnees
     printf("> Jour de naissance : "); 
-    scanf("%d", &tmpJourN);
+    scanf(" %d", &tmpJourN);
     while(tmpJourN < 1 || tmpJourN > 31) {
         printf("Annee incorrecte : ");
         scanf(" %d", &tmpJourN);
@@ -1420,7 +1421,13 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     for(i = 1; i <= 7; i++) {
         for(j = 1; j <= 24; j++) {
             //nouveauFormateur->horaire[i][j] = 0;
-            strcpy(nouveauFormateur->horaireId[i][j], "AUCUN\0");
+            //strcpy(nouveauFormateur->horaireId[i][j], "AUCUN\0");
+            nouveauFormateur->horaireId[i][j][0] = 'A';
+            nouveauFormateur->horaireId[i][j][1] = 'U';
+            nouveauFormateur->horaireId[i][j][2] = 'C';
+            nouveauFormateur->horaireId[i][j][3] = 'U';
+            nouveauFormateur->horaireId[i][j][4] = 'N';
+            nouveauFormateur->horaireId[i][j][5] = '\0';
         }
     }
 
@@ -1575,6 +1582,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
             if(envie != 0 && envie != 999) {
                 //Gestion de l'horaire
+                accord = 0;
                 while(accord == 0)  {
                     accord = verificationHoraire(fSuite, envie, nouveauFormateur);
                 }
