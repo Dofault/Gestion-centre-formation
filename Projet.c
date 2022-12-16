@@ -1278,7 +1278,7 @@ formateur* initialisationFormateur(int *nbFormateur) {
         
 		for(i=1;i<=7;i++) {
 			for(x=1;x<=22;x++) {
-                fgets(courant->horaireId[i][x], 5, fdat1);	
+                fgets(courant->horaireId[i][x], 6, fdat1);	
 			}
 		}
 
