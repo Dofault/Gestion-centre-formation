@@ -16,8 +16,7 @@ typedef struct etudiant {
 typedef struct formateur {
     char nom[30];
     char prenom[30];    
-    char titre[10][100];
-    char horaireId[8][23][6];
+    char titre[10][100], horaireId[8][23][6], horaireLun[23][6];
     int naissanceJour, naissanceMois, naissanceAnnee, nbTitre; 
     //int horaire[8][23];
     struct formateur *suivant;
@@ -503,9 +502,9 @@ erreurID:
                 afficherListeFormation(formationDebut, nbFormation);
             }
 
-            if(queFaire == 4) {     //Ajouter formateur
-                formateurDebut = ajoutFormateur(formateurDebut, &nbFormateur, formationDebut, nbFormation);
+            if(queFaire == 4) {     //Ajouter formateur 
 
+                formateurDebut = ajoutFormateur(formateurDebut, &nbFormateur, formationDebut, nbFormation);
             }
             
             // tache effectuee, on peut reset que faire
@@ -951,17 +950,17 @@ formateur* initialisationFormateur(int *nbFormateur) {
 		}
 
         //TEST
-        printf("%-30s %-30s %02d/%02d/%4d %02d\n", courant->nom, courant->prenom, courant->naissanceJour, courant->naissanceMois, courant->naissanceAnnee, courant->nbTitre);
-        for(i=1; i<=22; i++){
-            for(x = 1; x<=7; x++) {
-                printf("%5s ", courant->horaireId[x][i]);
-            }
-            printf("\n");
-        }
-        for(i=1;i<= courant->nbTitre; i++) {
-			// scan 100 caractere par nombre de titre
-            printf("%-100s\n", courant->titre[i]);
-		}        
+        // printf("%-30s %-30s %02d/%02d/%4d %02d\n", courant->nom, courant->prenom, courant->naissanceJour, courant->naissanceMois, courant->naissanceAnnee, courant->nbTitre);
+        // for(i=1; i<=22; i++){
+        //     for(x = 1; x<=7; x++) {
+        //         printf("%5s ", courant->horaireId[x][i]);
+        //     }
+        //     printf("\n");
+        // }
+        // for(i=1;i<= courant->nbTitre; i++) {
+		// 	// scan 100 caractere par nombre de titre
+        //     printf("%-100s\n", courant->titre[i]);
+		// }        
 
 	  	fSuivant=malloc(sizeof(formateur));
 	  	courant->suivant=fSuivant;
@@ -1425,13 +1424,12 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
     printf("TEST 1\n");
     //Initialisation de son horaire (disponible tout le temps dans un premier temps) 
-    /*for(i = 1; i <= 7; i++) {
-        for(j = 1; j <= 22; j++) {
+    for(i = 0; i <= 7; i++) {
+        for(j = 0; j <= 22; j++) {
             //nouveauFormateur->horaire[i][j] = 0;
-            strcpy(nouveauFormateur->horaireId[i][j], "AUCUN");
-            nouveauFormateur->horaireId[i][j][5] = '\0';
+            strcpy(nouveauFormateur->horaireLun[i], "AUCUN\0");
         }
-    }*/
+    }
 
     printf("TEST 2\n");
 
