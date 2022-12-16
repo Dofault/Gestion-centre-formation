@@ -864,6 +864,8 @@ void afficherListeEtudiant(formation *formationCourant, etudiant *etudiantDebut,
     }
 }
 
+
+//ChangerMenu
 void changerMenu(int *valeurMenu) {
 
     printf("-+--------------------------------------------------------------+\n");
@@ -894,6 +896,7 @@ void changerMenu(int *valeurMenu) {
 
 }
 
+
 void menuConsulterHoraire() {
     int valeurMenuHoraire=-1;
         
@@ -920,11 +923,11 @@ void menuConsulterHoraire() {
     //Et ainsi de suite
 }
 
+// Les valeurs possible de retour :
+// 1 : ajouter formation
+// 2 : modifier formation
+// 3 : afficher liste formation
 int menuGererFormation() {
-    // Les valeurs possible de retour :
-    // 1 : ajouter formation
-    // 2 : modifier formation
-    // 3 : afficher liste formation
     int valeurMenuFormation=-1;
     int queFaire = 0; //0 signifie ne rien faire.
 
@@ -968,12 +971,14 @@ int menuGererFormation() {
     }
 }
 
+
+//Est appelée depuis menuGererFormation()
+//Les valeurs possibles sont :
+// 1 : ajouter un formateur
+// 2 : supprimer un formateur
+// 3 : afficher la liste des formateurs
 int gestionFormateur() {
-    //Est appelée depuis menuGererFormation()
-    //Les valeurs possibles sont :
-    // 1 : ajouter un formateur
-    // 2 : supprimer un formateur
-    // 3 : afficher la liste des formateurs
+
     int queFaire = 0;
     int menu;
     
@@ -1002,12 +1007,14 @@ int gestionFormateur() {
 
 }
 
+
+
+//Est appelée depuis menuGererFormation()
+// Les valeurs possible de retour :
+// 1 : ajouter formation
+// 2 : Supprimer formation
+// 3 : afficher liste formation
 int gestionFormation() {
-    //Est appelée depuis menuGererFormation()
-    // Les valeurs possible de retour :
-    // 1 : ajouter formation
-    // 2 : Supprimer formation
-    // 3 : afficher liste formation
     int queFaire = 0;
     int menu;
     
@@ -1035,6 +1042,7 @@ int gestionFormation() {
     return queFaire;
 }
 
+
 void ecrireEtudiant(etudiant *e) {
    FILE *fres;
    fres=fopen("listeEtudiant.dat", "a");
@@ -1042,6 +1050,7 @@ void ecrireEtudiant(etudiant *e) {
    e->nom, e->prenom, e->idFormationAnnee, e->naissanceJour, e->naissanceMois, e->naissanceAnnee, e->annee, e->montantAPayer, e->montantPaye, e->reduction);
    fclose(fres);
 }
+
 
 void ecrireFormateur(formateur *f) {
     FILE *fres;
@@ -1127,6 +1136,33 @@ void ecrireFormation(formation *f) {
 
     fclose(fres);
 }
+
+
+
+
+
+
+void supprimerEspaceBlanc(char *str)
+{
+    int index, i;
+
+    /* Index par défaut */
+    index = -1;
+
+    /* Trouver dernier index du character non espace blanc */
+    i = 0;
+    while(str[i] != '\0')
+    {
+        if(str[i] != ' ' && str[i] != '\t' && str[i] != '\n')
+        {
+            index= i;
+        }
+        i++;
+    }
+    str[index + 1] = '\0';
+}
+
+
 
 void afficherHoraireFormateur(formateur *formateurCourant, formation *formationDebut, int nbFormation) {
     
@@ -1300,6 +1336,7 @@ formateur* initialisationFormateur(int *nbFormateur) {
     fclose(fdat1);
 }
 
+
 etudiant* initialisationEtudiant(int *nbEtudiant) {
 
     FILE *fdat;
@@ -1333,6 +1370,7 @@ etudiant* initialisationEtudiant(int *nbEtudiant) {
     return debut;
     fclose(fdat);
 }
+
 
 formation* initialisationFormation(int *nbFormation) {
     FILE *fdat2;
@@ -1428,7 +1466,8 @@ formation* initialisationFormation(int *nbFormation) {
     fclose(fdat2);
 }
 
-void afficherListeFormationBase(formation *courant, int nombreFormation) { //Affiche les formations sans indiquer les annees
+//Affiche les formations sans indiquer les annees
+void afficherListeFormationBase(formation *courant, int nombreFormation) {
     formation *debut = malloc(sizeof(*debut));
     formation *fSuite = malloc(sizeof(*fSuite));
 
@@ -1475,7 +1514,8 @@ void afficherListeFormationBase(formation *courant, int nombreFormation) { //Aff
 
 }
 
-void afficherListeFormation(formation *courant, int nombreFormation) { //Affiche les formations et toutes les annees qui les composent
+//Affiche les formations et toutes les annees qui les composent
+void afficherListeFormation(formation *courant, int nombreFormation) {
 
     formation *debut = malloc(sizeof(*debut));
     formation *fSuite = malloc(sizeof(*fSuite));
@@ -1524,7 +1564,8 @@ void afficherListeFormation(formation *courant, int nombreFormation) { //Affiche
     }
 }
 
-void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formation *debut) { //Supprime l'annee de formation indique.
+//Supprime l'annee de formation indique.
+void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formation *debut) {
     int i, nb;
     formation *aSupprimer = malloc(sizeof(*aSupprimer));
     formation *courant = malloc(sizeof(*courant));
@@ -1579,10 +1620,12 @@ void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formatio
     courant = debut;
 }
 
-formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, formation *debut) { //Supprimer une formation entiere : toutes les annees qui la composent
-    
-    //TODO : Prevoir cas premier a supprimer ou dernier
-    //TODO : actualiser le .dat
+
+//Supprimer une formation entiere : toutes les annees qui la composent
+//TODO : Prevoir cas premier a supprimer ou dernier
+//TODO : actualiser le .dat
+formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, formation *debut) {
+
     int i, j, positionAvantFormation, nb;
     formation *aSupprimer = malloc(sizeof(*aSupprimer));
     formation *courant = malloc(sizeof(*courant));
@@ -1668,6 +1711,7 @@ void reinitialiserFormationDat() {
     fres = fopen("listeFormation.dat","w");
     fclose(fres);
 }
+
 
 formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, int nombreFormation) {
 
@@ -1877,14 +1921,15 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     return debut;
 }
 
-int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *formateurCourant) { //fonction appelee dans ajouterFormateur
+//fonction appelee dans ajouterFormateur
+//Le but de cette fonction est de demander a l'utilisateur un jour, une heure et une periode (1h, 2h, 3h, ...) pendant laquelle
+//il donne son cours.
+//S'en suit une comparaison avec l'horaire de la formation entree en argument
+//Si les plages horaires de la formation sont libres, alors on renvoie 1, sinon, 0
+//NOTE : Quand on renvoie 0, cette fonction est a nouveau appelee
+int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *formateurCourant) {
 
-    
-    //Le but de cette fonction est de demander a l'utilisateur un jour, une heure et une periode (1h, 2h, 3h, ...) pendant laquelle
-    //il donne son cours.
-    //S'en suit une comparaison avec l'horaire de la formation entree en argument
-    //Si les plages horaires de la formation sont libres, alors on renvoie 1, sinon, 0
-    //NOTE : Quand on renvoie 0, cette fonction est a nouveau appelee
+
 
     //void afficherHoraireFormation(formation *);
 
@@ -1966,24 +2011,3 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *for
     return 1;
 
 }
-
-void supprimerEspaceBlanc(char *str)
-{
-    int index, i;
-
-    /* Index par défaut */
-    index = -1;
-
-    /* Trouver dernier index du character non espace blanc */
-    i = 0;
-    while(str[i] != '\0')
-    {
-        if(str[i] != ' ' && str[i] != '\t' && str[i] != '\n')
-        {
-            index= i;
-        }
-        i++;
-    }
-    str[index + 1] = '\0';
-}
-
