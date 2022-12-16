@@ -1052,32 +1052,6 @@ void ecrireEtudiant(etudiant *e) {
    fclose(fres);
 }
 
-
-void ecrireFormateur(formateur *f) {
-    FILE *fres;
-    fres=fopen("listeFormateur.dat", "a");
-
-    int z, y, x, i;
-
-
-    // char nom[30];     char prenom[30];       char titre[20][81];    char horaireId[8][25][6];    int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre;
-
-
-    fprintf(fres,"%-29s %-29s %2d %2d %4d %2d %2d", f->nom, f->prenom, f->naissanceJour, f->naissanceMois, f->naissanceAnnee, f->niveauDiplome, f->nbTitre);
-
-    for(i=1;i<=7; i++) {
-        for(x=0;x<=23;x++) {
-            fprintf(fres," %5s", f->horaireId[i][x]);
-        }
-    }
-
-    for(i=1;i<= f->nbTitre; i++) {
-        fprintf(fres," %80s", f->titre[i]);
-    }
-
-    fclose(fres);
-}
-
 void ecrireFormation(formation *f) {
 
     FILE *fres;
