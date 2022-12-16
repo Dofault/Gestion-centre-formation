@@ -852,7 +852,7 @@ void ecrireFormateur(formateur *f) {
     // char nom[30];     char prenom[30];       char titre[20][81];    char horaireId[8][25][6];    int naissanceJour, naissanceMois, naissanceAnnee, niveauDiplome, nbTitre;
 
 
-    fprintf(fres,"%-30s %-30s %2d %2d %4d %2d %2d", f->nom, f->prenom, f->naissanceJour, f->naissanceMois, f->naissanceAnnee, f->niveauDiplome, f->nbTitre);
+    fprintf(fres,"%-29s %-29s %2d %2d %4d %2d %2d", f->nom, f->prenom, f->naissanceJour, f->naissanceMois, f->naissanceAnnee, f->niveauDiplome, f->nbTitre);
 
     for(i=1;i<=7; i++) {
         for(x=0;x<=23;x++) {
@@ -1083,18 +1083,22 @@ formateur* initialisationFormateur(int *nbFormateur) {
     void supprimerEspaceBlanc(char[]);
 
     
-    fgets(courant->nom, 30, fdat1);
+    fgets(courant->nom, 29, fdat1);
+    fscanf(fdat1, "%29[^\n]", courant->nom);
+    
+    printf("%s", courant->nom);
     supprimerEspaceBlanc(courant->nom);
 
 
-	while(!feof(fdat1)) {
 
-        fgets(courant->prenom, 30, fdat1);
-        supprimerEspaceBlanc(courant->prenom);
+	while(!feof(fdat1)) {
+        fscanf(fdat1, " %29[^\n]", courant->prenom);
         printf("%s", courant->nom);
-		fscanf(fdat1," %30s %2d %2d %4d %2d %2d", courant->prenom, 
+        supprimerEspaceBlanc(courant->prenom);
+        /*
+		fscanf(fdat1," %29s %2d %2d %4d %2d %2d", courant->prenom, 
 		&courant->naissanceJour, &courant->naissanceMois, &courant->naissanceAnnee, &courant->niveauDiplome, 
-		&courant->nbTitre);
+		&courant->nbTitre);*/
 
 
 		// Lecture de l'horaire
