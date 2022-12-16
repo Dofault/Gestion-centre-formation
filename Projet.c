@@ -76,7 +76,7 @@ int main() {
     void reinitialiserFormationDat();
     formation* ajouterFormation(formation *, int *, int);
     formateur* ajoutFormateur(formateur *, int *, formation *, int);
-    int verificationHoraire(formation *, int, formateur *);
+    int verificationHoraire(formation *, int, formateur *, formation*, int);
     
     void afficherHoraireFormation(formation *);
     void afficherHoraireFormateur(formateur *, formation*, int);
@@ -1924,7 +1924,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
                 //Gestion de l'horaire
                 accord = 0;
                 while(accord == 0)  {
-                    accord = verificationHoraire(fSuite, envie, nouveauFormateur);
+                    accord = verificationHoraire(fSuite, envie, nouveauFormateur, formationDebut, nombreFormation);
                 }
             }
         }
@@ -1955,15 +1955,19 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 //S'en suit une comparaison avec l'horaire de la formation entree en argument
 //Si les plages horaires de la formation sont libres, alors on renvoie 1, sinon, 0
 //NOTE : Quand on renvoie 0, cette fonction est a nouveau appelee
-int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nouveau) {
+int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nouveau, formation *formationDebut, int nbFormation) {
     int heureRestante, heureDonnee = 0, jour, heure, i;
 
     //Initialisation du nombre d'heure restante
     heureRestante = fSuite->nombreHeureCours[numeroCoursChoisi];
-
+    void afficherHoraireFormateur(formateur*, formation*, int);
     while(heureRestante != 0) {
+
+        afficherHoraireFormateur(nouveau, formationDebut, nbFormation);
         printf("\nHeure(s) restante(s) pour ce cours : %02d\n", heureRestante - heureDonnee);
         //Demander le jour et heures pendant lesquelles il donne cours.
+
+
         printf("1 : Lundi\n");
         printf("2 : Mardi\n");
         printf("3 : Mercredi\n");
