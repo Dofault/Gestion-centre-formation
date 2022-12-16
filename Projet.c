@@ -2017,8 +2017,9 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nou
         //Modification de l'horaire et du nombre d'heure restante
         for(i = heure; i < heure + heureDonnee; i++) {
             //nouveau->horaire[jour][i] = numeroCoursChoisi;
-            strcpy(nouveau->horaireId[jour][i], fSuite->idFormationAnnee);
+            
             fSuite->horaire[jour][i] = numeroCoursChoisi;
+            strcpy(nouveau->horaireId[jour][i], fSuite->idFormationAnnee);
         }
         fSuite->coursDejaDonne[numeroCoursChoisi] = 1;
         heureRestante = heureRestante - heureDonnee;
