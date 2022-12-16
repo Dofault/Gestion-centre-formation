@@ -1271,34 +1271,36 @@ formateur* initialisationFormateur(int *nbFormateur) {
     //Dans l'odre : nom, prenom, jour naissance, mois naissance, annee naissance, nombre de titre
     //fgets(courant->nomBase, 99, fdat2);
     fgets(courant->nom, 30, fdat1);
-
+    
+    fscanf(fdat1, " ");
 	while(!feof(fdat1)) {
         fgets(courant->prenom, 30, fdat1);
 		fscanf(fdat1," %2d %2d %4d %2d ", &courant->naissanceJour, &courant->naissanceMois, &courant->naissanceAnnee, &courant->nbTitre);
 		// Lecture de l'horaire
 
-        
+        printf("\n\n----------\nnom:%s\n", courant->nom);
+        printf("prenom:%s\n", courant->prenom);
+        printf("nom: %s\n", courant->nom);
+        printf("naissanceJour: %d\n", courant->naissanceJour);
+        printf("naissanceMois: %d\n", courant->naissanceMois);
+        printf("naissanceAnnee: %d\n", courant->naissanceAnnee);
+
 		for(i=1;i<=7;i++) {
 			for(x=1;x<=22;x++) {
                 fgets(courant->horaireId[i][x], 6, fdat1);	
+                printf("%s ", courant->horaireId[i][x], x, i);
 			}
 		}
-/*
-        //TEST
-        printf("%-30s %-30s %02d/%02d/%4d %02d\n", courant->nom, courant->prenom, courant->naissanceJour, courant->naissanceMois, courant->naissanceAnnee, courant->nbTitre);
-        for(i=1; i<=22; i++){
-            for(x = 1; x<=7; x++) {
-                printf("%5s ", courant->horaireId[x][i]);
-            }
-            printf("\n");
-        }
-*/
+
+
 		// Passage en revue de tout les titres du formateur
 		for(i=1;i<= courant->nbTitre; i++) {
 			// scan 100 caractere par nombre de titre
             fgets(courant->titre[i], 100, fdat1);
+            printf("%s", courant->titre[i]);
 		}
 
+        fscanf(fdat1, " "); // passage à la ligne
 	  	fSuivant=malloc(sizeof(formateur));
 	  	courant->suivant=fSuivant;
 	  	*nbFormateur= *nbFormateur+1;
