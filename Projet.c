@@ -1144,7 +1144,7 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
 
     formation *formationCourant = malloc(sizeof(*formationCourant));
 
-    int i, j, x, y;
+    int i, j, x, y, id;
 
 
     char coursPresentGrille[20][50];
@@ -1157,11 +1157,11 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
     printf("|----------+----------+----------+----------+----------+----------+----------+----------|");
 
 
-    for(j=0;j<= 23; j++) { // Pour chaque heure
+    for(j=8;j<= 23; j++) { // Pour chaque heure
         printf("\n|   %02dh00  |", j);
         for(i=1;i<=7;i++) { // Pour chaque jour
             
-            if(strcmp(formateurCourant->horaireId[i][j], "RIENN") == 0) { // Si rien dans la case
+            if(strcmp(formateurCourant->horaireId[i][j], "AUCUN") == 0) { // Si rien dans la case
                 printf("    --    |");
             }
             else
@@ -1180,12 +1180,14 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
                             for(y=1;y<=nbCoursGrille;y++) { // Pour chaque cours qui sont deja affiche
                                 if (strcmp(coursPresentGrille[y], formationCourant->cours[formationCourant->horaire[i][j]]) == 0) { // si deja present dans la liste affiche
                                     verifDoublon = 1; // doublon deja present
+                                    id= y;
                                     break;
                                 }
                             }
 
                             if(verifDoublon == 0) { // si pas de doublon ajout dans la liste qui va etre affiche en legende
                                 nbCoursGrille +=1;
+                                id=nbCoursGrille;
                                 strcpy(coursPresentGrille[nbCoursGrille], formationCourant->cours[formationCourant->horaire[i][j]]); // ajout cours de la formation
                                 strcpy(nomFormationPresentGrille[nbCoursGrille], formationCourant->nomComplete); // Ajout nom formation
                                 break;
@@ -1197,7 +1199,7 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
 
                     }
 
-                    printf("    %02d    |", nbCoursGrille);
+                    printf("    %02d    |", id);
 
 
 
@@ -1281,7 +1283,7 @@ formateur* initialisationFormateur(int *nbFormateur) {
                 fgets(courant->horaireId[i][x], 6, fdat1);	
 			}
 		}
-
+/*
         //TEST
         printf("%-30s %-30s %02d/%02d/%4d %02d\n", courant->nom, courant->prenom, courant->naissanceJour, courant->naissanceMois, courant->naissanceAnnee, courant->nbTitre);
         for(i=1; i<=22; i++){
@@ -1290,7 +1292,7 @@ formateur* initialisationFormateur(int *nbFormateur) {
             }
             printf("\n");
         }
-
+*/
 		// Passage en revue de tout les titres du formateur
 		for(i=1;i<= courant->nbTitre; i++) {
 			// scan 100 caractere par nombre de titre
@@ -1696,7 +1698,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     courant = malloc(sizeof(courant));
     formation *fSuite;
     fSuite = malloc(sizeof(fSuite));
-
+    void afficherHoraireFormateur(formateur *, formation*, int);
     void ecrireFormateur(formateur *);
 
     int i, j, x, choixDeFormation = 1, reponse, heureDebutIndisponibilite, heureFinIndisponibilite, jour, heure, nbHeure, accord = 0, envie = 1;
@@ -1761,19 +1763,16 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     for(i = 1; i <= 7; i++) {
         for(j = 1; j <= 24; j++) {
             //nouveauFormateur->horaire[i][j] = 0;
-            //strcpy(nouveauFormateur->horaireId[i][j], "AUCUN\0");
-            nouveauFormateur->horaireId[i][j][0] = 'A';
-            nouveauFormateur->horaireId[i][j][1] = 'U';
-            nouveauFormateur->horaireId[i][j][2] = 'C';
-            nouveauFormateur->horaireId[i][j][3] = 'U';
-            nouveauFormateur->horaireId[i][j][4] = 'N';
-            nouveauFormateur->horaireId[i][j][5] = '\0';
+            strcpy(nouveauFormateur->horaireId[i][j], "AUCUN");
+
         }
     }
 
     //Selection du jour et ensuite des heures. Quand une indisponibilite est remplie
     //on repropose la liste des jours. L'utilisateur peut choisir retour pour sortir de la boucle
     while(reponse != 0) {
+        afficherHoraireFormateur(nouveauFormateur, formationDebut, nombreFormation);
+        
         //Jour
         printf("1 : Lundi\n");
         printf("2 : Mardi\n");
@@ -1817,6 +1816,8 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
             strcpy(nouveauFormateur->horaireId[jour][i], "INDSP");
         }
 
+
+        afficherHoraireFormateur(nouveauFormateur, formationDebut, nombreFormation);
         //Avancer ou sortir de la boucle while
         printf("Avez-vous d'autres indisponibilites ?\n");
         printf("1 : Oui\n");
@@ -2025,7 +2026,7 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nou
         heureRestante = heureRestante - heureDonnee;
         printf("Horaire mis a jour !\n");
     }
-
+    afficherHoraireFormateur(nouveau, formationDebut, nbFormation);
     return 1;
 
 }
