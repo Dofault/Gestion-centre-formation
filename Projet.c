@@ -1379,7 +1379,6 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     nouveauFormateur->nom[29] = '\0';
 
     printf("\nQuel est votre prenom ? ");
-    //scanf(" "); //Absorbtion de newline
     for(i = 0; i < 29; i++) {
         nouveauFormateur->prenom[i] = getchar();
         if(nouveauFormateur->prenom[i] == '\n') {
@@ -1418,23 +1417,23 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     printf("0 : Non\n");
     printf("Votre reponse : ");
     scanf(" %d", &reponse);
+
     while(reponse < 0 || reponse > 2) {
-        printf("\nReponse incorrecte. Essayez à nouveau : %d", &reponse);
+        printf("\nReponse incorrecte. Essayez a nouveau : ");
+        scanf(" %d", &reponse);
     }
 
+    printf("TEST 1\n");
     //Initialisation de son horaire (disponible tout le temps dans un premier temps) 
-    for(i = 1; i <= 7; i++) {
-        for(j = 1; j <= 24; j++) {
+    /*for(i = 1; i <= 7; i++) {
+        for(j = 1; j <= 22; j++) {
             //nouveauFormateur->horaire[i][j] = 0;
-            //strcpy(nouveauFormateur->horaireId[i][j], "AUCUN\0");
-            nouveauFormateur->horaireId[i][j][0] = 'A';
-            nouveauFormateur->horaireId[i][j][1] = 'U';
-            nouveauFormateur->horaireId[i][j][2] = 'C';
-            nouveauFormateur->horaireId[i][j][3] = 'U';
-            nouveauFormateur->horaireId[i][j][4] = 'N';
+            strcpy(nouveauFormateur->horaireId[i][j], "AUCUN");
             nouveauFormateur->horaireId[i][j][5] = '\0';
         }
-    }
+    }*/
+
+    printf("TEST 2\n");
 
     //Selection du jour et ensuite des heures. Quand une indisponibilite est remplie
     //on repropose la liste des jours. L'utilisateur peut choisir retour pour sortir de la boucle
