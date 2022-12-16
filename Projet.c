@@ -58,6 +58,7 @@ int main() {
     void menuConsulterHoraire();
     void ecrireFormation(formation *);
     void ecrireEtudiant(etudiant *);
+    void ecrireFormateur(formateur *);
     int menuGererFormateur();
     void supprimerEspaceBlanc(char[]);
     int gestionFormation();
@@ -1246,8 +1247,6 @@ void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formatio
 
 
 //Supprimer une formation entiere : toutes les annees qui la composent
-//TODO : Prevoir cas premier a supprimer ou dernier
-//TODO : actualiser le .dat
 formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, formation *debut) {
     int i, j, positionAvantFormation, nb;
     formation *aSupprimer = malloc(sizeof(*aSupprimer));
@@ -1339,11 +1338,14 @@ void reinitialiserFormationDat() {
 formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, int nombreFormation) {
 
     formateur *nouveauFormateur;
+    formateur *courant;
     nouveauFormateur = malloc(sizeof(nouveauFormateur));
+    courant = malloc(sizeof(courant));
     formation *fSuite;
     fSuite = malloc(sizeof(fSuite));
 
     int i, j, choixDeFormation = 1, reponse, heureDebutIndisponibilite, heureFinIndisponibilite, jour, heure, nbHeure, accord = 0, envie = 1;
+
     printf("Quel est votre nom ? ");
     scanf(" "); //Absorbtion de newline
     for(i = 0; i < 29; i++) {
@@ -1423,6 +1425,8 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
         printf("0 : Retour\n");
         printf("Quel jour etes-vous indisponible ? ");
         scanf("%d", &jour);
+        //TEST
+        //printf("ICI : %d", jour);
         //Controle de donnees
         while(jour < 0 || jour > 7){
             printf("Numero incorrect : ");
@@ -1477,6 +1481,11 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
             printf("Valeur invalide.");
             printf("\nVotre choix : ");
             scanf("%d", &choixDeFormation);
+        }
+
+        //Si l'utilisateur a choisi RETOUR
+        if(choixDeFormation == 0) {
+            break;
         }
 
         //recuperation de la formation ciblee
@@ -1552,7 +1561,16 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
             }
         }
     }
-    
+    ///AJOUT FORMATEUR A LA CHAINE////////////////////////  
+    courant = debut;
+    for(i = 1; i < *nbFormateur; i++) {
+       courant = courant->suivant; 
+    }
+    courant->suivant=nouveauFormateur;        
+    nouveauFormateur->suivant = NULL;                         
+    *nbFormateur = *nbFormateur + 1;
+    //////////////////////////////////////////////////////
+
     return debut;
 }
 
@@ -1630,4 +1648,8 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nou
 
     return 1;
 
+}
+
+void ecrireFormateur(formateur *courant) {
+     //TODO : faire lire et ecrireFormateur
 }
