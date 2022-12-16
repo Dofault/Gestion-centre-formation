@@ -939,8 +939,15 @@ formateur* initialisationFormateur(int *nbFormateur) {
 		// Lecture de l'horaire
 		for(i=1;i<=7;i++) {
 			for(x=1;x<=22;x++) {
-                fgets(courant->horaireId[i][x], 5, fdat1);	
+                fgets(courant->horaireId[i][x], 6, fdat1);	
 			}
+		}
+
+
+		// Passage en revue de tout les titres du formateur
+		for(i=1;i<= courant->nbTitre; i++) {
+			// scan 100 caractere par nombre de titre
+            fgets(courant->titre[i], 100, fdat1);
 		}
 
         //TEST
@@ -951,12 +958,10 @@ formateur* initialisationFormateur(int *nbFormateur) {
             }
             printf("\n");
         }
-
-		// Passage en revue de tout les titres du formateur
-		for(i=1;i<= courant->nbTitre; i++) {
+        for(i=1;i<= courant->nbTitre; i++) {
 			// scan 100 caractere par nombre de titre
-            fgets(courant->titre[i], 100, fdat1);
-		}
+            printf("%-100s\n", courant->titre[i]);
+		}        
 
 	  	fSuivant=malloc(sizeof(formateur));
 	  	courant->suivant=fSuivant;
