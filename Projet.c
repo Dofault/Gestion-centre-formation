@@ -647,7 +647,6 @@ erreurID:
             while(queFaire != 0) {
 
                 afficherListeFormation(formationDebut, nbFormation);
-                afficherListeFormationBase(formationDebut, nbFormation);
                 printf("\nSelectionnez le numero d'une formation (0 pour retourner au menu principal) : ");
                 scanf("%d", &queFaire);
 
@@ -1029,10 +1028,15 @@ void changerMenu(int *valeurMenu) {
 void menuConsulterHoraire() {
     int valeurMenuHoraire=-1;
         
-    printf("Choix de la formation\n");
-    printf("0 : Quitter\n");
-    printf("1 : \n");
-    printf("2 : \n");
+    printf("-+--------------------------------------------------------------+\n");
+    printf(" | Veuillez entrer la valeur correspondante au menu souhaite    |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 0 | Quitter                                                  |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 1 | Acceder aux horaires d'un formateur                      |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | 2 | Acceder aux horaires d'une formation                     |\n");
+    printf("-+---+----------------------------------------------------------+\n");
 
     // ***** A FAIRE : AFFICHER LA LISTE DES FORMATIONS ET DES QUE L'UTILISATEUR SELECTIONNE UNE FORMATION CA AFFICHE L'HORAIRE ************
 
@@ -1312,7 +1316,6 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
     char nomFormationPresentGrille[20][102];
     int nbCoursGrille = 0;
     int verifDoublon;
-    int idPresent;
 
     printf("|----------+----------+----------+----------+----------+----------+----------+----------|\n");
     printf("|  Heure   |  Lundi   |   Mardi  |  Mecredi |  Jeudi   | Vendredi |  Samedi  | Dimanche |\n");
@@ -1333,7 +1336,6 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
                 }
                 else // si id du cours présent
                 {
-                    idPresent = 0; // si l'id du cours n'est pas present c'est qu'il existe plus donc on devra le supprimer
                     formationCourant=formationDebut;
                     for(x=1;x<=nbFormation;x++) { // Passage en revu des formations pour trouver l'id de la formation de la cellule du formateur
                         if(strcmp(formateurCourant->horaireId[i][j], formationCourant->idFormationAnnee) == 0) { // si idFormationAnnee de formation est egal à la cellule de l'horaire du formateur
@@ -1345,7 +1347,6 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
                             for(y=1;y<=nbCoursGrille;y++) { // Pour chaque cours qui sont deja affiche
                                 if (strcmp(coursPresentGrille[y], formationCourant->cours[formationCourant->horaire[i][j]]) == 0) { // si deja present dans la liste affiche
                                     verifDoublon = 1; // doublon deja present
-                                    idPresent = 1;
                                     id= y;
                                     break;
                                 }
@@ -1366,10 +1367,6 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
 
                     }
 
-                    
-                    if(idPresent == 0) { // si pas de cours present c'est qu'il existe plus donc on remplace par aucun
-                        strcpy(formateurCourant->horaireId[i][j], "AUCUN");
-                    }
 
                     printf("    %02d    |", id);
 
@@ -1395,8 +1392,6 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
 void afficherHoraireFormation(formation *formationCourant){
     
     int i, j, x;
-
-
 
     printf("|----------+----------+----------+----------+----------+----------+----------+----------|\n");
     printf("|  Heure   |  Lundi   |   Mardi  |  Mecredi |  Jeudi   | Vendredi |  Samedi  | Dimanche |\n");
@@ -1722,8 +1717,6 @@ void supprimerFormateur(formateur *asupprimer, formateur *formateurDebut, int nb
     for(i=1;i<=nbFormateur;i++) {
 
         
-
-
         if(
             formateurCourant->naissanceAnnee == asupprimer->naissanceAnnee &&
             formateurCourant->naissanceJour == asupprimer->naissanceJour &&
