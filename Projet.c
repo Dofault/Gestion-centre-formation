@@ -16,10 +16,9 @@ typedef struct etudiant {
 typedef struct formateur {
     char nom[30];
     char prenom[30];    
-    char titre[10][100];
+    char titre[20][100];
     char horaireId[8][23][6];
-    int naissanceJour, naissanceMois, naissanceAnnee, nbTitre; 
-    //int horaire[8][23];
+    int naissanceJour, naissanceMois, naissanceAnnee, nbTitre;
     struct formateur *suivant;
 }formateur;
  
@@ -488,8 +487,27 @@ erreurID:
                     }
 
                     //suppression de l'element de la liste chainee
-                    supprimerFormationAnnee(numAffiche, &nbFormation, formationDebut);
-                    printf("Element supprime avec succes\n");
+                    formationIntercale = formationDebut;
+                    for(i = 1; i < numAffiche; i++) {
+                        formationIntercale = formationIntercale->suivant;
+                    }
+                    if(formationIntercale->nbEtudiant == 0) {
+                        x = 0;
+                        for(j = 1; j <= formationIntercale->nbCours; j++) {
+                            if(formationIntercale->coursDejaDonne[j] != 0) {
+                                x = 1;
+                                break;
+                            }
+                        }
+                        if(x == 0) {
+                            supprimerFormationAnnee(numAffiche, &nbFormation, formationDebut);
+                            printf("Element supprime avec succes\n");
+                        } else {
+                            printf("Un formateur se trouve dans cette formation. Impossible de la supprimer.\n");
+                        }
+                    } else {
+                        printf("Un etudiant se trouve dans cette formation. Impossible de la supprimer.\n");
+                    }
                     afficherListeFormation(formationDebut, nbFormation);
 
                     //Reecrire le Dat
@@ -510,6 +528,7 @@ erreurID:
                         printf("Valeur incorrecte : ");
                         scanf("%d", &numAffiche);
                     }
+
 
                     //suppression
                     formationDebut = supprimerFormationEntiere(numAffiche, &nbFormation, formationDebut);
@@ -1802,7 +1821,25 @@ formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, 
             aSupprimer = aSupprimer->suivant;
         }
 
-        avant = aSupprimer;
+        
+        avant = aSupprimer;     //Placement de la formation aSupprimer dans avant     
+        aSupprimer = debut;
+        for(i = 1; i <= nb; i++) {
+            courant = aSupprimer->suivant;
+            for(j = 1; j <= aSupprimer->nbCours; j++) {
+                if(aSupprimer->coursDejaDonne[j] != 0) {    //Verification que aucun formateur ne soit dans la formation
+                    printf("Suppression impossible : un formateur est present dans une annee\n");
+                    return debut;
+                }
+            }
+
+            if(aSupprimer->nbEtudiant != 0) {   //verification que aucun etudiant ne soit inscrit
+                printf("Suppression impossible : un eleve est present dans une annee\n");
+                return debut;
+            }
+            aSupprimer = courant;
+        } 
+
         aSupprimer = debut;
         for(i=1; i <= nb; i++) {
             courant = aSupprimer->suivant;
@@ -1827,11 +1864,34 @@ formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, 
         i--;
         positionAvantFormation = i;
 
-        //suppression
-        courant = debut;
+        //controle de suppression
+        courant = debut;    //remise au debut
         for(i = 1; i < positionAvantFormation; i++) {
-            courant = courant->suivant;
+            courant = courant->suivant;     //se positionner a la formation juste avant la premiere annee visee
         }    
+
+        for(j = 1; j <= nb; j++) {
+            aSupprimer = courant->suivant;
+            printf("%-5s %02d\n", aSupprimer->idFormationAnnee, aSupprimer->nbEtudiant);
+            if(aSupprimer->nbEtudiant != 0) {
+                printf("Impossible de supprimer cette formation car un etudiant y est inscrit.\n");
+                return debut;
+            }
+            for(i = 1; i <= aSupprimer->nbCours; i++) {
+                if(aSupprimer->coursDejaDonne[i] != 0) {
+                    printf("Impossible de supprimer cette formation car un formateur y est inscrit.\n");
+                    return debut;
+                }
+            }
+            courant = courant->suivant;
+        }
+
+
+        //suppression
+        courant = debut;    //remise au debut
+        for(i = 1; i < positionAvantFormation; i++) {
+            courant = courant->suivant;     //se positionner a la formation juste avant la premiere annee visee
+        }   
 
         for(j = 1; j <= nb; j++) {
             aSupprimer = courant->suivant;
@@ -1863,7 +1923,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
     formateur *nouveauFormateur;
     formateur *courant;
-    nouveauFormateur = malloc(sizeof(nouveauFormateur));
+    nouveauFormateur = malloc(sizeof(formateur));
     courant = malloc(sizeof(courant));
     formation *fSuite;
     fSuite = malloc(sizeof(fSuite));
@@ -1930,7 +1990,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
     //Initialisation de son horaire (disponible tout le temps dans un premier temps) 
     for(i = 1; i <= 7; i++) {
-        for(j = 1; j <= 24; j++) {
+        for(j = 0; j <= 22; j++) {
             //nouveauFormateur->horaire[i][j] = 0;
             strcpy(nouveauFormateur->horaireId[i][j], "AUCUN");
 
