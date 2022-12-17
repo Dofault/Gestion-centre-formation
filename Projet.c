@@ -558,8 +558,6 @@ erreurID:
 
             if(queFaire == 4) {     //Ajouter formateur
                 formateurDebut = ajoutFormateur(formateurDebut, &nbFormateur, formationDebut, nbFormation);
-                formateurDebut = initialisationFormateur(&nbFormateur);
-
             }
 
             if(queFaire == 5) { // supprimer formateur
@@ -591,7 +589,7 @@ erreurID:
                 }
                 printf("je sors\n");
                 if(nbEtudiant > 0) {
-                    formateurDebut = initialisationFormateur(nbFormateur);
+                    
                 }
                 
             }
@@ -1476,7 +1474,7 @@ formateur* initialisationFormateur(int *nbFormateur) {
 	}
 
 	courant=debut;
-	for(i=0;i<*nbFormateur;i++){
+	for(i=1;i<*nbFormateur;i++){
 		courant=courant->suivant;
 	}
 	courant->suivant=NULL;
