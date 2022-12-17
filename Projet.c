@@ -1746,8 +1746,8 @@ void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formatio
                 courant->suivant = NULL;
                 free(aSupprimer);
             } 
-            *nombreFormation = *nombreFormation - 1;
         }
+        *nombreFormation = *nombreFormation - 1;
         //diminuer le nombre d'annee de formation
         //recherche de la premiere annee de la formation a supprimer
         aSupprimer = debut;
@@ -2353,8 +2353,8 @@ void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debu
 
                 free(aSupprimer);
             } 
-            *nombreFormateur = *nombreFormateur - 1;
         }
+        *nombreFormateur = *nombreFormateur - 1;
         //diminuer le nombre d'annee de formation
         //recherche de la premiere annee de la formation a supprimer
         aSupprimer = debut;
