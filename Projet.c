@@ -75,7 +75,7 @@ int main() {
     formation* supprimerFormationEntiere(int , int *, formation *);
     void supprimerFormateur(int, int *, formateur *, formation *);
     void reinitialiserFormationDat();
-    formation* ajouterFormation(formation *, int *, int);
+    //formation* ajouterFormation(formation *, int *, int);
     formateur* ajoutFormateur(formateur *, int *, formation *, int);
     int verificationHoraire(formation *, int, formateur *, formation*, int);
     void reinitialiserFormateurDat();
@@ -442,9 +442,14 @@ erreurID:
                     ecrireFormation(nouvelleFormation);
 
                     ///AJOUT FORMATION A LA CHAINE////////////////////////
-                                                                        //
-                    formationCourant->suivant=nouvelleFormation;        //
-                    formationCourant=formationCourant->suivant;         //
+                    if(nbFormation > 0 ) {
+                        nouvelleFormation->suivant = formationCourant->suivant;        //
+                        formationCourant->suivant = nouvelleFormation;         //
+                    } else {
+                        formationDebut = nouvelleFormation;
+                        formationDebut->suivant = NULL;
+                    }   
+                                                                     //
                     nbFormation++;                                      //
                     //////////////////////////////////////////////////////
 
@@ -2142,11 +2147,11 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     ecrireFormateur(nouveauFormateur);
 
 
-    if(nb > 0) {
+    if(*nb > 0) {
         ///AJOUT FORMATEUR A LA CHAINE////////////////////////  
         courant = debut;
         for(i = 1; i < *nb; i++) {
-        courant = courant->suivant; 
+            courant = courant->suivant; 
         }
         courant->suivant=nouveauFormateur;        
         nouveauFormateur->suivant = NULL;                         
@@ -2154,11 +2159,8 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     }
     else
     {
-        formateur *formateurDebut=malloc(sizeof(formateur));
-        formateur* initialisationFormateur(int *);
-        formateurDebut = initialisationFormateur(&nb);
-        debut = formateurDebut;
-        
+        debut = nouveauFormateur;
+        debut->suivant = NULL;
     }
 
 
