@@ -73,6 +73,7 @@ int main() {
     void afficherListeEtudiant(formation *, etudiant *, int);
     void supprimerFormationAnnee(int , int *, formation *);
     formation* supprimerFormationEntiere(int , int *, formation *);
+    void supprimerFormateur(int, int *, formateur *, formation *);
     void reinitialiserFormationDat();
     formation* ajouterFormation(formation *, int *, int);
     formateur* ajoutFormateur(formateur *, int *, formation *, int);
@@ -473,77 +474,82 @@ erreurID:
                     scanf("%d", &test);
                 }
                 printf("\n");
+                if(test != 0) {
 
-                //Cas de suppression d'une annee uniquement
-                if(test == 1) {
-                    //Affichage des formations
-                    afficherListeFormation(formationDebut, nbFormation);
-                    
-                    printf("Veuillez entrer le numero correspondant a la formation que vous souhaitez supprimer : ");
-                    scanf("%d", &numAffiche);
-                    while(numAffiche < 0 || numAffiche > nbFormation) {
-                        printf("Valeur incorrecte : ");
+                    //Cas de suppression d'une annee uniquement
+                    if(test == 1) {
+                        //Affichage des formations
+                        afficherListeFormation(formationDebut, nbFormation);
+                        
+                        printf("Veuillez entrer le numero correspondant a la formation que vous souhaitez supprimer : ");
                         scanf("%d", &numAffiche);
-                    }
-
-                    //suppression de l'element de la liste chainee
-                    formationIntercale = formationDebut;
-                    for(i = 1; i < numAffiche; i++) {
-                        formationIntercale = formationIntercale->suivant;
-                    }
-                    if(formationIntercale->nbEtudiant == 0) {
-                        x = 0;
-                        for(j = 1; j <= formationIntercale->nbCours; j++) {
-                            if(formationIntercale->coursDejaDonne[j] != 0) {
-                                x = 1;
-                                break;
-                            }
+                        while(numAffiche < 0 || numAffiche > nbFormation) {
+                            printf("Valeur incorrecte : ");
+                            scanf("%d", &numAffiche);
                         }
-                        if(x == 0) {
-                            supprimerFormationAnnee(numAffiche, &nbFormation, formationDebut);
-                            printf("Element supprime avec succes\n");
+
+                        //suppression de l'element de la liste chainee
+                        formationIntercale = formationDebut;
+                        for(i = 1; i < numAffiche; i++) {
+                            formationIntercale = formationIntercale->suivant;
+                        }
+                        if(formationIntercale->nbEtudiant == 0) {
+                            x = 0;
+                            for(j = 1; j <= formationIntercale->nbCours; j++) {
+                                if(formationIntercale->coursDejaDonne[j] != 0) {
+                                    x = 1;
+                                    break;
+                                }
+                            }
+                            if(x == 0) {
+                                supprimerFormationAnnee(numAffiche, &nbFormation, formationDebut);
+                                printf("Element supprime avec succes\n");
+                            } else {
+                                printf("Un formateur se trouve dans cette formation. Impossible de la supprimer.\n");
+                            }
                         } else {
-                            printf("Un formateur se trouve dans cette formation. Impossible de la supprimer.\n");
+                            printf("Un etudiant se trouve dans cette formation. Impossible de la supprimer.\n");
+                        }
+                        afficherListeFormation(formationDebut, nbFormation);
+
+                        //Reecrire le Dat
+                        reinitialiserFormationDat();
+
+                        //remplir avec nouvelles donnees
+                        formationCourant = formationDebut;
+                        for(i = 1; i <= nbFormation; i++){
+                            ecrireFormation(formationCourant);
+                            formationCourant = formationCourant->suivant;
                         }
                     } else {
-                        printf("Un etudiant se trouve dans cette formation. Impossible de la supprimer.\n");
-                    }
-                    afficherListeFormation(formationDebut, nbFormation);
-
-                    //Reecrire le Dat
-                    reinitialiserFormationDat();
-
-                    //remplir avec nouvelles donnees
-                    formationCourant = formationDebut;
-                    for(i = 1; i <= nbFormation; i++){
-                        ecrireFormation(formationCourant);
-                        formationCourant = formationCourant->suivant;
-                    }
-                } else {
-                    //Cas de la suppression de la formation complete
-                    afficherListeFormationBase(formationDebut, nbFormation);
-                    printf("Veuillez entrer le numero correspondant a la formation que vous souhaitez supprimer : ");
-                    scanf("%d", &numAffiche);
-                    while(numAffiche < 0 || numAffiche > nbFormation) {
-                        printf("Valeur incorrecte : ");
+                        
+                        //Cas de la suppression de la formation complete
+                        afficherListeFormationBase(formationDebut, nbFormation);
+                        printf("Veuillez entrer le numero correspondant a la formation que vous souhaitez supprimer : ");
                         scanf("%d", &numAffiche);
+                        while(numAffiche < 0 || numAffiche > nbFormation) {
+                            printf("Valeur incorrecte : ");
+                            scanf("%d", &numAffiche);
+                        }
+
+
+                        //suppression
+                        formationDebut = supprimerFormationEntiere(numAffiche, &nbFormation, formationDebut);
+                        printf("Element supprime avec succes.\n");
+                        afficherListeFormationBase(formationDebut, nbFormation);
+
+                        //Reecrire le Dat
+                        reinitialiserFormationDat();
+
+                        //remplir avec nouvelles donnees
+                        formationCourant = formationDebut;
+                        for(i = 1; i <= nbFormation; i++){
+                            ecrireFormation(formationCourant);
+                            formationCourant = formationCourant->suivant;
+                        }
                     }
 
 
-                    //suppression
-                    formationDebut = supprimerFormationEntiere(numAffiche, &nbFormation, formationDebut);
-                    printf("Element supprime avec succes.\n");
-                    afficherListeFormationBase(formationDebut, nbFormation);
-
-                    //Reecrire le Dat
-                    reinitialiserFormationDat();
-
-                    //remplir avec nouvelles donnees
-                    formationCourant = formationDebut;
-                    for(i = 1; i <= nbFormation; i++){
-                        ecrireFormation(formationCourant);
-                        formationCourant = formationCourant->suivant;
-                    }
                 }
             }
 
@@ -558,68 +564,72 @@ erreurID:
             if(queFaire == 5) { // supprimer formateur
 
                 afficherListeFormateur(formateurDebut, nbFormateur);
-                void supprimerFormateur(formateur*, formateur*, int);
                 printf("=========================================\n");
                 printf("> Quels formateur voulez-vous supprimer ?\n");
                 printf("Choix : ");
-                scanf("%d", &z);
-
-                formateurCourant=formateurDebut;
-                for(i=1;i<=nbFormateur;i++) {
-
-                    if(i==z) {
-                        supprimerFormateur(formateurCourant, formateurDebut, nbFormateur);
-                        nbFormateur -=1;
-                    }
-
-                    formateurCourant= formateurCourant->suivant;
+                scanf(" %d", &z);
+                if(z < 0 || z > nbFormateur) {
+                    printf("Nombre incorrect : ");
+                    scanf(" %d", &z);
                 }
-                fres=fopen("listeFormateur.dat", "w");
-                fclose(fres);
-                printf("je rentre\n");
-                formateurCourant=formateurDebut;
-                for(i=1;i<=nbFormateur;i++) {
+
+                //Appel de la fonction de suppression
+                supprimerFormateur(z, &nbFormateur, formateurDebut, formationDebut);
+                //Reinitialisation du DAT
+                reinitialiserFormateurDat();
+                formateurCourant = formateurDebut;
+                for(z = 1; z <= nbFormateur; z++) {
                     ecrireFormateur(formateurCourant);
-                    formateurCourant= formateurCourant->suivant;
+                    formateurCourant = formateurCourant->suivant;
                 }
-                printf("je sors\n");
-                if(nbEtudiant > 0) {
-                    
+                //Actualisation du DAT formation
+                formationCourant = formationDebut;
+                for(z = 1; z <= nbFormation; z++) {
+                    ecrireFormation(formateurCourant);
+                    formationCourant = formationCourant->suivant;
                 }
-                
+
             }
 
             if(queFaire == 6) { // afficher liste formateur
 
                 afficherListeFormateur(formateurDebut, nbFormateur);
+                if(nbFormateur > 0) {
 
-                printf("=========================================\n");
-                printf("> Quels formateur voulez-vous consulter ?\n");
-                printf("Choix : ");
-                scanf("%d", &z);
+                
+                    printf("=========================================\n");
+                    printf("> Quels formateur voulez-vous consulter ?\n");
+                    printf("Choix : ");
+                    scanf("%d", &z);
 
-                formateurCourant=formateurDebut;
-                for(i=1;i<=nbFormateur;i++) {
+                    formateurCourant=formateurDebut;
+                    for(i=1;i<=nbFormateur;i++) {
 
-                    if(i==z) {
+                        if(i==z) {
 
-                        printf("\n===== Information sur le formateur selectionne ====== \n");
-                        printf("> Nom        : %-s \n", formateurCourant->nom);
-                        printf("> Prenom     : %-s \n", formateurCourant->prenom);
-                        printf("> Naissance  : %02d/%02d/%4d \n", formateurCourant->naissanceJour, formateurCourant->naissanceMois, formateurCourant->naissanceAnnee);
-                        printf(">> ===================== <<\n");
-                        printf(">> Liste de ses titres :\n");
-                        for(x=1;x<=formateurCourant->nbTitre;x++) {
-                            printf(" >> %s\n", formateurCourant->titre[x]);
+                            printf("\n===== Information sur le formateur selectionne ====== \n");
+                            printf("> Nom        : %-s \n", formateurCourant->nom);
+                            printf("> Prenom     : %-s \n", formateurCourant->prenom);
+                            printf("> Naissance  : %02d/%02d/%4d \n", formateurCourant->naissanceJour, formateurCourant->naissanceMois, formateurCourant->naissanceAnnee);
+                            printf(">> ===================== <<\n");
+                            printf(">> Liste de ses titres :\n");
+                            for(x=1;x<=formateurCourant->nbTitre;x++) {
+                                printf(" >> %s\n", formateurCourant->titre[x]);
+                            }
+                            printf(">> ===================== <<\n");
+                            printf(">> Son horaire :\n");
+                            afficherHoraireFormateur(formateurCourant, formationDebut, nbFormation);
+
+
                         }
-                        printf(">> ===================== <<\n");
-                        printf(">> Son horaire :\n");
-                        afficherHoraireFormateur(formateurCourant, formationDebut, nbFormation);
 
-
+                        formateurCourant= formateurCourant->suivant;
                     }
-
-                    formateurCourant= formateurCourant->suivant;
+                }
+                else
+                {
+                    printf("0 : retour\nChoix : ");
+                    scanf("%d", &z);
                 }
             }
             
@@ -1234,12 +1244,14 @@ void afficherListeFormateur(formateur *formateurDebut, int nbFormateur) {
     int i, j;
     formateur *formateurCourant = malloc(sizeof(*formateurCourant));
     formateurCourant = formateurDebut;
-    printf("==================================================================================================================\n");
-    printf("                                          LISTE DES FORMATEURS  \n");
-    printf("+--------+--------------------------------+--------------------------------+-------------------+-----------------+\n");
-    printf("| Numero | Nom                            | Prenom                         | Date de naissance | Nombre de titre |\n");
-    printf("+--------+--------------------------------+--------------------------------+-------------------+-----------------+\n");
+
     if(nbFormateur > 0) {
+        printf("==================================================================================================================\n");
+        printf("                                          LISTE DES FORMATEURS  \n");
+        printf("+--------+--------------------------------+--------------------------------+-------------------+-----------------+\n");
+        printf("| Numero | Nom                            | Prenom                         | Date de naissance | Nombre de titre |\n");
+        printf("+--------+--------------------------------+--------------------------------+-------------------+-----------------+\n");
+    
         for(i=1;i<=nbFormateur;i++) {
             
 
@@ -1297,6 +1309,7 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
     char nomFormationPresentGrille[20][102];
     int nbCoursGrille = 0;
     int verifDoublon;
+    int idPresent;
 
     printf("|----------+----------+----------+----------+----------+----------+----------+----------|\n");
     printf("|  Heure   |  Lundi   |   Mardi  |  Mecredi |  Jeudi   | Vendredi |  Samedi  | Dimanche |\n");
@@ -1317,6 +1330,7 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
                 }
                 else // si id du cours présent
                 {
+                    idPresent = 0; // si l'id du cours n'est pas present c'est qu'il existe plus donc on devra le supprimer
                     formationCourant=formationDebut;
                     for(x=1;x<=nbFormation;x++) { // Passage en revu des formations pour trouver l'id de la formation de la cellule du formateur
                         if(strcmp(formateurCourant->horaireId[i][j], formationCourant->idFormationAnnee) == 0) { // si idFormationAnnee de formation est egal à la cellule de l'horaire du formateur
@@ -1328,6 +1342,7 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
                             for(y=1;y<=nbCoursGrille;y++) { // Pour chaque cours qui sont deja affiche
                                 if (strcmp(coursPresentGrille[y], formationCourant->cours[formationCourant->horaire[i][j]]) == 0) { // si deja present dans la liste affiche
                                     verifDoublon = 1; // doublon deja present
+                                    idPresent = 1;
                                     id= y;
                                     break;
                                 }
@@ -1341,10 +1356,16 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
                                 break;
                             }
 
+
                         }
 
                         formationCourant= formationCourant->suivant;
 
+                    }
+
+                    
+                    if(idPresent == 0) { // si pas de cours present c'est qu'il existe plus donc on remplace par aucun
+                        strcpy(formateurCourant->horaireId[i][j], "AUCUN");
                     }
 
                     printf("    %02d    |", id);
@@ -1685,49 +1706,6 @@ void afficherListeFormation(formation *courant, int nombreFormation) {
         printf("+--------+-------+------------------------------------------------------------------------------------------------------+-----------+------------+\n");
     }
 }
-
-
-
-void supprimerFormateur(formateur *asupprimer, formateur *formateurDebut, int nbFormateur) {
-    int i;
-
-
-    formateur *formateurCourant=malloc(sizeof(*formateurCourant));
-    formateur *formateurIntercale=malloc(sizeof(*formateurIntercale));
-    formateurCourant=formateurDebut;
-    for(i=1;i<=nbFormateur;i++) {
-
-        
-
-
-        if(
-            formateurCourant->naissanceAnnee == asupprimer->naissanceAnnee &&
-            formateurCourant->naissanceJour == asupprimer->naissanceJour &&
-            formateurCourant->naissanceMois == asupprimer->naissanceMois &&
-            (strcmp(formateurCourant->nom, asupprimer->nom)== 0) &&
-            (strcmp(formateurCourant->prenom, asupprimer->prenom)== 0)
-        ) {
-
-            if(i==1) {
-                asupprimer = asupprimer->suivant;
-                free(asupprimer);
-            }
-            else
-            {
-                formateurIntercale->suivant = formateurCourant->suivant;
-                free(formateurCourant);
-                break;
-            }
-
-        }
-        formateurIntercale = formateurCourant;
-        formateurCourant=formateurCourant->suivant;
-    }
-}
-
-
-
-
 
 //Supprime l'annee de formation indique.
 void supprimerFormationAnnee(int numIdASupprimer, int *nombreFormation, formation *debut) {
@@ -2297,4 +2275,105 @@ void ecrireFormateur(formateur *courant) {
     fprintf(fres,"\n");
     fclose(fres);    
 
+}
+
+
+void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debut, formation *fDebut) {
+
+    int i, j, nb;
+    formateur *aSupprimer = malloc(sizeof(*formateur));
+    formateur *courant = malloc(sizeof(*formateur));
+    formation *fCourant = malloc(sizeof(formation));
+
+    aSupprimer = debut;
+
+
+    if(numASupprimer >= 1 && numASupprimer <= *nombreFormateur) {
+        if(numASupprimer == 1) {
+            //Actualisation des horaires de formations
+            for(i = 1; i <= 7; i++) {
+                for(j = 1; j <= 22; j++) {
+                    if(strcmp(aSupprimer->horaireId[i][j], "INDSP") != 0 && strcmp(aSupprimer->horaireId[i][j], "AUCUN") != 0) {    //Compararer l'horaire du formateur pour trouver les heures de cours
+                        //Preparation des formations
+                        fCourant = fDebut;
+                        while(strcmp(fCourant->idFormationAnnee, aSupprimer->horaireId[i][j]) != 0) { //Comparaison des ID de l'horaire et des annee de formations pour trouver la bonne formation
+                            fCourant = fCourant->suivant;
+                        }
+                        fCourant->coursDejaDonne[horaire[i][j]] = 0;
+                        fCourant->horaire[i][j] = 0;
+                    }
+                }
+            }
+
+            debut = debut->suivant;
+            free(aSupprimer);
+        } else {
+            courant = debut;
+            //On se deplace jusqu a la bonne adresse
+            for(i = 1; i < numASupprimer - 1; i++) {
+                courant = courant->suivant;
+            }
+
+            if(numASupprimer != *nombreFormateur) {
+                aSupprimer = courant->suivant;
+                courant->suivant = aSupprimer->suivant;
+
+                //Actualisation des horaires de formations
+                for(i = 1; i <= 7; i++) {
+                    for(j = 1; j <= 22; j++) {
+                        if(strcmp(aSupprimer->horaireId[i][j], "INDSP") != 0 && strcmp(aSupprimer->horaireId[i][j], "AUCUN") != 0) {    //Compararer l'horaire du formateur pour trouver les heures de cours
+                            //Preparation des formations
+                            fCourant = fDebut;
+                            while(strcmp(fCourant->idFormationAnnee, aSupprimer->horaireId[i][j]) != 0) { //Comparaison des ID de l'horaire et des annee de formations pour trouver la bonne formation
+                                fCourant = fCourant->suivant;
+                            }
+                            fCourant->coursDejaDonne[horaire[i][j]] = 0;
+                            fCourant->horaire[i][j] = 0;
+                        }
+                    }
+                }
+
+                free(aSupprimer);
+            } else {
+                aSupprimer = courant->suivant;
+                courant->suivant = NULL;
+
+                //Actualisation des horaires de formations
+                for(i = 1; i <= 7; i++) {
+                    for(j = 1; j <= 22; j++) {
+                        if(strcmp(aSupprimer->horaireId[i][j], "INDSP") != 0 && strcmp(aSupprimer->horaireId[i][j], "AUCUN") != 0) {    //Compararer l'horaire du formateur pour trouver les heures de cours
+                            //Preparation des formations
+                            fCourant = fDebut;
+                            while(strcmp(fCourant->idFormationAnnee, aSupprimer->horaireId[i][j]) != 0) { //Comparaison des ID de l'horaire et des annee de formations pour trouver la bonne formation
+                                fCourant = fCourant->suivant;
+                            }
+                            fCourant->coursDejaDonne[horaire[i][j]] = 0;
+                            fCourant->horaire[i][j] = 0;
+                        }
+                    }
+                }
+
+                free(aSupprimer);
+            } 
+            *nombreFormateur = *nombreFormateur - 1;
+        }
+        //diminuer le nombre d'annee de formation
+        //recherche de la premiere annee de la formation a supprimer
+        aSupprimer = debut;
+        for(i = 1; i <= *nombreFormateur; i++) {
+            if(strcmp(aSupprimer->idFormation, id) == 0) {
+                aSupprimer->nombreAnneeFormation = aSupprimer->nombreAnneeFormation - 1;
+            }
+            aSupprimer = aSupprimer->suivant;
+        }
+    }
+    courant = debut;
+
+}
+
+
+void reinitialiserFormateurDat() {
+    FILE *fres;
+    fres = fopen("listeFormateur.dat", "w");
+    fclose(fres);
 }
