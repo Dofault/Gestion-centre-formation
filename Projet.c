@@ -54,7 +54,7 @@ int main() {
     formateur *formateurDebut,*formateurCourant,*formateurSuivant,*formateurIntercale;
 
     /*------------------------------------------------------Declaration fonction ------------------------------------------------------------------------*/
-    void changerMenu(int *);
+    void changerMenu(int *, int, int, int);
     void menuConsulterHoraire();
     void ecrireFormation(formation *);
     void ecrireEtudiant(etudiant *);
@@ -78,7 +78,7 @@ int main() {
     formation* ajouterFormation(formation *, int *, int);
     formateur* ajoutFormateur(formateur *, int *, formation *, int);
     int verificationHoraire(formation *, int, formateur *, formation*, int);
-    
+    void reinitialiserFormateurDat();
     void afficherHoraireFormation(formation *);
     void afficherHoraireFormateur(formateur *, formation*, int);
 
@@ -94,7 +94,7 @@ int main() {
 
     // --------------------------------------------------------------------FIN DE LA LECTURE --------------------------------------------------------------------------
     // ---------------------------------------------------------------------LANCEMENT DU MENU -------------------------------------------------------------------------
-    changerMenu(&valeurMenu);
+    changerMenu(&valeurMenu, nbEtudiant, nbFormateur, nbFormation);
     while(valeurMenu != 0) {
 
         if(valeurMenu == 1) {//  --------------------------------------------------- MENU CONSULTER ----------------------------------------------------------------------------
@@ -444,7 +444,6 @@ erreurID:
                     ///AJOUT FORMATION A LA CHAINE////////////////////////
                                                                         //
                     formationCourant->suivant=nouvelleFormation;        //
-                    nouvelleFormation->suivant = NULL;                  //
                     formationCourant=formationCourant->suivant;         //
                     nbFormation++;                                      //
                     //////////////////////////////////////////////////////
@@ -452,6 +451,8 @@ erreurID:
 
                     
                 }
+                
+                nouvelleFormation->suivant = NULL;                  //
                 printf("\nEncodage de la formation realisee avec succes.\n"); 
                 printf("==============================================\n\n"); 
 
@@ -585,14 +586,14 @@ erreurID:
                 //Actualisation du DAT formation
                 formationCourant = formationDebut;
                 for(z = 1; z <= nbFormation; z++) {
-                    ecrireFormation(formateurCourant);
+                    ecrireFormation(formationCourant);
                     formationCourant = formationCourant->suivant;
                 }
 
             }
 
             if(queFaire == 6) { // afficher liste formateur
-
+                printf("nb formateur : %d", nbFormateur);
                 afficherListeFormateur(formateurDebut, nbFormateur);
                 if(nbFormateur > 0) {
 
@@ -770,7 +771,7 @@ erreurID:
         }
 
 
-        changerMenu(&valeurMenu);
+        changerMenu(&valeurMenu, nbEtudiant, nbFormateur, nbFormation);
         
     }
         
@@ -991,7 +992,7 @@ void afficherListeEtudiant(formation *formationCourant, etudiant *etudiantDebut,
 
 
 //ChangerMenu
-void changerMenu(int *valeurMenu) {
+void changerMenu(int *valeurMenu, int nbEtudiant, int nbFormateur, int nbFormation) {
 
     printf("-+--------------------------------------------------------------+\n");
     printf(" | Veuillez entrer la valeur correspondante au menu souhaite    |\n");
@@ -1007,6 +1008,8 @@ void changerMenu(int *valeurMenu) {
     printf(" | 4 | Consulter les etudiants                                  |\n");
     printf("-+---+----------------------------------------------------------+\n");
     printf(" | 5 | Gestion financiere des etudiants                         |\n");
+    printf("-+---+----------------------------------------------------------+\n");
+    printf(" | Nb. formateur :%4d | Nb. etudiant:%4d | Nb. formation:%4d |\n", nbFormateur, nbEtudiant, nbFormation);
     printf("-+---+----------------------------------------------------------+\n");
     printf("Votre choix : ");
     scanf("%d", &*valeurMenu);
@@ -1313,7 +1316,6 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
     char nomFormationPresentGrille[20][102];
     int nbCoursGrille = 0;
     int verifDoublon;
-    int idPresent;
 
     printf("|----------+----------+----------+----------+----------+----------+----------+----------|\n");
     printf("|  Heure   |  Lundi   |   Mardi  |  Mecredi |  Jeudi   | Vendredi |  Samedi  | Dimanche |\n");
@@ -1334,7 +1336,6 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
                 }
                 else // si id du cours présent
                 {
-                    idPresent = 0; // si l'id du cours n'est pas present c'est qu'il existe plus donc on devra le supprimer
                     formationCourant=formationDebut;
                     for(x=1;x<=nbFormation;x++) { // Passage en revu des formations pour trouver l'id de la formation de la cellule du formateur
                         if(strcmp(formateurCourant->horaireId[i][j], formationCourant->idFormationAnnee) == 0) { // si idFormationAnnee de formation est egal à la cellule de l'horaire du formateur
@@ -1344,9 +1345,9 @@ void afficherHoraireFormateur(formateur *formateurCourant, formation *formationD
 
 
                             for(y=1;y<=nbCoursGrille;y++) { // Pour chaque cours qui sont deja affiche
-                                if (strcmp(coursPresentGrille[y], formationCourant->cours[formationCourant->horaire[i][j]]) == 0) { // si deja present dans la liste affiche
+                                if (strcmp(coursPresentGrille[y], formationCourant->cours[formationCourant->horaire[i][j]]) == 0 && 
+                                    strcmp(nomFormationPresentGrille[nbCoursGrille], formationCourant->nomComplete) == 0) { // si deja present dans la liste affiche
                                     verifDoublon = 1; // doublon deja present
-                                    idPresent = 1;
                                     id= y;
                                     break;
                                 }
@@ -2140,16 +2141,28 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
     nouveauFormateur->naissanceJour = tmpJourN;
     ecrireFormateur(nouveauFormateur);
 
-    ///AJOUT FORMATEUR A LA CHAINE////////////////////////  
-    courant = debut;
-    for(i = 1; i < *nb; i++) {
-       courant = courant->suivant; 
-    }
-    courant->suivant=nouveauFormateur;        
-    nouveauFormateur->suivant = NULL;                         
-    *nb = *nb + 1;
-    //////////////////////////////////////////////////////
 
+    if(nb > 0) {
+        ///AJOUT FORMATEUR A LA CHAINE////////////////////////  
+        courant = debut;
+        for(i = 1; i < *nb; i++) {
+        courant = courant->suivant; 
+        }
+        courant->suivant=nouveauFormateur;        
+        nouveauFormateur->suivant = NULL;                         
+        //////////////////////////////////////////////////////
+    }
+    else
+    {
+        formateur *formateurDebut=malloc(sizeof(formateur));
+        formateur* initialisationFormateur(int *);
+        formateurDebut = initialisationFormateur(&nb);
+        debut = formateurDebut;
+        
+    }
+
+
+    *nb = *nb + 1;
     return debut;
 }
 
@@ -2189,8 +2202,13 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nou
 
         printf("A quelle heure souhaitez-vous commencer votre cours ? ");
         scanf("%d", &heure);
-        while(heure < 0 || heure > 23 || fSuite->horaire[jour][heure] != 0) {   //3e condition : Verification qu'aucun cours ne soit deja donne ce jours, a cette heure la
+        while(heure < 0 || heure > 23) {   //3e condition : Verification qu'aucun cours ne soit deja donne ce jours, a cette heure la
             printf("\nHeure incorrecte, essayez a nouveau : ");
+            scanf("%d", &heure);
+        }
+
+        while(fSuite->horaire[jour][heure] != 0) {
+            printf("\nLes etudiants de la formation ont deja cours ce jour la (%s), essayez à nouveau :", fSuite->cours[fSuite->horaire[jour][heure]]);
             scanf("%d", &heure);
         }
 
@@ -2279,8 +2297,8 @@ void ecrireFormateur(formateur *courant) {
 void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debut, formation *fDebut) {
 
     int i, j, nb;
-    formateur *aSupprimer = malloc(sizeof(*formateur));
-    formateur *courant = malloc(sizeof(*formateur));
+    formateur *aSupprimer = malloc(sizeof(formateur));
+    formateur *courant = malloc(sizeof(formateur));
     formation *fCourant = malloc(sizeof(formation));
 
     aSupprimer = debut;
@@ -2297,7 +2315,7 @@ void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debu
                         while(strcmp(fCourant->idFormationAnnee, aSupprimer->horaireId[i][j]) != 0) { //Comparaison des ID de l'horaire et des annee de formations pour trouver la bonne formation
                             fCourant = fCourant->suivant;
                         }
-                        fCourant->coursDejaDonne[horaire[i][j]] = 0;
+                        fCourant->coursDejaDonne[fCourant->horaire[i][j]] = 0;
                         fCourant->horaire[i][j] = 0;
                     }
                 }
@@ -2325,7 +2343,7 @@ void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debu
                             while(strcmp(fCourant->idFormationAnnee, aSupprimer->horaireId[i][j]) != 0) { //Comparaison des ID de l'horaire et des annee de formations pour trouver la bonne formation
                                 fCourant = fCourant->suivant;
                             }
-                            fCourant->coursDejaDonne[horaire[i][j]] = 0;
+                            fCourant->coursDejaDonne[fCourant->horaire[i][j]] = 0;
                             fCourant->horaire[i][j] = 0;
                         }
                     }
@@ -2345,7 +2363,7 @@ void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debu
                             while(strcmp(fCourant->idFormationAnnee, aSupprimer->horaireId[i][j]) != 0) { //Comparaison des ID de l'horaire et des annee de formations pour trouver la bonne formation
                                 fCourant = fCourant->suivant;
                             }
-                            fCourant->coursDejaDonne[horaire[i][j]] = 0;
+                            fCourant->coursDejaDonne[fCourant->horaire[i][j]] = 0;
                             fCourant->horaire[i][j] = 0;
                         }
                     }
@@ -2358,12 +2376,8 @@ void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debu
         //diminuer le nombre d'annee de formation
         //recherche de la premiere annee de la formation a supprimer
         aSupprimer = debut;
-        for(i = 1; i <= *nombreFormateur; i++) {
-            if(strcmp(aSupprimer->idFormation, id) == 0) {
-                aSupprimer->nombreAnneeFormation = aSupprimer->nombreAnneeFormation - 1;
-            }
-            aSupprimer = aSupprimer->suivant;
-        }
+
+        
     }
     courant = debut;
 
