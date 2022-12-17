@@ -1356,7 +1356,7 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
     formateur *nouveauFormateur;
     formateur *courant;
-    nouveauFormateur = malloc(sizeof(nouveauFormateur));
+    nouveauFormateur = malloc(sizeof(formateur));
     courant = malloc(sizeof(courant));
     formation *fSuite;
     fSuite = malloc(sizeof(fSuite));
@@ -1424,10 +1424,10 @@ formateur* ajoutFormateur(formateur *debut, int *nb, formation *formationDebut, 
 
     printf("TEST 1\n");
     //Initialisation de son horaire (disponible tout le temps dans un premier temps) 
-    for(i = 0; i <= 7; i++) {
-        for(j = 0; j <= 22; j++) {
+    for(i = 1; i <= 7; i++) {
+        for(j = 1; j <= 22; j++) {
             //nouveauFormateur->horaire[i][j] = 0;
-            strcpy(nouveauFormateur->horaireLun[i], "AUCUN\0");
+            strcpy(nouveauFormateur->horaireId[i][j], "AUCUN\0");
         }
     }
 
