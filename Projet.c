@@ -263,7 +263,6 @@ int main() {
                     etudiantNouveau->prenom[29] = '\0';
                     
 
-                    // TODO : verification annee de naissance
                     printf("\nInformation date de naissance : \n");
                     printf("> Annee : "); scanf("%d", &etudiantNouveau->naissanceAnnee);
                     printf("> Mois de naissance : "); scanf("%d", &etudiantNouveau->naissanceMois);
@@ -362,14 +361,6 @@ erreurID:
                 printf("\nCombien de titres seront necessaires a l'ensemble des enseignants de la formation ? ");
                 scanf("%d", &formationIntercale->nombrePrerequisProf);
 
-				//////////////////////////////////////////////////////////////////////////////////
-                // VU QUON VA AJOUTER POTENTIELLEMENT PLUSIEURS ANNEE ON INITIALISE LA CHAINE   //
-                // COMME CA ON AJOUTE A LA SUITE TOUTES LES ANNEES dans la boucle               //
-                formationCourant=formationDebut;                                                //
-                for(i=1;i< nbFormation; i++) {                                                 //
-                    formationCourant= formationCourant->suivant;                                //
-                }                                                                               //
-                //////////////////////////////////////////////////////////////////////////////////
                 if(formationIntercale->nombrePrerequisProf != 0) {
                     printf("Quel est l'ensemble des titres que les formateurs doivent avoir en possession pour enseigner dans cette formation ?\n");
                     for(i = 1; i <= formationIntercale->nombrePrerequisProf; i++) {
@@ -493,17 +484,18 @@ erreurID:
 
                     ///AJOUT FORMATION A LA CHAINE////////////////////////
                     if(nbFormation > 0 ) {
-                        nouvelleFormation->suivant = formationCourant->suivant;        //
-                        formationCourant->suivant = nouvelleFormation;         //
+                        formationCourant=formationDebut;                                                
+                        for(j=1; j < nbFormation; j++) {                                                 
+                            formationCourant= formationCourant->suivant;                                
+                        } 
+                        nouvelleFormation->suivant = formationCourant->suivant;        
+                        formationCourant->suivant = nouvelleFormation;         
                     } else {
                         formationDebut = nouvelleFormation;
                     }   
-                                                                     //
+                                                                     
                     nbFormation++;                                      //
-                    //////////////////////////////////////////////////////
-
-
-                    
+                    //////////////////////////////////////////////////////   
                 }
                 
                 nouvelleFormation->suivant = NULL;                  //
@@ -576,6 +568,7 @@ erreurID:
                             ecrireFormation(formationCourant);
                             formationCourant = formationCourant->suivant;
                         }
+
                     } else {
                         
                         //Cas de la suppression de la formation complete
@@ -1077,8 +1070,10 @@ int menuGererFormation() { // Les valeurs possible de retour  1 : ajouter format
     if(valeurMenuFormation == 2) {
         queFaire = gestionFormateur();
         return queFaire;
+    }
 
-        // ******* A FAIRE : Creer fonction gestionFormateur et renvoyer queFaire 3 valeurs différente (ajouter, modifier, supprimer formateur)
+    if(valeurMenuFormation == 0) {
+        return valeurMenuFormation;
     }
 }
 
