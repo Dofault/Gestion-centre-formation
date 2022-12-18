@@ -2,8 +2,6 @@
 #include<string.h>
 #include<stdlib.h>      //Gestion de la mémoire avec malloc, free, ...
 
-//TODO : Lire le nom et prenom des formateurs avec fgets au cas ou il y aie des espaces
-
 typedef struct etudiant {
     char nom[30];
     char prenom[30];
@@ -189,7 +187,7 @@ int main() {
                 
                 formationCourant = formationDebut;
                 
-                fres=fopen("listeFormation.dat", "w");
+                fres=fopen("DesplanqueCDelattre03.dat", "w");
                 fclose(fres);
                 printf("\ntttttt%d SUR  %s\n", nbFormation, formationCourant->nomComplete);
                 for(i=1;i<=nbFormation;i++) { // incrementation nbEtudiant dans la formation ou il sera ajoute
@@ -748,7 +746,7 @@ erreurID:
                                     printf("apres fonction debut : %s %d\n", etudiantDebut->nom, nbEtudiant);
                                     
                                     
-                                    fres=fopen("listeEtudiant.dat", "w");
+                                    fres=fopen("DesplanqueCDelattre01.dat", "w");
                                     fclose(fres);
                                     etudiantCourant=etudiantDebut;
                                     for(z=1;z<=nbEtudiant;z++) {
@@ -947,7 +945,7 @@ void menuGestionFinanciereEtudiant(etudiant *etudiantDebut, formation *formation
 
     if(modif == 1) {
         FILE *fres;
-        fres=fopen("listeEtudiant.dat", "w");
+        fres=fopen("DesplanqueCDelattre01.dat", "w");
         fclose(fres);
 
         etudiantCourant = etudiantDebut;
@@ -1143,18 +1141,18 @@ int gestionFormation() { //Est appelée depuis menuGererFormation() Les valeurs 
 }
 
 
-void ecrireEtudiant(etudiant *e) { // Ajout d'etudiant a la suite du reste dans listeEtudiant.dat
+void ecrireEtudiant(etudiant *e) { // Ajout d'etudiant a la suite du reste dans DesplanqueCDelattre01.dat
    FILE *fres;
-   fres=fopen("listeEtudiant.dat", "a");
+   fres=fopen("DesplanqueCDelattre01.dat", "a");
    fprintf(fres,"%-30s %-30s %5s %2d %2d %4d %2d %8.2f %8.2f %8.2f\n", 
    e->nom, e->prenom, e->idFormationAnnee, e->naissanceJour, e->naissanceMois, e->naissanceAnnee, e->annee, e->montantAPayer, e->montantPaye, e->reduction);
    fclose(fres);
 }
 
-void ecrireFormation(formation *f) { // Ajout de formation a la suite du reste dans listeFormation.dat
+void ecrireFormation(formation *f) { // Ajout de formation a la suite du reste dans DesplanqueCDelattre03.dat
 
     FILE *fres;
-    fres=fopen("listeFormation.dat", "a");
+    fres=fopen("DesplanqueCDelattre03.dat", "a");
 
     //printf("\nFormation en cours d'ajout : %s \n", f->nomBase);
     int z, y, x;
@@ -1396,7 +1394,7 @@ void afficherHoraireFormation(formation *formationCourant){
 formateur* initialisationFormateur(int *nbFormateur) {
 
     FILE *fdat1;
-    fdat1=fopen("listeFormateur.dat", "r");
+    fdat1=fopen("DesplanqueCDelattre02.dat", "r");
 
     formateur *fSuivant;
     formateur *debut=malloc(sizeof(*debut));
@@ -1451,7 +1449,7 @@ formateur* initialisationFormateur(int *nbFormateur) {
 etudiant* initialisationEtudiant(int *nbEtudiant) {
 
     FILE *fdat;
-    fdat=fopen("listeEtudiant.dat", "r");
+    fdat=fopen("DesplanqueCDelattre01.dat", "r");
 
     etudiant *eSuivant;
     etudiant *debut = malloc(sizeof(*debut));
@@ -1485,7 +1483,7 @@ etudiant* initialisationEtudiant(int *nbEtudiant) {
 
 formation* initialisationFormation(int *nbFormation) {
     FILE *fdat2;
-    fdat2 = fopen("listeFormation.dat","r");
+    fdat2 = fopen("DesplanqueCDelattre03.dat","r");
 
     formation *fSuivant;
     formation *debut = malloc(sizeof(*debut));
@@ -1881,7 +1879,7 @@ formation* supprimerFormationEntiere(int numIdASupprimer, int *nombreFormation, 
 
 void reinitialiserFormationDat() {
     FILE *fres;
-    fres = fopen("listeFormation.dat","w");
+    fres = fopen("DesplanqueCDelattre03.dat","w");
     fclose(fres);
 }
 
@@ -2241,7 +2239,7 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nou
     // Vu qu'on a aussi modifier formation on reecris toutes les formations
     void ecrireFormation(formation*);
     FILE *fres;
-    fres=fopen("listeFormation.dat", "w");
+    fres=fopen("DesplanqueCDelattre03.dat", "w");
     fclose(fres);
     formation *formationCourant = malloc(sizeof(*formationCourant));
     formationCourant=formationDebut;
@@ -2259,7 +2257,7 @@ int verificationHoraire(formation *fSuite, int numeroCoursChoisi, formateur *nou
 void ecrireFormateur(formateur *courant) {
 
     FILE *fres;
-    fres = fopen("listeFormateur.dat", "a");
+    fres = fopen("DesplanqueCDelattre02.dat", "a");
 
     int i, j;
 
@@ -2312,7 +2310,7 @@ void supprimerEtudiant(int numASupprimer, int *nombreEtudiant, etudiant *debut, 
 
 
             FILE *fres;
-            fres=fopen("listeFormation.dat", "w");
+            fres=fopen("DesplanqueCDelattre03.dat", "w");
             fclose(fres);
             void ecrireFormation(formation *);
             formationCourant=formationDebut;
@@ -2343,7 +2341,7 @@ void supprimerEtudiant(int numASupprimer, int *nombreEtudiant, etudiant *debut, 
 
             // mise a jour du fichier dat formation avec nbEtudiant -1
             FILE *fres;
-            fres=fopen("listeFormation.dat", "w");
+            fres=fopen("DesplanqueCDelattre03.dat", "w");
             fclose(fres);
             void ecrireFormation(formation *);
             formationCourant=formationDebut;
@@ -2468,7 +2466,7 @@ void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debu
 
         // mise a jour du fichier dat formation avec nbEtudiant -1
         FILE *fres;
-        fres=fopen("listeFormation.dat", "w");
+        fres=fopen("DesplanqueCDelattre03.dat", "w");
         fclose(fres);
         void ecrireFormation(formation *);
         fCourant=fDebut;
@@ -2496,6 +2494,6 @@ void supprimerFormateur(int numASupprimer, int *nombreFormateur, formateur *debu
 
 void reinitialiserFormateurDat() {
     FILE *fres;
-    fres = fopen("listeFormateur.dat", "w");
+    fres = fopen("DesplanqueCDelattre02.dat", "w");
     fclose(fres);
 }
