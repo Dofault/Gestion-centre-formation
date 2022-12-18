@@ -1373,11 +1373,11 @@ void afficherHoraireFormation(formation *formationCourant){
     for(j=1;j<=formationCourant->nbCours; j++) {
 
         if(formationCourant->coursDejaDonne[j] == 1) {
-            printf("\n> %2d : %-s (PROFESSEUR)", j, formationCourant->cours[j]);
+            printf("\n> %2d : %-s", j, formationCourant->cours[j]);
         }
         else
         {
-            printf("\n> %2d : %-s (AUCUN PROFESSEUR)", j, formationCourant->cours[j]);
+            printf("\n> %2d : %-s (Aucun professeur pour ce cours)", j, formationCourant->cours[j]);
         }
 
         
