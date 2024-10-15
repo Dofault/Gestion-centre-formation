@@ -9,6 +9,8 @@ Le projet enregistre les données dans des fichiers `.dat` :
 - ```DesplanqueCDelattre02.dat``` : Liste des formateurs
 - ```DesplanqueCDelattre03.dat``` : Liste des formations de chaque année
 
+Ce projet contient également un executable pour reinitialiser ces même fichiers `.dat` (`ResetEcritureFichierListeEtudiant.exe`)
+
 ## Fonctionnalités Principales
 
 ### Gestion des Formations
